@@ -82,7 +82,7 @@ public class NtdBMA extends GeneralSubstitutionModel{
             }
         }
 
-        /*for(i = 0; i < m_nStates; i++){
+       /*for(i = 0; i < m_nStates; i++){
             for(j = 0; j < m_nStates; j++){
                 System.out.print(m_rateMatrix[i][j]+" ");
             }

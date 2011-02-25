@@ -31,20 +31,7 @@ public class testNtdBMA extends TestCase {
         double[] getExpectedResult();
     }
 
-    /*
-     * Results obtained by running the following scilab code,
-     *
-     * k = 5 ; piQ = diag([.2, .3, .25, .25]) ; d = 0.1 ;
-     * % Q matrix with zeroed diagonal
-     * XQ = [0 1 k 1; 1 0 1 k; k 1 0 1; 1 k 1 0];
-     *
-     * xx = XQ * piQ ;
-     *
-     * % fill diagonal and normalize by total substitution rate
-     * q0 = (xx + diag(-sum(xx,2))) / sum(piQ * sum(xx,2)) ;
-     * expm(q0 * d)
-     */
-
+    
     //A HKY model
     Instance test0 = new Instance() {
         public String getPi() {
@@ -348,7 +335,7 @@ public class testNtdBMA extends TestCase {
         }
     };
 
-    Instance[] all = {test0,test1};//,test2,test3,test4,test5};
+    Instance[] all = {test0,test1,test2,test3,test4,test5};
 
     public void testsNtdBMA() throws Exception{
         for (Instance test : all) {
