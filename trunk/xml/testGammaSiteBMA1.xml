@@ -127,15 +127,16 @@
         </distribution>
 
 
-        <operator id='logKappa.RW' spec='RealRandomWalkOperator' windowSize="0.5" weight="1" parameter="@log.kappa"/>
+        <!--operator id='logKappa.RW' spec='RealRandomWalkOperator' windowSize="0.5" weight="1" parameter="@log.kappa"/>
         <operator id='logTN.RW' spec='RealRandomWalkOperator' windowSize="0.001" weight="1" parameter="@log.tn"/>
         <operator id='logAC.RW' spec='RealRandomWalkOperator' windowSize="0.001" weight="1" parameter="@log.ac"/>
         <operator id='logAT.RW' spec='RealRandomWalkOperator' windowSize="0.001" weight="1" parameter="@log.at"/>
         <operator id='logGC.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gc"/>
         <operator id='logGT.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gt"/>
+
+        <operator id="modelChoose.op" spec='RestrictedBitFlipOperator' modelChoose="@modelChoose" dependencies='@dependencies' weight="0.5"/-->
         <operator id='logShape.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.shape"/>
         <operator id='logitInvar.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@logit.invar"/>
-        <operator id="modelChoose.op" spec='RestrictedBitFlipOperator' modelChoose="@modelChoose" dependencies='@dependencies' weight="0.5"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
         <operator spec='Uniform' weight="10" tree="@tree"/>
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
@@ -147,7 +148,7 @@
 	        <model idref='likelihood'/>
             <log idref="likelihood"/>
     	    <ESS spec='ESS' name='log' arg="@likelihood"/>
-            <log idref='log.kappa'/>
+            <!--log idref='log.kappa'/>
     	    <ESS spec='ESS' name='log' arg="@log.kappa"/>
             <log idref='log.tn'/>
     	    <ESS spec='ESS' name='log' arg="@log.tn"/>
@@ -158,9 +159,13 @@
             <log idref='log.gc'/>
     	    <ESS spec='ESS' name='log' arg="@log.gc"/>
             <log idref='log.gt'/>
-    	    <ESS spec='ESS' name='log' arg="@log.gt"/>
+    	    <ESS spec='ESS' name='log' arg="@log.gt"/-->
+            <log idref='log.shape'/>
+    	    <ESS spec='ESS' name='log' arg="@log.shape"/>
+            <log idref='logit.invar'/>
+    	    <ESS spec='ESS' name='log' arg="@logit.invar"/>
         </logger>
-        <logger logEvery="1000" fileName="testSubstBMA3.log">
+        <logger logEvery="1000" fileName="testGammaSiteBMA1.log">
 	        <model idref='likelihood'/>
             <log idref="likelihood"/>
             <log idref='log.kappa'/>
@@ -174,7 +179,7 @@
             <log idref='logit.invar'/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
-        <logger logEvery="10000" fileName="testSubstBMA3.trees">
+        <logger logEvery="10000" fileName="testGammaSiteBMA1.trees">
             <log idref="tree"/>
         </logger>
     </run>
