@@ -19,7 +19,7 @@ public class NtdBMA extends GeneralSubstitutionModel{
     public Input<RealParameter> logAT = new Input<RealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logGC = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logGT = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
-    public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>("modelChoose", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
+    public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>("modelChoose", "Integer parameter that is a bit vector presenting the model", Input.Validate.REQUIRED);
 
     public static final int STATE_COUNT = 4;
     public static final int RATE_COUNT = 6;
