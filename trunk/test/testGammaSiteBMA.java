@@ -283,14 +283,14 @@ interface Instance {
                     "modelChoose",modelChoose
             );
 
-            double[] catRates = gammaSiteBMA.getCategoryRates();
+            double[] catRates = gammaSiteBMA.getCategoryRates(null);
             double[] expectedCatRates = test.getCategoryRates();
 
             for(int i = 0; i < catRates.length; i++){
                 assertEquals(catRates[i], expectedCatRates[i], 8e-10);
             }
 
-            double[] catProps = gammaSiteBMA.getCategoryProportions();
+            double[] catProps = gammaSiteBMA.getCategoryProportions(null);
             double[] expectedCatProps = test.getCategoryProportions();
             for(int i = 0; i < catProps.length; i++){
                 assertEquals(catProps[i], expectedCatProps[i], 1e-10);
