@@ -5,6 +5,7 @@ import beast.core.parameter.IntegerParameter;
 import beast.core.Input;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.tree.Node;
 import org.apache.commons.math.distribution.GammaDistribution;
 
 /**
@@ -82,7 +83,7 @@ public class GammaSiteBMA extends SiteModel {
      * discretization of gamma distribution with equal proportions in each
      * category
      */
-    protected void calculateCategoryRates() {
+    protected void calculateCategoryRates(Node node) {
         double propVariable = 1.0;
         int cat = 0;
 
