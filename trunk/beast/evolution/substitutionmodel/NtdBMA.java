@@ -110,4 +110,28 @@ public class NtdBMA extends GeneralSubstitutionModel{
         }
 	} // setupRateMatrix
 
+    public boolean requiresRecalculation(){
+        boolean recalculate = false;
+        if(modelChoose.get().somethingIsDirty()){
+            recalculate = true;
+        }else if(logKappa.get().somethingIsDirty()){
+            recalculate = true;
+        }else if(logTN.get().somethingIsDirty() && modelChoose.get().getValue(TN_INDEX) == PRESENT){
+            recalculate = true;
+        }else if(logAC.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+            recalculate = true;
+        }else if(logAT.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+            recalculate = true;
+        }else if(logGC.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+            recalculate = true;
+        }else if(logGT.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+            recalculate = true;
+        }
+
+        if(recalculate){
+            updateMatrix = true;
+        }
+        return recalculate;
+    }
+
 }

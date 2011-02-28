@@ -50,10 +50,12 @@ public class RestrictedBitFlipOperator extends Operator {
 
     public void initAndValidate() {
         int bitVectorLength = dependencies.get().getDimension();
+
+
         if(bitVectorLength != modelChoose.get().getDimension()){
             throw new RuntimeException("The bit vector and the dependencies vector should have the same length");
         }
-
+        depends = new int[bitVectorLength];
         for(int i = 0; i< bitVectorLength;i++){
             depends[i]  =  dependencies.get().getValue(i);
         }
