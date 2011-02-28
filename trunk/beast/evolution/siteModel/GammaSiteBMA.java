@@ -15,15 +15,10 @@ import org.apache.commons.math.distribution.GammaDistribution;
  */
 public class GammaSiteBMA extends SiteModel {
 
-    public Input<Integer> gammaCategoryCount =
-            new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)",Input.Validate.REQUIRED);
-    public Input<RealParameter> muParameter = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)",Input.Validate.REQUIRED);
     public Input<RealParameter> logShape =
             new Input<RealParameter>("logShape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less",Input.Validate.REQUIRED);
     public Input<RealParameter> logitInvar =
             new Input<RealParameter>("logitInvar", "proportion of sites that is invariant: should be between 0 (default) and 1",Input.Validate.REQUIRED);
-    public Input<SubstitutionModel.Base> m_pSubstModel =
-            new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", Input.Validate.REQUIRED);
     public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>("modelChoose",
             "Integer parameter that is a bit vector presenting the model", Input.Validate.REQUIRED);
 
@@ -33,6 +28,10 @@ public class GammaSiteBMA extends SiteModel {
     public static final int PRESENT = 1;
     public static final int ABSENT = 0;
 
+    public GammaSiteBMA() {
+        gammaCategoryCount.setRule(Input.Validate.REQUIRED);
+    }
+
     public void initAndValidate() throws Exception {
 
 
@@ -40,10 +39,10 @@ public class GammaSiteBMA extends SiteModel {
         muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
 
         //setting bounds for shape
-        shapeParameter.get().setBounds(1.0E-3, 1.0E3);
+        logShape.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         //setting bounds for invar
-        invarParameter.get().setBounds(0.0, 1.0);
+        logitInvar.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         //category count
         categoryCount = gammaCategoryCount.get()+1;
@@ -83,14 +82,13 @@ public class GammaSiteBMA extends SiteModel {
      * discretization of gamma distribution with equal proportions in each
      * category
      */
-    private void calculateCategoryRates() {
+    protected void calculateCategoryRates() {
         double propVariable = 1.0;
         int cat = 0;
 
         categoryRates[0] = 0.0;
         //back transform from logit space
         categoryProportions[0] = modelChoose.get().getValue(INVAR_INDEX)*(1/(1+Math.exp(-logitInvar.get().getValue(0))));
-
         propVariable = 1.0 - categoryProportions[0];
         cat = 1;
         
@@ -105,6 +103,7 @@ public class GammaSiteBMA extends SiteModel {
             for (int i = 0; i < gammaCatCount; i++) {
                 try {
                     categoryRates[i + cat] = GammaDistributionQuantile((2.0 * i + 1.0) / (2.0 * gammaCatCount), a, 1.0 / a);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.err.println("Something went wrong with the gamma distribution calculation");

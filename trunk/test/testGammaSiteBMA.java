@@ -5,11 +5,13 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
+import junit.framework.TestCase;
 
 /**
  * @author Chieh-Hsi Wu
  */
-public class testGammaSiteBMA {
+public class testGammaSiteBMA extends TestCase {
 
 interface Instance {
         SubstitutionModel getSubstModel () throws Exception;
@@ -85,17 +87,24 @@ interface Instance {
 
     };
 
-    /*//Neither gamma shape nor site invariant parameters is included.
+    //Neither gamma shape nor site invariant parameters is included.
     Instance test1 = new Instance(){
-        public SubstitutionModel getSubstModel (){
+        public SubstitutionModel getSubstModel ()throws Exception{
 
-            //Create a JC model
-            Parameter kappa = new Parameter.Default(1, 1);
+
             double[] pi = new double[]{0.25, 0.25, 0.25, 0.25};
 
-            Parameter freqs = new Parameter.Default(pi);
-            FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
-            HKY jc = new HKY(kappa, f);
+
+
+            HKY jc = new HKY();
+            Frequencies freqs = new Frequencies();
+		    freqs.initByName(
+                    "data", null,
+                    "estimate", false,
+                    "frequencies", "0.25 0.25 0.25 0.25");
+
+		    jc.initByName("kappa", "1.0",
+				       "frequencies",freqs);
             return jc;
         }
 
@@ -118,8 +127,10 @@ interface Instance {
             return 4;
         }
 
-        public Variable<Integer> getModelChoose(){
-            return new Variable.I(new int[]{0, 1});
+        public IntegerParameter getModelChoose() throws Exception{
+            IntegerParameter modelChoose = new IntegerParameter();
+            modelChoose.init(0, 1, "0 1",2);
+            return modelChoose;
         }
 
         public double[] getCategoryRates(){
@@ -135,15 +146,22 @@ interface Instance {
 
     //Neither gamma shape nor site invariant parameters is included.
     Instance test2 = new Instance(){
-        public SubstitutionModel getSubstModel (){
+        public SubstitutionModel getSubstModel ()throws Exception{
 
-            //Create a JC model
-            Parameter kappa = new Parameter.Default(1, 1);
+
             double[] pi = new double[]{0.25, 0.25, 0.25, 0.25};
 
-            Parameter freqs = new Parameter.Default(pi);
-            FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
-            HKY jc = new HKY(kappa, f);
+
+
+            HKY jc = new HKY();
+            Frequencies freqs = new Frequencies();
+		    freqs.initByName(
+                    "data", null,
+                    "estimate", false,
+                    "frequencies", "0.25 0.25 0.25 0.25");
+
+		    jc.initByName("kappa", "1.0",
+				       "frequencies",freqs);
             return jc;
         }
 
@@ -166,8 +184,10 @@ interface Instance {
             return 4;
         }
 
-        public Variable<Integer> getModelChoose(){
-            return new Variable.I(new int[]{1, 1});
+        public IntegerParameter getModelChoose() throws Exception{
+            IntegerParameter modelChoose = new IntegerParameter();
+            modelChoose.init(0, 1, "1 1",2);
+            return modelChoose;
         }
 
         public double[] getCategoryRates(){
@@ -182,15 +202,22 @@ interface Instance {
 
 
     Instance test3 = new Instance(){
-        public SubstitutionModel getSubstModel (){
+        public SubstitutionModel getSubstModel ()throws Exception{
 
-            //Create a JC model
-            Parameter kappa = new Parameter.Default(1, 1);
+
             double[] pi = new double[]{0.25, 0.25, 0.25, 0.25};
 
-            Parameter freqs = new Parameter.Default(pi);
-            FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
-            HKY jc = new HKY(kappa, f);
+
+
+            HKY jc = new HKY();
+            Frequencies freqs = new Frequencies();
+		    freqs.initByName(
+                    "data", null,
+                    "estimate", false,
+                    "frequencies", "0.25 0.25 0.25 0.25");
+
+		    jc.initByName("kappa", "1.0",
+				       "frequencies",freqs);
             return jc;
         }
 
@@ -213,8 +240,10 @@ interface Instance {
             return 8;
         }
 
-        public Variable<Integer> getModelChoose(){
-            return new Variable.I(new int[]{1, 1});
+        public IntegerParameter getModelChoose() throws Exception{
+            IntegerParameter modelChoose = new IntegerParameter();
+            modelChoose.init(0, 1, "1 1",2);
+            return modelChoose;
         }
 
         public double[] getCategoryRates(){
@@ -226,25 +255,32 @@ interface Instance {
         public double[] getCategoryProportions(){
             return new double[]{0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
         }
-    }; */
+    };
 
-    Instance[] all = {test0};//,test1,test2,test3};
-    public void testGammaSiteBMA(){
+    Instance[] all = {test0,test1,test2,test3};
+    public void testGammaSiteBMA() throws Exception{
 
-        /*for(Instance test: all){
+        for(Instance test: all){
             SubstitutionModel substModel = test.getSubstModel();
-            Parameter mu = new Parameter.Default(test.getMu());
-            Parameter logitInvar = new Parameter.Default(test.getLogitInvar());
-            Parameter logShape = new Parameter.Default(test.getLogShape());
+            RealParameter mu = new RealParameter();
+            RealParameter logitInvar = new RealParameter();
+            RealParameter logShape = new RealParameter();
+
+            mu.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getMu(),1);
+            logitInvar.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogitInvar(),1);
+            logShape.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogShape(),1);
+
             int catCount = test.getCategoryCount();
-            Variable<Integer> modelChoose = test.getModelChoose();
-            GammaSiteBMA gammaSiteBMA = new GammaSiteBMA(
-                    substModel,
-                    mu,
-                    logitInvar,
-                    logShape,
-                    catCount,
-                    modelChoose
+            IntegerParameter modelChoose = test.getModelChoose();
+
+            GammaSiteBMA gammaSiteBMA = new GammaSiteBMA();
+            gammaSiteBMA.initByName(
+                    "gammaCategoryCount",catCount,
+                    "mutationRate",mu,
+                    "logitInvar",logitInvar,
+                    "logShape",logShape,
+                    "substModel",substModel,
+                    "modelChoose",modelChoose
             );
 
             double[] catRates = gammaSiteBMA.getCategoryRates();
@@ -260,7 +296,7 @@ interface Instance {
                 assertEquals(catProps[i], expectedCatProps[i], 1e-10);
             }
 
-        } */
+        }
 
 
     }
