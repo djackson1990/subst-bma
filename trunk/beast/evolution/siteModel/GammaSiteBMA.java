@@ -3,10 +3,8 @@ package beast.evolution.siteModel;
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.IntegerParameter;
 import beast.core.Input;
-import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
-import org.apache.commons.math.distribution.GammaDistribution;
 
 /**
  * @author Chieh-Hsi Wu
@@ -37,7 +35,9 @@ public class GammaSiteBMA extends SiteModel {
 
 
         //seting the bound for mu
-        muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+        if (muParameter.get() != null) {
+            muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+        }
 
         //setting bounds for shape
         logShape.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
