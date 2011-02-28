@@ -61,22 +61,26 @@ public class GammaSiteBMA extends SiteModel {
 
     @Override
     protected boolean requiresRecalculation() {
+       // we only get here if something is dirty in its inputs
         boolean recalculate = false;
-        // we only get here if something is dirty in its inputs
+        if(modelChoose.get().somethingIsDirty()){
+            recalculate = true;
+        }else if(logShape.get().somethingIsDirty()){
+            if(modelChoose.get().getValue(SHAPE_INDEX) == PRESENT){
+                recalculate = true;
+            }
+        }else if(logitInvar.get().somethingIsDirty()){
+            if(modelChoose.get().getValue(INVAR_INDEX) == PRESENT){
+                recalculate = true;
+            }
+        }
 
-        /*if (muParameter.isDirty()) {
+        if(recalculate){
             ratesKnown = false;
         }
-        if (muParameter.isDirty()) {
-            ratesKnown = false;
-        }
-        if (muParameter.isDirty()) {
-            ratesKnown = false;
-        }
-        ratesKnown = false;
-        return true;*/
-        //return m_pSubstModel.isDirty() || !ratesKnown;
         return recalculate;
+        //return m_pSubstModel.isDirty() || !ratesKnown;
+
     }
 
     /**
