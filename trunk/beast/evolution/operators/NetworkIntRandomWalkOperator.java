@@ -3,6 +3,7 @@ package beast.evolution.operators;
 import beast.core.*;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.substitutionmodel.NtdBMA;
+import beast.evolution.operators.util.Vertex;
 import beast.util.Randomizer;
 
 import java.util.ArrayList;
@@ -14,15 +15,21 @@ import java.util.ArrayList;
 public class NetworkIntRandomWalkOperator extends Operator {
 
 
-    public Input<ArrayList<Vertex>> vertices = new Input<ArrayList<Vertex>>("vertex", "Unique id number of the vertex.");
-    public Input<IntegerParameter> parameter = new Input<IntegerParameter>("parameter", "Vertex indicator which indicates the current vertex in the network.");
+    public Input<ArrayList<Vertex>> vertices = new Input<ArrayList<Vertex>>("vertex", "Unique id number of the vertex.", new ArrayList<Vertex>());
+    public Input<IntegerParameter> parameter = new Input<IntegerParameter>("parameter", "Vertex indicator which indicates the current vertex in the network.",Input.Validate.REQUIRED);
     double[][] logHastingsRatios;
     boolean[][] permittedRoutes;
     int[][] neighbours;
+    int vertexCount = -1;
 
 
     public void initAndValidate() throws Exception {
         ArrayList<Vertex> vertices = this.vertices.get();
+        vertexCount = vertices.size();
+        for(int i = 0; i < vertices.size(); i++){
+                    System.err.println(vertices.get(i));
+                }
+        
         hasSingleComponent(vertices);
         neighbours = new int[vertices.size()][];
 
@@ -30,15 +37,22 @@ public class NetworkIntRandomWalkOperator extends Operator {
             neighbours[i] = vertices.get(i).getNeighbours();
         }
 
-        logHastingsRatios = new double[vertices.size()][vertices.size()];
+
         permittedRoutes = new boolean[vertices.size()][vertices.size()];
-        int vertexCount = vertices.size();
+        logHastingsRatios = new double[vertices.size()][vertices.size()];
+        markPermittedRoutes();
+        computeHastingsRatio();
+    }
+
+    private void markPermittedRoutes(){
         for(int i = 0; i < vertexCount;i++){
-            for(int j = 0; j < neighbours.length; j++){
+            for(int j = 0; j < neighbours[i].length; j++){
                 permittedRoutes[i][neighbours[i][j]]= true;
             }
         }
+    }
 
+    private void computeHastingsRatio(){
         for(int i = 0; i < vertexCount; i++){
             for(int j = i+1; j < vertexCount;j++){
                 if(permittedRoutes[i][j] != permittedRoutes[j][i]){
@@ -53,6 +67,12 @@ public class NetworkIntRandomWalkOperator extends Operator {
                 }
             }
         }
+        for(int i =0; i < vertexCount; i++){
+            for(int j = 0; j < vertexCount; j++){
+                System.out.print(logHastingsRatios[i][j]+ " ");
+            }
+            System.out.println();
+        }
 
     }
 
@@ -60,9 +80,11 @@ public class NetworkIntRandomWalkOperator extends Operator {
 
         IntegerParameter parameter = this.parameter.get(this);
         int currVertex = parameter.getValue(0);
-        int nextVertex = neighbours[currVertex][Randomizer.nextInt()*neighbours[currVertex].length];
+        int nextVertex = neighbours[currVertex][Randomizer.nextInt(neighbours[currVertex].length)];
+        //System.out.println("currVertex: "+currVertex+ ", nextVertex: "+nextVertex);
         parameter.setValue(0,nextVertex);
-
+        //System.out.println("currVal: "+this.parameter.get());
+        //System.out.println(logHastingsRatios[currVertex][nextVertex]);
         return logHastingsRatios[currVertex][nextVertex];
 
     }
@@ -102,41 +124,7 @@ public class NetworkIntRandomWalkOperator extends Operator {
 
 
     /** basic implementation of a SubstitutionModel bringing together relevant super class**/
-    public class Vertex extends Plugin {
-        public static final String ID_NUM = "idNum";
-        public static final String NEIGHBOURS = "neighbours";
-        public Input<Integer> idNum = new Input<Integer>(ID_NUM, "Unique id number of the vertex.");
-        public Input<String> neighbours = new Input<String>(NEIGHBOURS, "A string of the id number of adjacent nodes separated by a while space");
 
-        private int id;
-        private int[] neighbourIds;
-
-        public void initAndValidate() throws Exception {
-            id = idNum.get();
-            String[] neighboursStr = neighbours.get().split("\\s+");
-            neighbourIds = new int[neighboursStr.length];
-            for(int i = 0; i < neighboursStr.length;i++){
-                neighbourIds[i] = Integer.parseInt(neighboursStr[i]);
-            }
-
-        }
-
-   
-
-        public int getId(){
-            return id;
-        }
-
-        public int[] getNeighbours(){
-            return neighbourIds;
-        }
-
-        public String toString(){
-            return "Id: "+id+ ", neighbours: "+neighbours.get() ;
-        }
-
-
-    }
 
 
     public static void main(String[] args){

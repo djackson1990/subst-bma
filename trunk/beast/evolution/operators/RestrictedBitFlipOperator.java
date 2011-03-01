@@ -42,8 +42,8 @@ public class RestrictedBitFlipOperator extends Operator {
     public static final int INDEPENDENT = -1;
     public static final String MODEL_CHOOSE = "modelChoose";
     public static final String DEPENDENCIES = "dependencies";
-    public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>(MODEL_CHOOSE, "the parameter to operate a flip on.");
-    public Input<IntegerParameter> dependencies = new Input<IntegerParameter>(DEPENDENCIES, "Rules which defines the set of bit vector are allowed.");
+    public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>(MODEL_CHOOSE, "the parameter to operate a flip on.",Input.Validate.REQUIRED);
+    public Input<IntegerParameter> dependencies = new Input<IntegerParameter>(DEPENDENCIES, "Rules which defines the set of bit vector are allowed.",Input.Validate.REQUIRED);
 
 
     private int[] depends;

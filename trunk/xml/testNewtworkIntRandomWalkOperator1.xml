@@ -1,0 +1,29 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:beast.evolution.operators.util'>
+    <input spec='IntegerParameter' id="ntd.indicator" value='3' lower='0' upper='5' dimension="1"/>
+
+
+    <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
+        <state>
+            <input name='stateNode' idref='ntd.indicator'/>
+        </state>
+
+	    <distribution spec="CompoundDistribution" id="posterior"/>
+
+        <operator id="networkIntRandomWalk" spec="NetworkIntRandomWalkOperator" weight="1">
+            <input spec='Vertex' name="vertex" idNum="0" neighbours="1 2"/>
+            <input spec='Vertex' name="vertex" idNum="1" neighbours="0 3"/>
+            <input spec='Vertex' name="vertex" idNum="2" neighbours="0 3"/>
+            <input spec='Vertex' name="vertex" idNum="3" neighbours="1 2 4"/>
+            <input spec='Vertex' name="vertex" idNum="4" neighbours="3 5"/>
+            <input spec='Vertex' name="vertex" idNum="5" neighbours="4"/>
+            <input name="parameter" idref="ntd.indicator"/>
+        </operator>
+
+
+
+        <logger logEvery="100" fileName="testNetworkIntRandomWalkOperator.log">
+            <log idref="ntd.indicator"/>
+        </logger>
+    </run>
+</beast>
