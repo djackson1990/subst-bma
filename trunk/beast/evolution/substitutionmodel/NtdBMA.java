@@ -207,6 +207,9 @@ public class NtdBMA extends GeneralSubstitutionModel{
     }
 
     private int getCurrModel(){
+        if(modelChoose.get().getValue(0) == K80){
+            System.out.println(modelChoose.get().getValue(0));
+        }
         return modelChoose.get().getValue(0);
 
     }

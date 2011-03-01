@@ -1,6 +1,6 @@
 package test;
 
-import beast.evolution.siteModel.GammaSiteBMA;
+import beast.evolution.sitemodel.GammaSiteBMA;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.Frequencies;

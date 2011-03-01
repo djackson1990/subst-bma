@@ -47,7 +47,7 @@
         </frequencies>
     </input>
 
-    <input spec='beast.evolution.siteModel.GammaSiteBMA' id='gammaSiteBMA' gammaCategoryCount="4">
+    <input spec='GammaSiteBMA' id='gammaSiteBMA' gammaCategoryCount="4">
         <parameter id="log.shape" name="logShape" value="0.0" lower="-Infinity" upper="Infinity"/>
         <parameter id="logit.invar" name="logitInvar" value="0.0" lower="-Infinity" upper="Infinity"/>
         <input spec='beast.core.parameter.IntegerParameter' id="gsm.indicator" name="modelChoose" value='0 0' lower='0' upper='1' dimension="2"/>
