@@ -63,7 +63,7 @@ public class testNtdBMA extends TestCase {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "0 0",2);
+            modelChoose.init(0, 5, "3",1);
             return modelChoose;
         }
 
@@ -112,7 +112,7 @@ public class testNtdBMA extends TestCase {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "1 0",2);
+            modelChoose.init(0, 5, "4",1);
             return modelChoose;
         }
 
@@ -163,7 +163,7 @@ public class testNtdBMA extends TestCase {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "1 1",2);
+            modelChoose.init(0, 5, "5", 1);
             return modelChoose;
         }
 
@@ -213,7 +213,7 @@ public class testNtdBMA extends TestCase {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "0 0",2);
+            modelChoose.init(0, 5, "3", 1);
             return modelChoose;
         }
 
@@ -264,7 +264,7 @@ public class testNtdBMA extends TestCase {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "1 0",2);
+            modelChoose.init(0, 5, "4", 1);
             return modelChoose;
         }
 
@@ -316,7 +316,7 @@ public class testNtdBMA extends TestCase {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "1 1",2);
+            modelChoose.init(0, 5, "5", 1);
             return modelChoose;
         }
        
@@ -354,7 +354,7 @@ public class testNtdBMA extends TestCase {
             logGC.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogGC(),1);
             logGT.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogGT(),1);
             IntegerParameter modelChoose = test.getModelChoose();
-
+           
             Frequencies f = new Frequencies();
             f.init(null, true,""+test.getPi());
             

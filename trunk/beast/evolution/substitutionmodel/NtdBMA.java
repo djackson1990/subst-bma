@@ -19,16 +19,38 @@ public class NtdBMA extends GeneralSubstitutionModel{
     public Input<RealParameter> logAT = new Input<RealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logGC = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logGT = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
-    public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>("modelChoose", "Integer parameter that is a bit vector presenting the model", Input.Validate.REQUIRED);
+    public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
 
     public static final int STATE_COUNT = 4;
     public static final int RATE_COUNT = 6;
 
-    public static final int TN_INDEX = 0;
-    public static final int GTR_INDEX = 1;
+
 
     public static final int ABSENT = 0;
     public static final int PRESENT = 1;
+
+    public static final int K80_INDEX = 0;
+    public static final int F81_INDEX = 1;
+    public static final int TN_INDEX = 2;
+    public static final int GTR_INDEX = 3;
+
+    public static final double[] UNIF_DIST = {1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT};
+
+    public static final int JC = 0;
+    public static final int K80 = 1;
+    public static final int F81 = 2;
+    public static final int HKY = 3;
+    public static final int TN = 4;
+    public static final int GTR = 5;
+
+    public static final int[][] INDICATORS = {
+            {ABSENT, ABSENT, ABSENT,ABSENT},
+            {ABSENT, PRESENT,ABSENT,ABSENT},
+            {ABSENT, PRESENT,ABSENT,ABSENT},
+            {PRESENT, PRESENT,ABSENT,ABSENT},
+            {PRESENT, PRESENT, PRESENT,ABSENT},
+            {PRESENT, PRESENT, PRESENT,PRESENT}
+    };
 
 
 
@@ -38,6 +60,10 @@ public class NtdBMA extends GeneralSubstitutionModel{
 
     @Override
     public void initAndValidate() throws Exception {
+        if(modelChoose.get().getUpper() > GTR || modelChoose.get().getUpper() > JC){
+            System.err.println("The value of model choose needs to be between " + JC + " and " + GTR + "inclusive, " +
+                    "where "+ JC + " and " + GTR +" represents JC and GTR repectively");
+        }
         updateMatrix = true;
         m_nStates = STATE_COUNT;
         eigenSystem = new DefaultEigenSystem(STATE_COUNT);
@@ -52,23 +78,44 @@ public class NtdBMA extends GeneralSubstitutionModel{
 
 
     protected void setupRelativeRates() {
-    	relativeRates[1] = Math.exp(logKappa.get().getValue(0)+modelChoose.get().getValue(TN_INDEX)*logTN.get().getValue(0));
+
+        
+        //rate AG value
+    	relativeRates[1] = Math.exp(
+                INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue(0)+
+                        INDICATORS[modelChoose.get().getValue(0)][TN_INDEX]*logTN.get().getValue(0));
+
         //rate CT value
-        relativeRates[4] = Math.exp(logKappa.get().getValue(0)-modelChoose.get().getValue(TN_INDEX)*logTN.get().getValue(0));
+        relativeRates[4] = Math.exp(
+                INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue(0)-
+                        INDICATORS[getCurrModel()][TN_INDEX]*logTN.get().getValue(0));
+
         //rate AC value
-        relativeRates[0] = Math.exp(modelChoose.get().getValue(GTR_INDEX)*logAC.get().getValue(0));
+        relativeRates[0] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logAC.get().getValue(0));
+
         //rate AT value
-        relativeRates[2] = Math.exp(modelChoose.get().getValue(GTR_INDEX)*logAT.get().getValue(0));
+        relativeRates[2] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logAT.get().getValue(0));
+
         //rate GC value
-        relativeRates[3] = Math.exp(modelChoose.get().getValue(GTR_INDEX)*logGC.get().getValue(0));
+        relativeRates[3] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logGC.get().getValue(0));
+        
         //rate GT value
-        relativeRates[5] = Math.exp(modelChoose.get().getValue(GTR_INDEX)*logGT.get().getValue(0));
+        relativeRates[5] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logGT.get().getValue(0));
+
+      
     }
 
     /** sets up rate matrix **/
     protected void setupRateMatrix() {
-        //System.out.println("setup rate matrix");
-    	double [] fFreqs = frequencies.get().getFreqs();
+    	double [] fFreqs;
+
+        if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
+            fFreqs = frequencies.get().getFreqs();
+        }else{
+            fFreqs = UNIF_DIST;
+        }
+
+        
         int i, j, k = 0;
 
         // Set the instantaneous rate matrix
@@ -112,26 +159,56 @@ public class NtdBMA extends GeneralSubstitutionModel{
 
     public boolean requiresRecalculation(){
         boolean recalculate = false;
+
+
         if(modelChoose.get().somethingIsDirty()){
             recalculate = true;
-        }else if(logKappa.get().somethingIsDirty()){
+        }else if(frequencies.get().isDirtyCalculation() &&
+                INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
+
             recalculate = true;
-        }else if(logTN.get().somethingIsDirty() && modelChoose.get().getValue(TN_INDEX) == PRESENT){
+
+        }else if(logKappa.get().somethingIsDirty() &&
+                INDICATORS[getCurrModel()][K80_INDEX] == PRESENT){
+
             recalculate = true;
-        }else if(logAC.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+
+        }else if(logTN.get().somethingIsDirty() &&
+                INDICATORS[getCurrModel()][TN_INDEX] == PRESENT){
+
             recalculate = true;
-        }else if(logAT.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+
+        }else if(logAC.get().somethingIsDirty() &&
+               INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
             recalculate = true;
-        }else if(logGC.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+
+        }else if(logAT.get().somethingIsDirty() &&
+                INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
             recalculate = true;
-        }else if(logGT.get().somethingIsDirty() && modelChoose.get().getValue(GTR_INDEX) == PRESENT){
+
+        }else if(logGC.get().somethingIsDirty() &&
+                INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
             recalculate = true;
+
+        }else if(logGT.get().somethingIsDirty() &&
+                INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
+            recalculate = true;
+
         }
 
         if(recalculate){
             updateMatrix = true;
         }
         return recalculate;
+    }
+
+    private int getCurrModel(){
+        return modelChoose.get().getValue(0);
+
     }
 
 }
