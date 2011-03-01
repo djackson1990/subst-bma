@@ -60,7 +60,7 @@ public class NtdBMA extends GeneralSubstitutionModel{
 
     @Override
     public void initAndValidate() throws Exception {
-        if(modelChoose.get().getUpper() > GTR || modelChoose.get().getUpper() > JC){
+        if(modelChoose.get().getUpper() > GTR || modelChoose.get().getUpper() < JC){
             System.err.println("The value of model choose needs to be between " + JC + " and " + GTR + "inclusive, " +
                     "where "+ JC + " and " + GTR +" represents JC and GTR repectively");
         }
@@ -206,10 +206,7 @@ public class NtdBMA extends GeneralSubstitutionModel{
         return recalculate;
     }
 
-    private int getCurrModel(){
-        if(modelChoose.get().getValue(0) == K80){
-            System.out.println(modelChoose.get().getValue(0));
-        }
+    private int getCurrModel(){        
         return modelChoose.get().getValue(0);
 
     }
