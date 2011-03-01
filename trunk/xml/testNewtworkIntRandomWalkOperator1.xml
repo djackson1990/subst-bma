@@ -10,19 +10,20 @@
 
 	    <distribution spec="CompoundDistribution" id="posterior"/>
 
+        <!--Perform a random walk on the nucleotide model space-->
         <operator id="networkIntRandomWalk" spec="NetworkIntRandomWalkOperator" weight="1">
-            <input spec='Vertex' name="vertex" idNum="0" neighbours="1 2"/>
-            <input spec='Vertex' name="vertex" idNum="1" neighbours="0 3"/>
-            <input spec='Vertex' name="vertex" idNum="2" neighbours="0 3"/>
-            <input spec='Vertex' name="vertex" idNum="3" neighbours="1 2 4"/>
-            <input spec='Vertex' name="vertex" idNum="4" neighbours="3 5"/>
-            <input spec='Vertex' name="vertex" idNum="5" neighbours="4"/>
+            <input id="jc" spec='Vertex' name="vertex" idNum="0" neighbours="1 2"/>
+            <input id="k80" spec='Vertex' name="vertex" idNum="1" neighbours="0 3"/>
+            <input id="f81" spec='Vertex' name="vertex" idNum="2" neighbours="0 3"/>
+            <input id="hky85" spec='Vertex' name="vertex" idNum="3" neighbours="1 2 4"/>
+            <input id="tn93" spec='Vertex' name="vertex" idNum="4" neighbours="3 5"/>
+            <input id="gtr" spec='Vertex' name="vertex" idNum="5" neighbours="4"/>
             <input name="parameter" idref="ntd.indicator"/>
         </operator>
 
 
 
-        <logger logEvery="100" fileName="testNetworkIntRandomWalkOperator.log">
+        <logger logEvery="100" fileName="testNetworkIntRandomWalkOperator1.log">
             <log idref="ntd.indicator"/>
         </logger>
     </run>
