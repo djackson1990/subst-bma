@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * @author Chieh-Hsi Wu
  *
  */
+@Description("Performs a random walk on a network which a single connected component.")
 public class NetworkIntRandomWalkOperator extends Operator {
 
 
