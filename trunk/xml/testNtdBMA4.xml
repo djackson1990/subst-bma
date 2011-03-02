@@ -41,9 +41,9 @@
         <parameter id="log.at" name="logAT" value="0.0" lower="-Infinity" upper="Infinity"/>
         <parameter id="log.gc" name="logGC" value="0.0" lower="-Infinity" upper="Infinity"/>
         <parameter id="log.gt" name="logGT" value="0.0" lower="-Infinity" upper="Infinity"/>
-        <input spec='beast.core.parameter.IntegerParameter' id="ntd.indicator" name="modelChoose" value='3' lower='0' upper='5' dimension="1"/>
+        <input spec='beast.core.parameter.IntegerParameter' id="ntd.indicator" name="modelChoose" value='0' lower='0' upper='5' dimension="1"/>
         <frequencies id='freqs' spec='Frequencies'>
-            <data idref='alignment'/>
+            <input spec="RealParameter" id="frequencies.param" name="frequencies" value="0.25 0.25 0.25 0.25" dimension="4"/>
         </frequencies>
     </input>
 
@@ -73,6 +73,7 @@
             <stateNode idref="log.gc"/>
             <stateNode idref="log.gt"/>
             <stateNode idref="ntd.indicator"/>
+            <stateNode idref="frequencies.param"/>
             <stateNode idref="tree"/>
         </state>
 
@@ -112,7 +113,7 @@
         <operator id='logAT.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.at"/>
         <operator id='logGC.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gc"/>
         <operator id='logGT.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gt"/>
-
+        <operator id="deltaExchange" spec="DeltaExchangeOperator" delta="0.1" weight="1" parameter="@frequencies.param"/>
         <!--Perform a random walk on the nucleotide model space-->
         <operator id="networkIntRandomWalk" spec="NetworkIntRandomWalkOperator" weight="0.5">
             <input id="jc" spec='Vertex' name="vertex" idNum="0" neighbours="1 2"/>
@@ -130,7 +131,7 @@
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
         <operator spec='WilsonBalding' weight="1" tree="@tree"/>
 
-        <logger logEvery="100000">
+        <logger logEvery="1000">
 	        <model idref='likelihood'/>
             <log idref="likelihood"/>
     	    <ESS spec='ESS' name='log' arg="@likelihood"/>
@@ -147,6 +148,7 @@
             <log idref='log.gt'/>
     	    <ESS spec='ESS' name='log' arg="@log.gt"/>
             <log idref='ntd.indicator'/>
+            <log idref="frequencies.param"/>
         </logger>
         <logger logEvery="1000" fileName="testSubstBMA4.log">
 	        <model idref='likelihood'/>
@@ -158,6 +160,7 @@
             <log idref='log.gc'/>
             <log idref='log.gt'/>
             <log idref='ntd.indicator'/>
+            <log idref="frequencies.param"/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
         <logger logEvery="10000" fileName="testSubstBMA4.trees">
