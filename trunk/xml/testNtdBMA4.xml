@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:beast.evolution.operators.util'>
 
 
     <!-- The sequence alignment                                                  -->
@@ -35,18 +35,18 @@
     </input-->
 
     <input spec='NtdBMA' id='ntdBMA'>
-        <parameter id="log.kappa" name="logKappa" value="3.0" lower="-Infinity" upper="Infinity"/>
-        <parameter id="log.tn" name="logTN" value="0.03" lower="-Infinity" upper="Infinity"/>
-        <parameter id="log.ac" name="logAC" value="0.7" lower="-Infinity" upper="Infinity"/>
-        <parameter id="log.at" name="logAT" value="1.0" lower="-Infinity" upper="Infinity"/>
-        <parameter id="log.gc" name="logGC" value="0.5" lower="-Infinity" upper="Infinity"/>
-        <parameter id="log.gt" name="logGT" value="0.6" lower="-Infinity" upper="Infinity"/>
-        <input spec='beast.core.parameter.IntegerParameter' id="modelChoose" name="modelChoose" value='5' lower='0' upper='5' dimension="1"/>
+        <parameter id="log.kappa" name="logKappa" value="0.0" lower="-Infinity" upper="Infinity"/>
+        <parameter id="log.tn" name="logTN" value="0.0" lower="-Infinity" upper="Infinity"/>
+        <parameter id="log.ac" name="logAC" value="0.0" lower="-Infinity" upper="Infinity"/>
+        <parameter id="log.at" name="logAT" value="0.0" lower="-Infinity" upper="Infinity"/>
+        <parameter id="log.gc" name="logGC" value="0.0" lower="-Infinity" upper="Infinity"/>
+        <parameter id="log.gt" name="logGT" value="0.0" lower="-Infinity" upper="Infinity"/>
+        <input spec='beast.core.parameter.IntegerParameter' id="ntd.indicator" name="modelChoose" value='3' lower='0' upper='5' dimension="1"/>
         <frequencies id='freqs' spec='Frequencies'>
             <data idref='alignment'/>
         </frequencies>
     </input>
- 		
+
     <!-- site model                                                              -->
     <input spec='SiteModel' id="siteModel">
         <substModel idref='ntdBMA'/>
@@ -72,7 +72,7 @@
             <stateNode idref="log.at"/>
             <stateNode idref="log.gc"/>
             <stateNode idref="log.gt"/>
-            <stateNode idref="modelChoose"/>
+            <stateNode idref="ntd.indicator"/>
             <stateNode idref="tree"/>
         </state>
 
@@ -112,7 +112,17 @@
         <operator id='logAT.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.at"/>
         <operator id='logGC.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gc"/>
         <operator id='logGT.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gt"/>
-        <!--operator id="modelChoose.RW" spec='IntRandomWalkOperator' windowSize="1" weight="0.5" parameter="@modelChoose"/-->
+
+        <!--Perform a random walk on the nucleotide model space-->
+        <operator id="networkIntRandomWalk" spec="NetworkIntRandomWalkOperator" weight="0.5">
+            <input id="jc" spec='Vertex' name="vertex" idNum="0" neighbours="1 2"/>
+            <input id="k80" spec='Vertex' name="vertex" idNum="1" neighbours="0 3"/>
+            <input id="f81" spec='Vertex' name="vertex" idNum="2" neighbours="0 3"/>
+            <input id="hky85" spec='Vertex' name="vertex" idNum="3" neighbours="1 2 4"/>
+            <input id="tn93" spec='Vertex' name="vertex" idNum="4" neighbours="3 5"/>
+            <input id="gtr" spec='Vertex' name="vertex" idNum="5" neighbours="4"/>
+            <input name="parameter" idref="ntd.indicator"/>
+        </operator>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
         <operator spec='Uniform' weight="10" tree="@tree"/>
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
@@ -120,7 +130,7 @@
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
         <operator spec='WilsonBalding' weight="1" tree="@tree"/>
 
-        <logger logEvery="1000">
+        <logger logEvery="100000">
 	        <model idref='likelihood'/>
             <log idref="likelihood"/>
     	    <ESS spec='ESS' name='log' arg="@likelihood"/>
@@ -136,8 +146,9 @@
     	    <ESS spec='ESS' name='log' arg="@log.gc"/>
             <log idref='log.gt'/>
     	    <ESS spec='ESS' name='log' arg="@log.gt"/>
+            <log idref='ntd.indicator'/>
         </logger>
-        <logger logEvery="1000" fileName="testSubstBMA3.log">
+        <logger logEvery="1000" fileName="testSubstBMA4.log">
 	        <model idref='likelihood'/>
             <log idref="likelihood"/>
             <log idref='log.kappa'/>
@@ -146,10 +157,10 @@
             <log idref='log.at'/>
             <log idref='log.gc'/>
             <log idref='log.gt'/>
-            <log idref='modelChoose'/>
+            <log idref='ntd.indicator'/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
-        <logger logEvery="10000" fileName="testSubstBMA3.trees">
+        <logger logEvery="10000" fileName="testSubstBMA4.trees">
             <log idref="tree"/>
         </logger>
     </run>
