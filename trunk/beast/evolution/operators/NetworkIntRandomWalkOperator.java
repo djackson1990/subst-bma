@@ -151,7 +151,7 @@ public class NetworkIntRandomWalkOperator extends Operator {
 
         Vertex f81 = new Vertex();
         f81.initByName(
-                Vertex.ID_NUM, NtdBMA.K80,
+                Vertex.ID_NUM, NtdBMA.F81,
                 Vertex.NEIGHBOURS, "0 3"
         );
 

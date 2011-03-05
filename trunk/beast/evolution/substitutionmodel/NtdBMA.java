@@ -45,7 +45,7 @@ public class NtdBMA extends GeneralSubstitutionModel{
 
     public static final int[][] INDICATORS = {
             {ABSENT, ABSENT, ABSENT,ABSENT},
-            {ABSENT, PRESENT,ABSENT,ABSENT},
+            {PRESENT, ABSENT, ABSENT,ABSENT},
             {ABSENT, PRESENT,ABSENT,ABSENT},
             {PRESENT, PRESENT,ABSENT,ABSENT},
             {PRESENT, PRESENT, PRESENT,ABSENT},
@@ -84,7 +84,6 @@ public class NtdBMA extends GeneralSubstitutionModel{
     	relativeRates[1] = Math.exp(
                 INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue(0)+
                         INDICATORS[modelChoose.get().getValue(0)][TN_INDEX]*logTN.get().getValue(0));
-
         //rate CT value
         relativeRates[4] = Math.exp(
                 INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue(0)-
@@ -209,6 +208,17 @@ public class NtdBMA extends GeneralSubstitutionModel{
     private int getCurrModel(){        
         return modelChoose.get().getValue(0);
 
+    }
+
+    @Override
+    public double[] getFrequencies() {
+        if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
+            //System.out.println("estimate freqs");
+            return frequencies.get().getFreqs();
+        }else{
+
+            return UNIF_DIST;
+        }
     }
 
 }
