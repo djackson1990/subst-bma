@@ -141,11 +141,13 @@
 
 
         <operator id='logKappa.RW' spec='RealRandomWalkOperator' windowSize="0.5" weight="1" parameter="@log.kappa"/>
-        <operator id='logTN.RW' spec='RealRandomWalkOperator' windowSize="0.001" weight="1" parameter="@log.tn"/>
-        <operator id='logAC.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.ac"/>
-        <operator id='logAT.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.at"/>
-        <operator id='logGC.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gc"/>
-        <operator id='logGT.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.gt"/>
+        <operator id='logTN.RW' spec='RealRandomWalkOperator' windowSize="0.01" weight="1" parameter="@log.tn"/>
+        <operator id='logAC.RW' spec='RealRandomWalkOperator' windowSize="0.1" weight="1" parameter="@log.ac"/>
+        <operator id='logAT.RW' spec='RealRandomWalkOperator' windowSize="0.1" weight="1" parameter="@log.at"/>
+        <operator id='logGC.RW' spec='RealRandomWalkOperator' windowSize="0.1" weight="1" parameter="@log.gc"/>
+        <!-- Converges a lot better when one of the relative rate parameter is fixed to 1.0
+        and the other 5 are relative to it-->
+        <!--operator id='logGT.RW' spec='RealRandomWalkOperator' windowSize="0.1" weight="1" parameter="@log.gt"/-->
         <operator id="deltaExchange" spec="DeltaExchangeOperator" delta="0.1" weight="2" parameter="@frequencies.param"/>
         <!--Perform a random walk on the nucleotide model space-->
         <operator id="networkIntRandomWalk" spec="NetworkIntRandomWalkOperator" weight="0.5">
