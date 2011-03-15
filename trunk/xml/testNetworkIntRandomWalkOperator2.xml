@@ -1,0 +1,35 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:beast.evolution.operators.util:beast.math.distributions'>
+    <input spec='IntegerParameter' id="ntd.indicator" value='3' lower='0' upper='3' dimension="1"/>
+
+
+    <run spec="MCMC" id="mcmc" chainLength="10000"> <!--autoOptimize="true"-->
+        <state>
+            <input name='stateNode' idref='ntd.indicator'/>
+        </state>
+
+	    <distribution spec="CompoundDistribution" id="posterior">
+            <distribution id="prior" spec="Prior">
+                <distribution spec="beast.math.distributions.DiscreteDistribution">
+                    <input name="probs" spec="RealParameter" value="0.1 0.2 0.3 0.4" lower="0" upper="1" dimension="4"/>
+                </distribution>
+                <x idref="ntd.indicator"/>
+            </distribution>
+        </distribution>
+
+        <!--Perform a random walk on the nucleotide model space-->
+        <operator id="networkIntRandomWalk" spec="NetworkIntRandomWalkOperator" weight="1">
+            <input id="jc" spec='Vertex' name="vertex" idNum="0" neighbours="1 2"/>
+            <input id="k80" spec='Vertex' name="vertex" idNum="1" neighbours="0 3"/>
+            <input id="f81" spec='Vertex' name="vertex" idNum="2" neighbours="0 3"/>
+            <input id="hky85" spec='Vertex' name="vertex" idNum="3" neighbours="1 2"/>
+            <input name="parameter" idref="ntd.indicator"/>
+        </operator>
+
+
+
+        <logger logEvery="1" fileName="testNetworkIntRandomWalkOperator2.log">
+            <log idref="ntd.indicator"/>
+        </logger>
+    </run>
+</beast>

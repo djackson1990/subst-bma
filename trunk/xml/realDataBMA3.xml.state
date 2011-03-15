@@ -1,0 +1,14 @@
+<itsabeastystatewerein version='2.0'>
+<statenode id='log.kappa'>log.kappa[1] (-Infinity,Infinity): 1.7379345472263836 </statenode>
+<statenode id='log.tn'>log.tn[1] (-Infinity,Infinity): 0.08380864477137993 </statenode>
+<statenode id='log.ac'>log.ac[1] (-Infinity,Infinity): 0.39856589796769004 </statenode>
+<statenode id='log.at'>log.at[1] (-Infinity,Infinity): -0.3933654456601665 </statenode>
+<statenode id='log.gc'>log.gc[1] (-Infinity,Infinity): 0.6567316918392799 </statenode>
+<statenode id='log.gt'>log.gt[1] (-Infinity,Infinity): 0.0 </statenode>
+<statenode id='ntd.indicator'>ntd.indicator[1] (0,5): 5 </statenode>
+<statenode id='frequencies.param'>frequencies.param[4] (0.0,1.0): 0.2581930583637227 0.22169854594737276 0.21439434869250806 0.3057140469963983 </statenode>
+<statenode id='log.shape'>log.shape[1] (-Infinity,Infinity): -0.23558011159831227 </statenode>
+<statenode id='logit.invar'>logit.invar[1] (-Infinity,Infinity): 1.1197113169048047 </statenode>
+<statenode id='gsm.indicator'>gsm.indicator[2] (0,1): 1 0 </statenode>
+<statenode id='tree'>20:(16:(19:(22:(1:0.057849264269915754,0:0.057849264269915754):0.025240054989371763,21:(14:(13:(12:(2:0.004494817701105185,9:0.004494817701105185):0.004273102301873774,10:0.00876792000297896):0.010757356977122476,3:0.019525276980101435):0.04388192259394716,15:(4:0.050811791570372036,8:0.050811791570372036):0.012595408003676561):0.01968211968523892):0.022883526194603432,18:(6:0.07358194814446288,7:0.07358194814446288):0.03239089730942807):0.04520542664758613,17:(5:0.06477814796581262,11:0.06477814796581262):0.08640012413566446):0.0</statenode>
+</itsabeastystatewerein>
