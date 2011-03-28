@@ -6,6 +6,8 @@ import beast.core.parameter.IntegerParameter;
 import beast.core.Input;
 import beast.core.Description;
 import beast.evolution.tree.Node;
+import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.Nucleotide;
 import beast.math.matrixAlgebra.Matrix;
 import beast.math.matrixAlgebra.RobustEigenDecomposition;
 import beast.math.matrixAlgebra.RobustSingularValueDecomposition;
@@ -512,7 +514,13 @@ public class NtdBMA extends SubstitutionModel.Base{
         super.store();
     }
 
-  
+	@Override
+	public boolean canHandleDataType(DataType dataType) throws Exception {
+		if (dataType instanceof Nucleotide) {
+			return true;
+		}
+		throw new Exception("Can only handle nucleotide data");
+	}  
     /**
      * This function returns the Eigen vectors.
      *
