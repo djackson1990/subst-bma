@@ -356,7 +356,7 @@ public class testNtdBMA extends TestCase {
             IntegerParameter modelChoose = test.getModelChoose();
            
             Frequencies f = new Frequencies();
-            f.init(null, true,""+test.getPi());
+            f.init(null, true,test.getPi());
             
             NtdBMA ntdBMA = new NtdBMA();
             ntdBMA.init(
@@ -367,7 +367,6 @@ public class testNtdBMA extends TestCase {
                     logGC,
                     logGT,
                     modelChoose,
-                    null,
                     f
             );
 
