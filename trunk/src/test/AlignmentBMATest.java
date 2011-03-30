@@ -1,22 +1,13 @@
 package test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import junit.framework.TestCase;
-import org.junit.Test;
 
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.AlignmentBMA;
 import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.substitutionmodel.Frequencies;
-import beast.evolution.substitutionmodel.GeneralSubstitutionModel;
-import beast.evolution.substitutionmodel.HKY;
-import beast.evolution.substitutionmodel.WAG;
-import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
+import beast.core.parameter.IntegerParameter;
 
 /**
  * @author Chieh-Hsi Wu
@@ -33,69 +24,101 @@ public class AlignmentBMATest extends TestCase {
 	}
 
 
-	static public Alignment getAlignment1() throws Exception {
-		Sequence human = new Sequence("human", "       AGAAAAAGGA");
-		Sequence chimp = new Sequence("chimp","        AGAAAAAGGA");
-		Sequence bonobo = new Sequence("bonobo","      AGTAATATGT");
-		Sequence gorilla = new Sequence("gorilla","    AGTAATATGT");
-		Sequence orangutan = new Sequence("orangutan","AGAAAAATGA");
-		Sequence siamang = new Sequence("siamang","    AGAAAAATGA");
+    static public ArrayList<Sequence> getSequences() throws Exception {
+		Sequence human = new Sequence("human", "AGAAAAAGGAAGAAGAGGGGAAAAAG");
+		Sequence chimp = new Sequence("chimp","AGAAAAAGGAACAAAAGAAGAGAAAG");
+		Sequence bonobo = new Sequence("bonobo","AGTAATATGTTCTAGATGGGTTATAT");
+		Sequence gorilla = new Sequence("gorilla","AGTAATATGTTGTATACTTGTTATAT");
+		Sequence orangutan = new Sequence("orangutan","AGAAAAATGATGAAAATAAGACAAAA");
+		Sequence siamang = new Sequence("siamang","AGAAAAATGAAGAATATTTGAAAAAA");
+        ArrayList<Sequence> seqList = new ArrayList<Sequence>();
 
-		Alignment data = new Alignment();
-		data.initByName("sequence", human, "sequence", chimp, "sequence", bonobo, "sequence", gorilla, "sequence", orangutan, "sequence", siamang,
-						"dataType","nucleotide"
-						);
-		return data;
+        seqList.add(human);
+        seqList.add(chimp);
+        seqList.add(bonobo);
+        seqList.add(gorilla);
+        seqList.add(orangutan);
+        seqList.add(siamang);
+
+		return seqList;
 	}
 
-    static public Alignment getAlignment2() throws Exception {
-		Sequence human = new Sequence("human", "       AGAAGAGGG");
-		Sequence chimp = new Sequence("chimp","        ACAAAAGAA");
-		Sequence bonobo = new Sequence("bonobo","      TCTAGATGG");
-		Sequence gorilla = new Sequence("gorilla","    TGTATACTT");
-		Sequence orangutan = new Sequence("orangutan","TGAAAATAA");
-		Sequence siamang = new Sequence("siamang","    AGAATATTT");
+    public int[] getPartitionWeights(){
+        int[] getPartitionWeights = new int[26];
+        getPartitionWeights[0] = 10;
+        getPartitionWeights[1] = 10;
+        getPartitionWeights[2] = 6;
 
-		Alignment data = new Alignment();
-		data.initByName("sequence", human, "sequence", chimp, "sequence", bonobo, "sequence", gorilla, "sequence", orangutan, "sequence", siamang,
-						"dataType","nucleotide"
-						);
-		return data;
-	}
+        return getPartitionWeights;
+    }
 
-    static public Alignment getAlignment3() throws Exception {
-		Sequence human = new Sequence("human", "       GAAAAAG");
-		Sequence chimp = new Sequence("chimp","        GAGAAAG");
-		Sequence bonobo = new Sequence("bonobo","      GTTATAT");
-		Sequence gorilla = new Sequence("gorilla","    GTTATAT");
-		Sequence orangutan = new Sequence("orangutan","GACAAAA");
-		Sequence siamang = new Sequence("siamang","    GAAAAAA");
-        
-		Alignment data = new Alignment();
-		data.initByName("sequence", human, "sequence", chimp, "sequence", bonobo, "sequence", gorilla, "sequence", orangutan, "sequence", siamang,
-						"dataType","nucleotide"
-						);
-		return data;
-	}
+    public int[][] getWeightMatrix(){
+        int[][] weightMatrix = new int[26][10];
+        weightMatrix[0] = new int []{4,3,0,0,0,0,2,0,0,1};
+        weightMatrix[1] = new int []{2,1,1,0,3,1,1,1,0,0};
+        weightMatrix[2] = new int []{2,2,0,1,0,0,0,0,1,0};
+        return weightMatrix;
+    }
 
     public void testAlignmentBMA() throws Exception{
 
-        Alignment align1  = getAlignment1();
-        Alignment align2  = getAlignment2();
-        Alignment align3  = getAlignment3();
-        for(int i = 0; i < align1.getSiteCount(); i++){
-            System.err.print(align1.getPatternIndex(i)+" ");
+        IntegerParameter partitionIndices = new IntegerParameter();
+        partitionIndices.initByName(
+                "value", "0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2",
+                "dimension", 26,
+                "upper", 25,
+                "lower", 0
+        );
+        ArrayList<Sequence> seqList  = getSequences();
+
+
+        AlignmentBMA data = new AlignmentBMA();
+		data.initByName(
+                "partitionIndices", partitionIndices,
+                "sequence", seqList.get(0),
+                "sequence", seqList.get(1),
+                "sequence", seqList.get(2),
+                "sequence", seqList.get(3),
+                "sequence", seqList.get(4),
+                "sequence", seqList.get(5),
+                "dataType","nucleotide"
+        );
+
+        int[] partitionWeight = data.getPartitionWeight();
+        int[] expectedParitionWeight = getPartitionWeights();
+        int[][] expectedWeightMatrix = getWeightMatrix();
+
+        for(int i = 0; i < partitionWeight.length;i++){
+            assertEquals(partitionWeight[i], expectedParitionWeight[i]);
         }
-        System.err.println();
-        System.err.println(align2.getPatternCount());
-        System.err.println(align3.getPatternCount());
-        //assertEquals(1.0, 1.0, 5e-10);
+
+        int[][] weightMatrix = data.getWeightMatrix();
+
+        for(int i = 0;i < weightMatrix.length; i ++){
+            for(int j = 0; j < weightMatrix[i].length;j++){
+                assertEquals(weightMatrix[i][j], expectedWeightMatrix[i][j]);
+            }
+        }
+
 
     }
 
 
+//                               0123456789
+//AGAAAAAGGAAGAAGAGGGGAAAAAG     AAAAGGGGGG
+//AGAAAAAGGAACAAAAGAAGAGAAAG     AAAGACGGGG
+//AGTAATATGTTCTAGATGGGTTATAT     ATTTGCGTTT
+//AGTAATATGTTGTATACTTGTTATAT     ATTTTGGCTT
+//AGAAAAATGATGAAAATAAGACAAAA     AATCAGGTAT
+//AGAAAAATGAAGAATATTTGAAAAAA     AAAATGGTAT
+//06100109612510407446130108
+//00000000111111234445666789
+//8611313111
 
+//0610010961 2510407446 130108
+//0000111669 0012444567 001138
 
-
-
-} // class TreeLikelihoodTest
+//int[] patFreq1 = {4,3,0,0,0,0,2,0,0,1}
+//int[] patFreq2 = {2,1,1,0,3,1,1,1,0,0}
+//int[] patFreq3 = {2,2,0,1,0,0,0,0,1,0}    
+} 

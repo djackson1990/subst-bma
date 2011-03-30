@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 /**
  * @author Chieh-Hsi Wu
  */
-public class TestMultinomial extends TestCase{
+public class MultinomialTest extends TestCase{
 
     interface Instance {
 
@@ -85,7 +85,7 @@ public class TestMultinomial extends TestCase{
 
     Instance[] all = new Instance[]{test0,test1,test2};
 
-    public void testMultinomial() throws Exception{
+    public void TestMultinomial() throws Exception{
         for(Instance test: all){
             RealParameter probs = new RealParameter();
             IntegerParameter x  = new IntegerParameter();

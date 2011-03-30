@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 /**
  * @author Chieh-Hsi Wu
  */
-public class TestDiscreteDistribution extends TestCase {
+public class DiscreteDistributionTest extends TestCase {
 
     interface Instance {
 
@@ -116,7 +116,7 @@ public class TestDiscreteDistribution extends TestCase {
 
     Instance[] all = new Instance[]{test0,test1,test2,test3};
 
-    public void testMultinomial() throws Exception{
+    public void TestDiscrete() throws Exception{
         for(Instance test: all){
 
             RealParameter probs = new RealParameter();

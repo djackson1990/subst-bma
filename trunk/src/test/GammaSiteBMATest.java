@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 /**
  * @author Chieh-Hsi Wu
  */
-public class testGammaSiteBMA extends TestCase {
+public class GammaSiteBMATest extends TestCase {
 
 interface Instance {
         SubstitutionModel getSubstModel () throws Exception;
@@ -34,10 +34,6 @@ interface Instance {
     //Neither gamma shape nor site invariant parameters is included.
     Instance test0 = new Instance() {
         public SubstitutionModel getSubstModel ()throws Exception{
-
-
-            double[] pi = new double[]{0.25, 0.25, 0.25, 0.25};
-
 
 
             HKY jc = new HKY();
@@ -92,10 +88,6 @@ interface Instance {
         public SubstitutionModel getSubstModel ()throws Exception{
 
 
-            double[] pi = new double[]{0.25, 0.25, 0.25, 0.25};
-
-
-
             HKY jc = new HKY();
             Frequencies freqs = new Frequencies();
 		    freqs.initByName(
@@ -148,11 +140,6 @@ interface Instance {
     Instance test2 = new Instance(){
         public SubstitutionModel getSubstModel ()throws Exception{
 
-
-            double[] pi = new double[]{0.25, 0.25, 0.25, 0.25};
-
-
-
             HKY jc = new HKY();
             Frequencies freqs = new Frequencies();
 		    freqs.initByName(
@@ -204,11 +191,6 @@ interface Instance {
     Instance test3 = new Instance(){
         public SubstitutionModel getSubstModel ()throws Exception{
 
-
-            double[] pi = new double[]{0.25, 0.25, 0.25, 0.25};
-
-
-
             HKY jc = new HKY();
             Frequencies freqs = new Frequencies();
 		    freqs.initByName(
@@ -258,7 +240,7 @@ interface Instance {
     };
 
     Instance[] all = {test0,test1,test2,test3};
-    public void testGammaSiteBMA() throws Exception{
+    public void TestGammaSiteBMA() throws Exception{
 
         for(Instance test: all){
             SubstitutionModel substModel = test.getSubstModel();

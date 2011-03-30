@@ -11,7 +11,7 @@ import junit.framework.TestCase;
  *
  * JUnit test for NtdBMA model
  */
-public class testNtdBMA extends TestCase {
+public class NtdBMATest extends TestCase {
     interface Instance {
         String getPi();
 
@@ -337,7 +337,7 @@ public class testNtdBMA extends TestCase {
 
     Instance[] all = {test0,test1,test2,test3,test4,test5};
 
-    public void testsNtdBMA() throws Exception{
+    public void TestNtdBMA() throws Exception{
         for (Instance test : all) {
 
             RealParameter logKappa = new RealParameter();
