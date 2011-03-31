@@ -8,10 +8,11 @@
 	</description>
 
 	<!-- set global properties for this build -->
-	<property name="src_substBMA" location="" />
+	<property name="src_substBMA" location="src" />
 	<property name="build_substBMA" location="build" />
 	<property name="dist_substBMA" location="${build_substBMA}/dist" />
 	<property name="beast2path" location="../beast2" />
+	<property name="srcBeast2" location="${beast2path}/src" />
 	<property name="beast2classpath" location="${beast2path}/build" />
 
     <import file="${beast2path}/build.xml" />
@@ -69,7 +70,7 @@
 		       memorymaximumsize="256m">
 			<include name="beast/**/**" />
 			<!-- compile JUnit test classes -->
-			<include name="test/beast/**" />
+			<include name="test/**" />
 		</javac>
 		<echo message="Successfully compiled." />
 	</target>
@@ -118,6 +119,7 @@
 	    <property name="myclasspath" refid="classpath"/>
 	    <!-- Emit the property to the ant console -->
 	    <echo message="Classpath = ${myclasspath}"/>
+
 		<mkdir dir="${report}" />
 		<junit printsummary="yes"> <!--showoutput='yes'-->
 			<classpath>
@@ -130,6 +132,10 @@
 			<batchtest fork="yes" todir="${report}">
 				<fileset dir="${src_substBMA}">
                     <include name="test/**/*Test.java"/>
+				</fileset>
+				<fileset dir="${srcBeast2}">
+                    <include name="test/beast/integration/**/*Test.java"/>                                         
+                    <exclude name="test/beast/integration/**/ResumeTest.java"/>                                         
 				</fileset>
 			</batchtest>
 		</junit>
