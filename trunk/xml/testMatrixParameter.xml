@@ -1,0 +1,31 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter'>
+
+    <parameter spec='BooleanParameter' name='indicators' id='indicators' dimension="5" value="false"/>
+
+    <input id="matrix" spec="MatrixParameter">
+        <input spec="RealParameter" id="param1" name="parameter" value="0.25 0.25 0.25 0.25" lower="0" upper="1" dimension="4"/>
+        <input spec="RealParameter" id="param2" name="parameter" value="0.20 0.25 0.25 0.30" lower="0" upper="1" dimension="4"/>
+        <input spec="RealParameter" id="param3" name="parameter" value="0.10 0.20 0.30 0.40" lower="0" upper="1" dimension="4"/>
+        <input spec="RealParameter" id="param4" name="parameter" value="0.15 0.20 0.25 0.40" lower="0" upper="1" dimension="4"/>        
+    </input>
+
+
+    <run spec="MCMC" id="mcmc" chainLength="10"> <!--autoOptimize="true"-->
+        <state>
+            <input name='stateNode' idref='indicators'/>
+        </state>
+
+	<distribution spec="CompoundDistribution" id="posterior"/>
+
+        <operator id="bitflip" spec="BitFlipOperator" weight="1">
+            <input name="parameter" idref="indicators"/>
+        </operator>
+
+        <logger logEvery="10">
+            <log idref="matrix"/>
+            <log idref="indicators"/>
+        </logger>
+    </run>
+
+</beast>
