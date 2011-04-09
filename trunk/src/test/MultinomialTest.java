@@ -67,7 +67,7 @@ public class MultinomialTest extends TestCase{
 
     };
 
-    Instance test4 = new Instance() {
+    Instance test3 = new Instance() {
         public String getProbs (){
 
             return "0.45 0.72 0.64 0.32 0.82 0.16 0.16 0.15 0.08 0.49";
@@ -85,7 +85,7 @@ public class MultinomialTest extends TestCase{
 
     Instance[] all = new Instance[]{test0,test1,test2};
 
-    public void TestMultinomial() throws Exception{
+    public void testMultinomial() throws Exception{
         for(Instance test: all){
             RealParameter probs = new RealParameter();
             IntegerParameter x  = new IntegerParameter();

@@ -1,6 +1,5 @@
 package beast.core.parameter;
 
-import beast.core.Valuable;
 import beast.core.Input;
 import beast.core.Description;
 
@@ -16,7 +15,7 @@ import java.io.PrintStream;
 @Description("Stores a matrix of real values.")
 public class MatrixParameter extends RealParameter{
     public Input<List<RealParameter>> m_values = new Input<List<RealParameter>>("parameter","reference to a real parameter",
-			new ArrayList<RealParameter>(), Input.Validate.REQUIRED, Valuable.class);
+			new ArrayList<RealParameter>(), Input.Validate.REQUIRED, RealParameter.class);
 
     public MatrixParameter() {
        m_pValues.setRule(Input.Validate.OPTIONAL);
@@ -42,11 +41,10 @@ public class MatrixParameter extends RealParameter{
     }
 
     public double[][] getMatrix() {
-        double[][] matrix = new double[getRowDimension()][];
+        double[][] matrix = new double[getRowDimension()][parameters[0].getDimension()];
         for(int i = 0;i < parameters.length;i++){
-            double[] matrixi = new double[parameters[i].getDimension()];
-            for(int j = 0; j < matrixi.length;j++){
-                matrixi[j] = (Double)parameters[i].getValue(j);
+            for(int j = 0; j < matrix[i].length;j++){
+                matrix[i][j] = (Double)parameters[i].getValue(j);
             }
         }
 
@@ -81,5 +79,13 @@ public class MatrixParameter extends RealParameter{
         for(int i = 0; i < matrix.getRowDimension();i++){
             matrix.getParameter(i).log(nSample, out);
         }
+    }
+
+    public String toString(){
+        String str ="";
+        for(int i = 0; i < getRowDimension();i++){
+            str += getParameter(i).toString()+"\n";
+        }
+        return str;
     }
 }

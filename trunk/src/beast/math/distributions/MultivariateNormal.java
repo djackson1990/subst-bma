@@ -8,14 +8,12 @@ import beast.core.parameter.MatrixParameter;
 import beast.math.matrixAlgebra.*;
 import beast.util.Randomizer;
 
-import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
-import org.apache.commons.math.MathException;
 
 /**
  * @author Chieh-Hsi Wu
  */
-public class MultivariateNormalDistribution extends ParametricDistribution{
+public class MultivariateNormal extends ParametricDistribution{
     public Input<RealParameter> meanVec = new Input<RealParameter>("mean","Mean vector of the multivariate normal distribution", Input.Validate.REQUIRED);
     public Input<MatrixParameter> precisionMatrix = new Input<MatrixParameter>("precision", "Precision matrix of the multivariate normal distribution", Input.Validate.REQUIRED);
     private double[] mean;
@@ -38,6 +36,7 @@ public class MultivariateNormalDistribution extends ParametricDistribution{
         mean = new double[meanVec.getDimension()];
         for(int i = 0; i < mean.length;i++){
             mean[i] = meanVec.getValue(i);
+            
         }
         precision = precisionMatrix.get().getMatrix();
 
@@ -62,12 +61,6 @@ public class MultivariateNormalDistribution extends ParametricDistribution{
 
     public static final String TYPE = "MultivariateNormal";
 
-
-
-    public MultivariateNormalDistribution(double[] mean, double[][] precision) {
-        this.mean = mean;
-        this.precision = precision;
-    }
 
     public String getType() {
         return TYPE;
