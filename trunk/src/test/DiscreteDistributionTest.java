@@ -116,7 +116,7 @@ public class DiscreteDistributionTest extends TestCase {
 
     Instance[] all = new Instance[]{test0,test1,test2,test3};
 
-    public void TestDiscrete() throws Exception{
+    public void testDiscrete() throws Exception{
         for(Instance test: all){
 
             RealParameter probs = new RealParameter();

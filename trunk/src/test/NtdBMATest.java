@@ -337,7 +337,7 @@ public class NtdBMATest extends TestCase {
 
     Instance[] all = {test0,test1,test2,test3,test4,test5};
 
-    public void TestNtdBMA() throws Exception{
+    public void testNtdBMA() throws Exception{
         for (Instance test : all) {
 
             RealParameter logKappa = new RealParameter();

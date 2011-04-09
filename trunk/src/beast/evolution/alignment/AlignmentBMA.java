@@ -2,10 +2,12 @@ package beast.evolution.alignment;
 
 import beast.core.parameter.IntegerParameter;
 import beast.core.Input;
+import beast.core.Description;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class allows flexible paritition accross an nucleotide alignment.")
 public class AlignmentBMA extends Alignment{
     public Input<IntegerParameter> partitionIndices =
             new Input<IntegerParameter>("partitionIndices", "The indiced of partitions in which the sites are allocated",Input.Validate.REQUIRED);

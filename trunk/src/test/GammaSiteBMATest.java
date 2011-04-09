@@ -240,7 +240,7 @@ interface Instance {
     };
 
     Instance[] all = {test0,test1,test2,test3};
-    public void TestGammaSiteBMA() throws Exception{
+    public void testGammaSiteBMA() throws Exception{
 
         for(Instance test: all){
             SubstitutionModel substModel = test.getSubstModel();
