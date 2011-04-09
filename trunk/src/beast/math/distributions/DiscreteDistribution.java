@@ -2,12 +2,14 @@ package beast.math.distributions;
 
 import beast.core.Input;
 import beast.core.Valuable;
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import org.apache.commons.math.distribution.Distribution;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class represents a discrete distirbution on integers.")
 public class DiscreteDistribution extends ParametricDistribution {
     public Input<RealParameter> m_probs = new Input<RealParameter>("probs","Probabilities of each integer value", Input.Validate.REQUIRED);
 

@@ -3,6 +3,7 @@ package beast.math.distributions;
 
 import beast.core.Input;
 import beast.core.Valuable;
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.MatrixParameter;
 import beast.math.matrixAlgebra.*;
@@ -13,6 +14,8 @@ import org.apache.commons.math.distribution.Distribution;
 /**
  * @author Chieh-Hsi Wu
  */
+
+@Description("This class implements the multivariate nromal distribution.")
 public class MultivariateNormal extends ParametricDistribution{
     public Input<RealParameter> meanVec = new Input<RealParameter>("mean","Mean vector of the multivariate normal distribution", Input.Validate.REQUIRED);
     public Input<MatrixParameter> precisionMatrix = new Input<MatrixParameter>("precision", "Precision matrix of the multivariate normal distribution", Input.Validate.REQUIRED);

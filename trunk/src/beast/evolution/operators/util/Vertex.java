@@ -2,10 +2,12 @@ package beast.evolution.operators.util;
 
 import beast.core.Plugin;
 import beast.core.Input;
+import beast.core.Description;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class represents a vertex in a network.")
 public class Vertex extends Plugin {
     public static final String ID_NUM = "idNum";
     public static final String NEIGHBOURS = "neighbours";

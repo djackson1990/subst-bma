@@ -2,13 +2,14 @@ package beast.math.distributions;
 
 import beast.core.Input;
 import beast.core.Valuable;
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import org.apache.commons.math.distribution.Distribution;
 
 /**
  * @author Chieh-Hsi Wu
- *
- */
+ **/
+@Description("This class implements the multinomial distribution.")
 public class Multinomial extends ParametricDistribution{
     public Input<RealParameter> m_probs = new Input<RealParameter>("probs","coefficients of the Multinomial distribution and should add up to one", Input.Validate.REQUIRED);
     private Double[] probs;

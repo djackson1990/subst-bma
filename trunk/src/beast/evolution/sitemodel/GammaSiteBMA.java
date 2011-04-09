@@ -3,15 +3,13 @@ package beast.evolution.sitemodel;
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.IntegerParameter;
 import beast.core.Input;
-import beast.evolution.sitemodel.SiteModel;
+import beast.core.Description;
 import beast.evolution.tree.Node;
 
 /**
  * @author Chieh-Hsi Wu
- *
- * BSSVS on Gamma site model
- *
  */
+@Description("This class facilitates bayesian model averaging of gamma site models.")
 public class GammaSiteBMA extends SiteModel {
 
     public Input<RealParameter> logShape =
