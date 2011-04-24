@@ -6,7 +6,6 @@ import junit.framework.TestCase;
 
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.AlignmentBMA;
-import beast.evolution.likelihood.TreeLikelihood;
 import beast.core.parameter.IntegerParameter;
 
 /**
@@ -15,13 +14,7 @@ import beast.core.parameter.IntegerParameter;
  * JUnit test for AlignmentBMA model
  */
 public class AlignmentBMATest extends TestCase {
-	final static double PRECISION = 1e-6;
 
-
-
-	protected TreeLikelihood newTreeLikelihood() {
-		return new TreeLikelihood();
-	}
 
 
     static public ArrayList<Sequence> getSequences() throws Exception {
@@ -60,6 +53,10 @@ public class AlignmentBMATest extends TestCase {
         return weightMatrix;
     }
 
+    public int[] getPatternIndices(){
+        return new int[]{0,6,1,0,0,1,0,9,6,1,2,5,1,0,4,0,7,4,4,6,1,3,0,1,0,8};
+    }
+
     public void testAlignmentBMA() throws Exception{
 
         IntegerParameter partitionIndices = new IntegerParameter();
@@ -87,6 +84,8 @@ public class AlignmentBMATest extends TestCase {
         int[] partitionWeight = data.getPartitionWeight();
         int[] expectedParitionWeight = getPartitionWeights();
         int[][] expectedWeightMatrix = getWeightMatrix();
+        int[] expectedPatternIndices = getPatternIndices();
+        int[] patternIndices = data.getPatternIndices();
 
         for(int i = 0; i < partitionWeight.length;i++){
             assertEquals(partitionWeight[i], expectedParitionWeight[i]);
@@ -98,6 +97,10 @@ public class AlignmentBMATest extends TestCase {
             for(int j = 0; j < weightMatrix[i].length;j++){
                 assertEquals(weightMatrix[i][j], expectedWeightMatrix[i][j]);
             }
+        }
+
+        for(int i = 0; i < patternIndices.length;i++){
+            assertEquals(patternIndices[i], expectedPatternIndices[i]);
         }
 
 
