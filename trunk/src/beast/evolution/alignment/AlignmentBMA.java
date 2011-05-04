@@ -162,4 +162,5 @@ public class AlignmentBMA extends Alignment{
         return patternIndices;
     }
 
+
 }

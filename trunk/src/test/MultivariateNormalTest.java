@@ -2,7 +2,10 @@ package test;
 
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.MatrixParameter;
+import beast.core.Distribution;
 import beast.math.distributions.MultivariateNormal;
+import beast.math.distributions.ParametricDistribution;
+import beast.math.distributions.Normal;
 import junit.framework.TestCase;
 
 /**
@@ -273,8 +276,7 @@ public class MultivariateNormalTest extends TestCase {
                 double fLogX = multiNorm.calcLogP(x);
                 assertEquals(fLogX, expectedFLogX[i], 1e-10);
             }
-
-
+            Normal norm = new Normal();
 
         }
     }

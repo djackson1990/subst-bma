@@ -8,8 +8,7 @@ import beast.core.parameter.RealParameter;
 import beast.core.parameter.MatrixParameter;
 import beast.math.matrixAlgebra.*;
 import beast.util.Randomizer;
-
-import org.apache.commons.math.distribution.Distribution;
+import org.apache.commons.math.distribution.ContinuousDistribution;
 
 /**
  * @author Chieh-Hsi Wu
@@ -27,6 +26,7 @@ public class MultivariateNormal extends ParametricDistribution{
 
     @Override
 	public void initAndValidate() {
+        System.err.println("Using multivariate normal");
         refresh();
 	}
 
@@ -57,7 +57,7 @@ public class MultivariateNormal extends ParametricDistribution{
     }
 
 	@Override
-	public Distribution getDistribution() {
+	public ContinuousDistribution getDistribution() {
 		return null;
 	}
 
