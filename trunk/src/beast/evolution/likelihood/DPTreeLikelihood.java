@@ -35,7 +35,14 @@ public class DPTreeLikelihood extends Distribution {
     public void initAndValidate() throws Exception{
         Alignment alignment = alignmentInput.get();
         int siteCount = alignment.getSiteCount();
-        compoundLik = new ArrayList<TreeLikelihood>();
+        /*compoundLik = new ArrayList<TreeLikelihood>();
+        TreeLikelihood treeLikelihood = new TreeLikelihood();
+                treeLikelihood.initByName(
+                    "data", alignment,
+                    "tree", treeInput.get(),
+                    "siteModel", siteModelInput.get(),
+                    "branchRateModel", branchRateModelInput.get());
+        compoundLik.add(treeLikelihood);*/
         for(int i = 0; i < siteCount; i++){
             AlignmentSubset site = new AlignmentSubset(alignment,i);
             TreeLikelihood treeLikelihood = new TreeLikelihood();
@@ -46,29 +53,58 @@ public class DPTreeLikelihood extends Distribution {
                     "branchRateModel", branchRateModelInput.get()
             );
 
-            compoundLik.add(treeLikelihood);
+
         }
         System.err.println("Number of likelihoods: "+compoundLik.size());
     }
 
+    /*protected boolean requiresRecalculation() {
+        m_nHasDirt = Tree.IS_CLEAN;
 
+        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_FILTHY;
+            return true;
+        }
+        if (m_data.get().isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_FILTHY;
+            return true;
+        }
+        if (m_siteModel.isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_DIRTY;
+            return true;
+        }
+        return m_tree.get().somethingIsDirty();
+    } */
 
     @Override
     public double calculateLogP() throws Exception {
         logP = 0;
 
         for(TreeLikelihood treeLik : compoundLik) {
-        	//if (dists.isDirtyCalculation()) {
+        	if (treeLik.requiresRecalculation()) {
         		logP += treeLik.calculateLogP();
-        	//} else {
-        		//logP += dists.getCurrentLogP();
-        	//}
+        	} else {
+        		logP += treeLik.getCurrentLogP();
+        	}
             if (Double.isInfinite(logP) || Double.isNaN(logP)) {
             	return logP;
             }
         }
         //System.err.println("logP: "+logP);
         return logP;
+    }
+
+    public void store(){
+        for(TreeLikelihood treeLik : compoundLik) {
+            treeLik.store();
+        }
+    }
+
+    public void restore(){
+        for(TreeLikelihood treeLik : compoundLik) {
+            treeLik.restore();
+        }
+
     }
 
 
