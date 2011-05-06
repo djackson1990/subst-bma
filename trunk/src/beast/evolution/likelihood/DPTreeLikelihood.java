@@ -1,10 +1,7 @@
 package beast.evolution.likelihood;
 
 import beast.core.util.CompoundDistribution;
-import beast.core.Input;
-import beast.core.Distribution;
-import beast.core.State;
-import beast.core.CalculationNode;
+import beast.core.*;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AlignmentSubset;
@@ -24,6 +21,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class tree likelihood computation with data partitioning.")
 public class DPTreeLikelihood extends Distribution {
 
     public Input<Alignment> alignmentInput = new Input<Alignment>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);

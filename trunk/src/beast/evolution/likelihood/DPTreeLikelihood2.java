@@ -11,6 +11,7 @@ import beast.evolution.substitutionmodel.HKY;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.Distribution;
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.DPTreeLikelihood;
 import beast.core.util.CompoundDistribution;
@@ -21,12 +22,9 @@ import java.util.List;
 import test.beast.BEASTTestCase;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 6/05/2011
- * Time: 4:43:11 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This class tree likelihood computation with data partitioning - experiment in progress")
 public class DPTreeLikelihood2 extends Distribution {
     public Input<Alignment> alignmentInput = new Input<Alignment>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);
     public Input<Tree> treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Input.Validate.REQUIRED);
