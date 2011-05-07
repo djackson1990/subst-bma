@@ -24,8 +24,8 @@ import java.util.Arrays;
  * Model averaging of nucleotide substitution model
  *
  */
-@Description("Model averaging of nucleotide substitution model including HKY85, TN93 and GTR.")
-public class NtdBMA extends SubstitutionModel.Base{
+@Description("Model averaging of nucleotide substitution model including HKY85, TN93 and GTR (old parameterization).")
+public class OldNtdBMA extends SubstitutionModel.Base{
     public Input<RealParameter> logKappa = new Input<RealParameter>("logKappa", "parameter representing log of HKY kappa parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logTN = new Input<RealParameter>("logTN", "parameter representing log of TN parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logAC = new Input<RealParameter>("logAC", "parameter representing log of AC parameter", Input.Validate.REQUIRED);
@@ -88,37 +88,33 @@ public class NtdBMA extends SubstitutionModel.Base{
         //q = new double[m_nStates][m_nStates];
     } // initAndValidate
 
-    
+
 
 
 
     protected void setupRelativeRates() {
 
+
         //rate AG value
-    	relativeRates[1] = 1.0;
-
-
+    	relativeRates[1] = Math.exp(
+                INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue(0)+
+                        INDICATORS[modelChoose.get().getValue(0)][TN_INDEX]*logTN.get().getValue(0));
         //rate CT value
-        relativeRates[4] = Math.exp(INDICATORS[getCurrModel()][TN_INDEX]*logTN.get().getValue());
+        relativeRates[4] = Math.exp(
+                INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue(0)-
+                        INDICATORS[getCurrModel()][TN_INDEX]*logTN.get().getValue(0));
 
         //rate AC value
-        relativeRates[0] = Math.exp(
-                0.0-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue()+
-                INDICATORS[getCurrModel()][GTR_INDEX]*logAC.get().getValue());
-        
+        relativeRates[0] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logAC.get().getValue(0));
+
         //rate AT value
-        relativeRates[2] = Math.exp(
-                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue()+
-                        INDICATORS[getCurrModel()][GTR_INDEX]*logAT.get().getValue());
+        relativeRates[2] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logAT.get().getValue(0));
 
         //rate GC value
-        relativeRates[3] = Math.exp(
-                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue()+
-                        INDICATORS[getCurrModel()][GTR_INDEX]*logGC.get().getValue());
+        relativeRates[3] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logGC.get().getValue(0));
 
         //rate GT value
-        relativeRates[5] = Math.exp(-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue());
-
+        relativeRates[5] = Math.exp(INDICATORS[getCurrModel()][GTR_INDEX]*logGT.get().getValue(0));
 
         /*System.err.println("AC: "+relativeRates[0]);
         System.err.println("AG: "+relativeRates[1]);
@@ -132,7 +128,7 @@ public class NtdBMA extends SubstitutionModel.Base{
         System.err.println(INDICATORS[modelChoose.get().getValue(0)][TN_INDEX]);
         System.err.println(logTN.get().getValue(0));*/
 
-      
+
     }
 
     /** sets up rate matrix **/
@@ -145,7 +141,7 @@ public class NtdBMA extends SubstitutionModel.Base{
             fFreqs = UNIF_DIST;
         }
 
-        
+
         int i, j, k = 0;
 
         // Set the instantaneous rate matrix
@@ -321,7 +317,7 @@ public class NtdBMA extends SubstitutionModel.Base{
         return recalculate;
     }
 
-    private int getCurrModel(){        
+    private int getCurrModel(){
         return modelChoose.get().getValue(0);
 
     }
@@ -336,12 +332,12 @@ public class NtdBMA extends SubstitutionModel.Base{
             return UNIF_DIST;
         }
     }
-    
+
         @Override
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
     	//System.err.println("Get probs: "+updateMatrix);
         double distance = (fStartTime - fEndTime) * fRate;
-    	
+
         int i, j, k;
         double temp;
 
@@ -359,7 +355,7 @@ public class NtdBMA extends SubstitutionModel.Base{
                     }
                     System.err.println();
                 }*/
-            	
+
             	updateMatrix = false;
             }
         }
@@ -422,7 +418,7 @@ public class NtdBMA extends SubstitutionModel.Base{
         }*/
     } // getTransitionProbabilities
 
-  
+
     protected double[] Eval;
     protected double[] EvalImag;
     protected double[] storedEvalImag;
@@ -431,7 +427,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     protected double[][] storedEvec;
     protected double[][] Ievc;
     protected double[][] storedIevc;
-  
+
     /**
      * allocate memory for the Eigen routines
      */
@@ -450,7 +446,7 @@ public class NtdBMA extends SubstitutionModel.Base{
 
         updateMatrix = true;
     }
-    
+
 
 
     /**
@@ -523,7 +519,7 @@ public class NtdBMA extends SubstitutionModel.Base{
 			return true;
 		}
 		throw new Exception("Can only handle nucleotide data");
-	}  
+	}
     /**
      * This function returns the Eigen vectors.
      *

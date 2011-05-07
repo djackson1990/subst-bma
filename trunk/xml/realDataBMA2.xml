@@ -112,28 +112,28 @@
 
 
         <distribution spec="CompoundDistribution" id="posterior">
-            <distribution id="log.kappa.prior" spec="beast.math.beast.math.distributions.Prior">
-                <distribution id="log.kappa.norm" spec="beast.math.beast.math.distributions.Normal" mean="0" sigma="3"/>
+            <distribution id="log.kappa.prior" spec="beast.math.distributions.Prior">
+                <distribution id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="3"/>
                 <x idref="log.kappa"/>
             </distribution>
-            <distribution id="log.TN.prior" spec="beast.math.beast.math.distributions.Prior">
-                <distribution id="log.TN.norm" spec="beast.math.beast.math.distributions.Normal" mean="0" sigma="0.03"/>
+            <distribution id="log.TN.prior" spec="beast.math.distributions.Prior">
+                <distribution id="log.TN.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.03"/>
                 <x idref="log.tn"/>
             </distribution>
-            <distribution id="log.AC.prior" spec="beast.math.beast.math.distributions.Prior">
-                <distribution id="log.AC.norm" spec="beast.math.beast.math.distributions.Normal" mean="0" sigma="1"/>
+            <distribution id="log.AC.prior" spec="beast.math.distributions.Prior">
+                <distribution id="log.AC.norm" spec="beast.math.distributions.Normal" mean="0" sigma="1"/>
                 <x idref="log.ac"/>
             </distribution>
-            <distribution id="log.AT.prior" spec="beast.math.beast.math.distributions.Prior">
-                <distribution id="log.AT.norm" spec="beast.math.beast.math.distributions.Normal" mean="0" sigma="0.7"/>
+            <distribution id="log.AT.prior" spec="beast.math.distributions.Prior">
+                <distribution id="log.AT.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.7"/>
                 <x idref="log.at"/>
             </distribution>
-            <distribution id="log.GC.prior" spec="beast.math.beast.math.distributions.Prior">
-                <distribution id="log.GC.norm" spec="beast.math.beast.math.distributions.Normal" mean="0" sigma="0.5"/>
+            <distribution id="log.GC.prior" spec="beast.math.distributions.Prior">
+                <distribution id="log.GC.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.5"/>
                 <x idref="log.gc"/>
             </distribution>
-            <distribution id="log.GT.prior" spec="beast.math.beast.math.distributions.Prior">
-                <distribution id="log.GT.norm" spec="beast.math.beast.math.distributions.Normal" mean="0" sigma="0.6"/>
+            <distribution id="log.GT.prior" spec="beast.math.distributions.Prior">
+                <distribution id="log.GT.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.6"/>
                 <x idref="log.gt"/>
             </distribution>
             <distribution id='likelihood' idref="treeLikelihood"/>
