@@ -6,13 +6,14 @@ import beast.core.Description;
 
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * @author Chieh-Hsi Wu
  */
 @Description("This class allows flexible paritition accross an nucleotide alignment.")
 public class AlignmentBMA extends Alignment{
-    public Input<IntegerParameter> partitionIndices =
+    public Input<IntegerParameter> partitionIndicesInput =
             new Input<IntegerParameter>("partitionIndices", "The indiced of partitions in which the sites are allocated",Input.Validate.REQUIRED);
 
     private int[][] weightMatrix;
@@ -26,7 +27,7 @@ public class AlignmentBMA extends Alignment{
 
 
     public void computeWeightsInPartitions(){
-        IntegerParameter partitionIndices = this.partitionIndices.get();
+        IntegerParameter partitionIndices = this.partitionIndicesInput.get();
         int patternCount = getPatternCount();
         int siteCount = getSiteCount();
         weightMatrix = new int[siteCount][patternCount];
@@ -42,7 +43,7 @@ public class AlignmentBMA extends Alignment{
     @Override
     protected boolean requiresRecalculation() {
         boolean recalculates = false;
-        if(partitionIndices.get().somethingIsDirty()){
+        if(partitionIndicesInput.get().somethingIsDirty()){
             recalculates = true;
             computeWeightsInPartitions();
         }
@@ -162,5 +163,21 @@ public class AlignmentBMA extends Alignment{
         return patternIndices;
     }
 
+    public int countClusters(){
+        ArrayList<Integer> clusterList = new ArrayList<Integer>();
+        IntegerParameter partitionIndices = partitionIndicesInput.get();
+        int dim  = partitionIndices.getDimension();
+        clusterList.add(partitionIndices.getValue(0));
+        for(int i = 1; i < dim; i++){
+            int partitionIndex = partitionIndices.getValue(i);
+            if(!clusterList.contains(partitionIndices.getValue(i))){
+                clusterList.add(partitionIndex);
+            }
+        }
+
+        return clusterList.size();
+
+    }
+  
 
 }
