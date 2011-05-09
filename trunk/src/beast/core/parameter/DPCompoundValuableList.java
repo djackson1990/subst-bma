@@ -1,6 +1,7 @@
 package beast.core.parameter;
 
 import beast.core.Input;
+import beast.core.Description;
 import beast.evolution.alignment.AlignmentBMA;
 
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Creates a list of compound valuables for data partitioning.")
 public class DPCompoundValuableList extends CompoundValuable{
 
     public Input<AlignmentBMA> alignmentBMAInput = new Input<AlignmentBMA>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);
