@@ -8,14 +8,14 @@ import java.util.ArrayList;
  * @author Chieh-Hsi Wu
  */
 @Description("This class stores a list of RealParameters objects, this is like a stateNode version of the CompoundValuable.")
-public class DPCompoundParameter extends RealParameter{
+public class CompoundParameter extends RealParameter{
 
     private int[][] parameterIndex;
     private ArrayList<RealParameter> parameters;
     private int parameterCount;
     private int dimension;
 
-    public DPCompoundParameter(RealParameter[] parameters){
+    public CompoundParameter(RealParameter[] parameters){
         // determine dimension
         dimension = 0;
         parameterCount  = parameters.length;
@@ -73,7 +73,7 @@ public class DPCompoundParameter extends RealParameter{
     }
 
     @Override
-    public DPCompoundParameter copy() {
+    public CompoundParameter copy() {
     	try {
 	        @SuppressWarnings("unchecked")
 			
@@ -81,7 +81,7 @@ public class DPCompoundParameter extends RealParameter{
 	        for(int i = 0; i <  parameterCount;i++){
                 copiedParameters[i]=(RealParameter)(parameters.get(i)).copy();
             }
-            DPCompoundParameter copy = new DPCompoundParameter(copiedParameters);
+            CompoundParameter copy = new CompoundParameter(copiedParameters);
 	        return copy;
     	} catch (Exception e) {
 			e.printStackTrace();
