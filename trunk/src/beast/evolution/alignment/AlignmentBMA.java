@@ -51,6 +51,10 @@ public class AlignmentBMA extends Alignment{
     	return recalculates;
     }
 
+    public int getPartitionIndex(int site){
+        return partitionIndicesInput.get().getValue(site);
+    }
+
     public void restore(){
         computeWeightsInPartitions();
         super.restore();
