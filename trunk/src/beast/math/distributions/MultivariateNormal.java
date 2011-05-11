@@ -53,7 +53,10 @@ public class MultivariateNormal extends ParametricDistribution{
         for(int i = 0;i < xVals.length;i++){
             xVals[i] = x.getArrayValue(i);
         }
-		return logPdf(xVals);
+        double logP = logPdf(xVals);
+        //System.err.println("logP: "+logP);
+
+		return logP;
     }
 
 	@Override

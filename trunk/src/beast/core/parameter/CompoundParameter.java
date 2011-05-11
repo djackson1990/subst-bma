@@ -2,20 +2,46 @@ package beast.core.parameter;
 
 import beast.core.StateNode;
 import beast.core.Description;
+import beast.core.Input;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Chieh-Hsi Wu
  */
 @Description("This class stores a list of RealParameters objects, this is like a stateNode version of the CompoundValuable.")
 public class CompoundParameter extends RealParameter{
+    public Input<List<RealParameter>> parametersInput =
+                new Input<List<RealParameter>>("parameter", "refrence to a parameter", new ArrayList<RealParameter>(), Input.Validate.REQUIRED);
+
 
     private int[][] parameterIndex;
     private ArrayList<RealParameter> parameters;
     private int parameterCount;
     private int dimension;
 
+    public CompoundParameter(){
+        m_pValues.setRule(Input.Validate.OPTIONAL);
+    }
     public CompoundParameter(RealParameter[] parameters){
+        m_pValues.setRule(Input.Validate.OPTIONAL);
+        //initAndValidate(parameters);
+    }
+
+    
+    public void initAndValidate(){
+        List<RealParameter> parameters = parametersInput.get();
+        RealParameter[] parameterArray = new RealParameter[parameters.size()];
+        for(int i = 0; i < parameters.size();i++){
+            parameterArray[i] =  parameters.get(i);
+        }
+
+        initAndValidate(parameterArray);
+    }
+
+
+    public void initAndValidate(RealParameter[] parameters){
         // determine dimension
         dimension = 0;
         parameterCount  = parameters.length;
@@ -31,14 +57,11 @@ public class CompoundParameter extends RealParameter{
             int paramDim = parameters[i].getDimension();
             for(int j = 0; j < paramDim; j++){
                 parameterIndex[indexOffset+j] = new int[]{i,j};
-                
+
             }
             indexOffset += paramDim;
         }
         m_bIsDirty = new boolean[dimension];
-
-
-
     }
 
     public void checkSharedBounds(){
@@ -98,9 +121,7 @@ public class CompoundParameter extends RealParameter{
 
 	}
 
-        /*
-     * various setters & getters *
-     */
+
     public int getDimension() {
         return parameterCount;
     }
@@ -130,6 +151,10 @@ public class CompoundParameter extends RealParameter{
 
         }
         return values;
+    }
+
+    public double getArrayValue(int dim){
+        return getValue(dim);
     }
 
     public void setValue(Double value) {
