@@ -1,6 +1,5 @@
 package beast.evolution.likelihood;
 
-import beast.core.util.CompoundDistribution;
 import beast.core.*;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -11,7 +10,6 @@ import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.Frequencies;
-import beast.evolution.likelihood.TreeLikelihood;
 import test.beast.BEASTTestCase;
 
 import java.util.Random;
@@ -35,8 +33,8 @@ public class DPTreeLikelihood extends Distribution {
     public void initAndValidate() throws Exception{
         Alignment alignment = alignmentInput.get();
         int siteCount = alignment.getSiteCount();
-        /*compoundLik = new ArrayList<TreeLikelihood>();
-        TreeLikelihood treeLikelihood = new TreeLikelihood();
+        compoundLik = new ArrayList<TreeLikelihood>();
+        /*TreeLikelihood treeLikelihood = new TreeLikelihood();
                 treeLikelihood.initByName(
                     "data", alignment,
                     "tree", treeInput.get(),
@@ -52,10 +50,9 @@ public class DPTreeLikelihood extends Distribution {
                     "siteModel", siteModelInput.get(),
                     "branchRateModel", branchRateModelInput.get()
             );
-
-
+            compoundLik.add(treeLikelihood);
         }
-        System.err.println("Number of likelihoods: "+compoundLik.size());
+        //System.err.println("Number of likelihoods: "+compoundLik.size());
     }
 
     /*protected boolean requiresRecalculation() {

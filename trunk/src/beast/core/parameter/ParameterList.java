@@ -30,8 +30,12 @@ public class ParameterList extends StateNode {
         startEditing(null);
         parameterList.get(pIndex).setValue(dim,value);
         lastParameterChanged = pIndex;
+    }
 
-        
+    
+
+    private Parameter getParameter(int pIndex){
+        return parameterList.get(pIndex);
     }
     
 
@@ -77,14 +81,17 @@ public class ParameterList extends StateNode {
         throw new RuntimeException("As suggested by the name, this class represents a list, so it's not appropriate to return a single value");
 
     }
-        /** other := this
-     * Assign all values of this to other **/
+
+    /** other := this
+     *  Assign all values of this to other **/
     public void assignTo(StateNode other){
 
     }
 
     /** this := other
-    * Assign all values of other to this **/
+     * Assign all values of other to this
+     *
+     **/
     public void assignFrom(StateNode other){
 
     }
@@ -94,7 +101,6 @@ public class ParameterList extends StateNode {
      * do not need to be copied.
      */
     public void assignFromFragile(StateNode other){
-
     }
 
     /** StateNode implementation **/
@@ -106,6 +112,11 @@ public class ParameterList extends StateNode {
     /** Loggable implementation **/
     @Override
     public void log(int nSample, PrintStream out) {
+        ParameterList paramList = (ParameterList) getCurrent();
+        int dim = paramList.getDimension();
+        for(int i = 0; i < dim; i++){
+            paramList.getParameter(i).log(nSample,out);
+        }
         //todo
     }
 
