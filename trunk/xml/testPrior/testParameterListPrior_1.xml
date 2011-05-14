@@ -1,0 +1,50 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter'>
+
+    <!--parameter spec='RealParameter' name='indicators' id='indicators' dimension="5" value="false"/-->
+    <input spec="CompoundParameter" id="cp">
+        <parameter spec="RealParameter2" id="parameter1" value="0.0" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="RealParameter2" id="parameter2" value="0.0" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="RealParameter2" id="parameter3" value="0.0" upper="Infinity" lower="-Infinity"/>
+    </input>
+
+    <input spec="CompoundParameter" id="cp2">
+        <parameter spec="RealParameter2" id="parameter4" value="0.0" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="RealParameter2" id="parameter5" value="0.0" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="RealParameter2" id="parameter6" value="0.0" upper="Infinity" lower="-Infinity"/>
+    </input>
+
+    <input spec="ParameterList" id="parameterList">
+        <parameter idref="cp"/>
+        <!--parameter idref="cp2"/-->
+    </input>
+
+    <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
+        <state>
+            <input name='stateNode' idref='parameterList'/>
+        </state>
+
+	    <distribution spec="CompoundDistribution" id="posterior"/>
+
+        <operator id="errwo" spec="PLExtendedRealRandomWalkOperator" windowSizes="0.2 0.1 0.3" weight="1">
+            <input name="parameters" idref="parameterList"/>
+        </operator>
+
+        <distribution spec="CompoundDistribution" id="Prior">
+            <distribution id="log.kappa.prior" spec="beast.math.distributions.ParameterListPrior">
+                <distribution id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="3"/>
+                <xList idref="parameterList"/>
+            </distribution>
+        </distribution>
+
+        <logger logEvery="1000">
+            <log idref="Prior"/>
+            <log idref="parameterList"/>
+        </logger>
+
+        <logger logEvery="10" fileName="testParameterListPrior_1.log">
+            <log idref="cp"/>
+        </logger>
+    </run>
+
+</beast>

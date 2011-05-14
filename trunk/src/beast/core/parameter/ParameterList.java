@@ -2,8 +2,10 @@ package beast.core.parameter;
 
 import beast.core.Description;
 import beast.core.StateNode;
+import beast.core.Input;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.io.PrintStream;
 
 import org.w3c.dom.Node;
@@ -13,29 +15,63 @@ import org.w3c.dom.Node;
  */
 @Description("This class stores a list of parameters and the size of the list can change.")
 public class ParameterList extends StateNode {
+    public Input<List<RealParameter2>> parametersInput =
+                new Input<List<RealParameter2>>("parameter", "refrence to a parameter", new ArrayList<RealParameter2>(), Input.Validate.REQUIRED);
 
-    private ArrayList<Parameter> parameterList;
-    private ArrayList<Parameter> storedParameterList;
+    private ArrayList<RealParameter2> parameterList;
+    private ArrayList<RealParameter2> storedParameterList;
     private int lastParameterChanged = -1;
     
     public ParameterList(){
+        parameterList = new ArrayList<RealParameter2>();
+        storedParameterList = new ArrayList<RealParameter2>();
     }
 
-    public void addParameter(Parameter parameter){
+    public void initAndValidate(){
+        System.err.println("initialize parameter list");
+        List<RealParameter2> parameterList  = parametersInput.get();
+        for(RealParameter2 parameter: parameterList){
+            this.parameterList.add(parameter);
+        }
+    }
+
+
+    public void addParameter(RealParameter2 parameter){
         startEditing(null);
+        parameterList.add(parameter);
+    }
+
+    public void addParameterQuietly(RealParameter2 parameter){
         parameterList.add(parameter);
     }
 
     public void setValue(int pIndex, int dim, double value) {
         startEditing(null);
-        parameterList.get(pIndex).setValue(dim,value);
+        parameterList.get(pIndex).setValueQuietly(dim,value);
         lastParameterChanged = pIndex;
+    }
+
+    public double getValue(int pIndex, int dim) {
+        return parameterList.get(pIndex).getValue(dim);
+
+    }
+
+    public double getParameterUpper(int iParam){
+        return getParameter(iParam).getUpper();
+    }
+
+    public double getParameterLower(int iParam){
+        return getParameter(iParam).getLower();
     }
 
     
 
-    private Parameter getParameter(int pIndex){
+    public RealParameter2 getParameter(int pIndex){
         return parameterList.get(pIndex);
+    }
+
+    public int getParameterDimension(){
+        return getParameter(0).getDimension();
     }
     
 
@@ -44,28 +80,36 @@ public class ParameterList extends StateNode {
         parameterList.remove(pIndex);
     }
 
-    public void store(){
-        storedParameterList = new ArrayList<Parameter>();
-        for(Parameter parameter:parameterList){
+    protected void store(){
+        storedParameterList = new ArrayList<RealParameter2>();
+        for(RealParameter2 parameter:parameterList){
+            parameter.store();
             storedParameterList.add(parameter);
         }
+        //System.out.println("storing");
     }
 
     public void restore(){
-        ArrayList<Parameter> tempList = storedParameterList;
+        ArrayList<RealParameter2> tempList = storedParameterList;
         storedParameterList = parameterList;
         parameterList = tempList;
+        for(RealParameter2 parameter:parameterList){
+            parameter.restore();
+        }
+        //System.out.println("restoring");
+
     }
 
     public ParameterList copy(){
         ParameterList copy = new ParameterList();
-        for(Parameter parameter: parameterList){
-            copy.addParameter(parameter.copy());
+        for(RealParameter2 parameter: parameterList){
+            copy.addParameterQuietly((RealParameter2)parameter.copy());
         }
         return copy;
     }
 
     public void setEverythingDirty(boolean isDirty){
+        setSomethingIsDirty(isDirty);
         for(Parameter parameter:parameterList){
             parameter.setEverythingDirty(isDirty);
         }
@@ -85,6 +129,7 @@ public class ParameterList extends StateNode {
     /** other := this
      *  Assign all values of this to other **/
     public void assignTo(StateNode other){
+        //todo
 
     }
 
@@ -93,6 +138,7 @@ public class ParameterList extends StateNode {
      *
      **/
     public void assignFrom(StateNode other){
+        //todo
 
     }
 
@@ -101,6 +147,7 @@ public class ParameterList extends StateNode {
      * do not need to be copied.
      */
     public void assignFromFragile(StateNode other){
+        //todo
     }
 
     /** StateNode implementation **/
@@ -124,9 +171,31 @@ public class ParameterList extends StateNode {
 
     }
 
+    @Override
     public void init(PrintStream out) throws Exception {
-        //todo
+        int dimParam = getDimension();
+        for (int iParam = 0; iParam < dimParam; iParam++) {
+            int dimValue = getParameter(iParam).getDimension();
+            for(int iValue = 0; iValue < dimValue; iValue++){
+                out.print(getID()+"."+iParam +"."+ iValue + "\t");
+            }
+        }
+
     }
+
+    /** Note that changing toString means fromXML needs to be changed as well,
+     * since it parses the output of toString back into a parameter.
+     */
+    public String toString() {
+        final StringBuffer buf = new StringBuffer();
+        int dimParam = getDimension();
+        buf.append(getID());
+        buf.append("["+dimParam+"]:\n");
+        for(int iParam = 0; iParam < dimParam; iParam++){
+            buf.append(getParameter(iParam).toString()).append("\n");
+        }
+        return buf.toString();
+    }    
 
     public int getDimension(){
         return parameterList.size();
