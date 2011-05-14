@@ -12,9 +12,9 @@ import beast.evolution.tree.Node;
 @Description("This class facilitates bayesian model averaging of gamma site models.")
 public class GammaSiteBMA extends SiteModel {
 
-    public Input<RealParameter> logShape =
+    public Input<RealParameter> logShapeInput =
             new Input<RealParameter>("logShape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less",Input.Validate.REQUIRED);
-    public Input<RealParameter> logitInvar =
+    public Input<RealParameter> logitInvarInput =
             new Input<RealParameter>("logitInvar", "proportion of sites that is invariant: should be between 0 (default) and 1",Input.Validate.REQUIRED);
     public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>("modelChoose",
             "Integer parameter that is a bit vector presenting the model", Input.Validate.REQUIRED);
@@ -29,32 +29,44 @@ public class GammaSiteBMA extends SiteModel {
         gammaCategoryCount.setRule(Input.Validate.REQUIRED);
     }
 
+    private RealParameter logShape;
+    private RealParameter logitInvar;
     public void initAndValidate() throws Exception {
 
-
         //seting the bound for mu
-        if (muParameter.get() != null) {
-            muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+        muParameter = muParameterInput.get();
+        if (muParameter == null) {
+        	muParameter = new RealParameter("1.0");
         }
+        muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);
 
+        logShape = logShapeInput.get();
+        logitInvar = logitInvarInput.get();
+        if (logShape == null) {
+        	logShape = new RealParameter("0.0");
+        }
         //setting bounds for shape
-        logShape.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        logShape.setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
+
+        if (logitInvar == null) {
+        	logitInvar = new RealParameter("0.0");
+        }
         //setting bounds for invar
-        logitInvar.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        logitInvar.setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         //category count
         categoryCount = gammaCategoryCount.get()+1;
 
-        
+
         categoryRates = new double[categoryCount];
         categoryProportions = new double[categoryCount];
 
         ratesKnown = false;
 
-        addCondition(muParameter);
-        addCondition(invarParameter);
-        addCondition(shapeParameter);
+        addCondition(muParameterInput);
+        addCondition(logShapeInput);
+        addCondition(logitInvarInput);
     }
 
     @Override
@@ -68,11 +80,11 @@ public class GammaSiteBMA extends SiteModel {
 
 
             recalculate = true;
-        }else if(logShape.get().somethingIsDirty()){
+        }else if(logShape.somethingIsDirty()){
             if(modelChoose.get().getValue(SHAPE_INDEX) == PRESENT){
                 recalculate = true;
             }
-        }else if(logitInvar.get().somethingIsDirty()){
+        }else if(logitInvar.somethingIsDirty()){
             if(modelChoose.get().getValue(INVAR_INDEX) == PRESENT){
                 recalculate = true;
             }
@@ -97,7 +109,7 @@ public class GammaSiteBMA extends SiteModel {
 
         categoryRates[0] = 0.0;
         //back transform from logit space
-        categoryProportions[0] = modelChoose.get().getValue(INVAR_INDEX)*(1/(1+Math.exp(-logitInvar.get().getValue(0))));
+        categoryProportions[0] = modelChoose.get().getValue(INVAR_INDEX)*(1/(1+Math.exp(-logitInvar.getValue(0))));
         propVariable = 1.0 - categoryProportions[0];
         cat = 1;
         
@@ -105,7 +117,7 @@ public class GammaSiteBMA extends SiteModel {
         if (modelChoose.get().getValue(SHAPE_INDEX) == PRESENT) {
 
             //back transform from log-space
-            final double a = Math.exp(logShape.get().getValue(0));
+            final double a = Math.exp(logShape.getValue(0));
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
