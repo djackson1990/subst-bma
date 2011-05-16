@@ -14,6 +14,8 @@ public class RealParameter2 extends RealParameter {
 
     public RealParameter2(Double [] fValues) throws Exception {
     	super(fValues);
+        m_bIsDirty = new boolean[fValues.length];
+        storedValues = new java.lang.Double[fValues.length];
     }
 
     /** Constructor used by Input.setValue(String) **/

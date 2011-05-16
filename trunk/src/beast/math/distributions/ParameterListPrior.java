@@ -24,7 +24,7 @@ public class ParameterListPrior extends Prior{
         for(int i = 0; i < dimParam; i ++){
             logP += m_dist.calcLogP(parameterList.getParameter(i));
         }
-
+        //System.err.println("logP: "+logP);
 		return logP;
 	}
 

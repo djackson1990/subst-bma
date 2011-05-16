@@ -28,7 +28,7 @@ public class ParameterList extends StateNode {
     }
 
     public void initAndValidate(){
-        System.err.println("initialize parameter list");
+        //System.err.println("initialize parameter list");
         List<RealParameter2> parameterList  = parametersInput.get();
         for(RealParameter2 parameter: parameterList){
             this.parameterList.add(parameter);
@@ -37,14 +37,18 @@ public class ParameterList extends StateNode {
 
 
     public void addParameter(RealParameter2 parameter){
-        startEditing(null);
+        //System.err.println("add parameter");
+        //startEditing(null);
         parameterList.add(parameter);
     }
 
     public void addParameterQuietly(RealParameter2 parameter){
         parameterList.add(parameter);
     }
-
+    public void removeParameter(int pIndex){
+        //startEditing(null);
+        parameterList.remove(pIndex);
+    }
     public void setValue(int pIndex, int dim, double value) {
         startEditing(null);
         parameterList.get(pIndex).setValueQuietly(dim,value);
@@ -75,10 +79,7 @@ public class ParameterList extends StateNode {
     }
     
 
-    protected void removeParameter(int pIndex){
-        startEditing(null);
-        parameterList.remove(pIndex);
-    }
+
 
     protected void store(){
         storedParameterList = new ArrayList<RealParameter2>();
@@ -90,6 +91,7 @@ public class ParameterList extends StateNode {
     }
 
     public void restore(){
+        m_bHasStartedEditing = false;
         ArrayList<RealParameter2> tempList = storedParameterList;
         storedParameterList = parameterList;
         parameterList = tempList;
@@ -109,7 +111,9 @@ public class ParameterList extends StateNode {
     }
 
     public void setEverythingDirty(boolean isDirty){
+        //System.err.println("Parameter list: "+isDirty);
         setSomethingIsDirty(isDirty);
+        //System.err.println("list size: "+parameterList.size());
         for(Parameter parameter:parameterList){
             parameter.setEverythingDirty(isDirty);
         }
@@ -189,8 +193,7 @@ public class ParameterList extends StateNode {
     public String toString() {
         final StringBuffer buf = new StringBuffer();
         int dimParam = getDimension();
-        buf.append(getID());
-        buf.append("["+dimParam+"]:\n");
+        buf.append(getID()+"["+dimParam+"]:\n");
         for(int iParam = 0; iParam < dimParam; iParam++){
             buf.append(getParameter(iParam).toString()).append("\n");
         }

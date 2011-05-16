@@ -11,11 +11,12 @@ import beast.util.Randomizer;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 
 /**
- * @author Chieh-Hsi Wu
+ * @author Marc Suchard
+ *
  */
 
 @Description("This class implements the multivariate nromal distribution.")
-public class MultivariateNormal extends ParametricDistribution{
+public class MultivariateNormal extends ParametricDistribution implements MultivariateDistribution{
     public Input<RealParameter> meanVec = new Input<RealParameter>("mean","Mean vector of the multivariate normal distribution", Input.Validate.REQUIRED);
     public Input<MatrixParameter> precisionMatrix = new Input<MatrixParameter>("precision", "Precision matrix of the multivariate normal distribution", Input.Validate.REQUIRED);
     private double[] mean;
@@ -99,6 +100,10 @@ public class MultivariateNormal extends ParametricDistribution{
 
     public double[] getMean() {
         return mean;
+    }
+
+    public double[] sample(){
+        return nextMultivariateNormal();
     }
 
     public double[] nextMultivariateNormal() {
@@ -188,6 +193,8 @@ public class MultivariateNormal extends ParametricDistribution{
         }
         return cholesky;
     }
+
+
 
     public static double[] nextMultivariateNormalPrecision(double[] mean, double[][] precision) {
         return nextMultivariateNormalVariance(mean, getInverse(precision));
