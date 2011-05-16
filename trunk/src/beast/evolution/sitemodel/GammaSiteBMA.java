@@ -62,7 +62,7 @@ public class GammaSiteBMA extends SiteModel {
         categoryRates = new double[categoryCount];
         categoryProportions = new double[categoryCount];
 
-        ratesKnown = false;
+        needRefresh = true;
 
         addCondition(muParameterInput);
         addCondition(logShapeInput);
@@ -71,12 +71,32 @@ public class GammaSiteBMA extends SiteModel {
 
     @Override
     protected boolean requiresRecalculation() {
+
+        if (categoryCount > 1) {
+            if(logShape != null && logShape.somethingIsDirty() &&
+                    modelChoose.get().getValue(SHAPE_INDEX) == PRESENT){
+
+            }
+
+    		ratesUnknown |= (logShape != null && shapeParameter.somethingIsDirty()) ||
+				muParameter.somethingIsDirty();
+    	} else {
+			ratesUnknown = muParameter.somethingIsDirty();
+    	}
+
+        proportionsUnknown = (logShape != null &&
+                logitInvar.somethingIsDirty() &&
+                modelChoose.get().getValue(INVAR_INDEX) == PRESENT);
+    	needRefresh |= proportionsUnknown || ratesUnknown;
+
+        return true;
        // we only get here if something is dirty in its inputs
-        boolean recalculate = false;
+        //boolean recalculate = false;
         /*if(m_pSubstModel.isDirty()){
             recalculate = true;
 
-        }else */if(modelChoose.get().somethingIsDirty()){
+        }else */
+        /*if(modelChoose.get().somethingIsDirty()){
 
 
             recalculate = true;
@@ -91,10 +111,9 @@ public class GammaSiteBMA extends SiteModel {
         }
 
         if(recalculate){
-            ratesKnown = false;
+            needRefresh = false;
         }
-        //return recalculate;
-        return m_pSubstModel.isDirty() || recalculate;
+        return m_pSubstModel.isDirty() || recalculate;*/
 
 
     }
@@ -155,7 +174,7 @@ public class GammaSiteBMA extends SiteModel {
         }
 
 
-        ratesKnown = true;
+        needRefresh = true;
     }
 
 }
