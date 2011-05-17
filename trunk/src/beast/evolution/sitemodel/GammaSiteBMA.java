@@ -62,7 +62,7 @@ public class GammaSiteBMA extends SiteModel {
         categoryRates = new double[categoryCount];
         categoryProportions = new double[categoryCount];
 
-        needRefresh = true;
+        ratesKnown = false;
 
         addCondition(muParameterInput);
         addCondition(logShapeInput);
@@ -71,32 +71,12 @@ public class GammaSiteBMA extends SiteModel {
 
     @Override
     protected boolean requiresRecalculation() {
-
-        if (categoryCount > 1) {
-            if(logShape != null && logShape.somethingIsDirty() &&
-                    modelChoose.get().getValue(SHAPE_INDEX) == PRESENT){
-
-            }
-
-    		ratesUnknown |= (logShape != null && shapeParameter.somethingIsDirty()) ||
-				muParameter.somethingIsDirty();
-    	} else {
-			ratesUnknown = muParameter.somethingIsDirty();
-    	}
-
-        proportionsUnknown = (logShape != null &&
-                logitInvar.somethingIsDirty() &&
-                modelChoose.get().getValue(INVAR_INDEX) == PRESENT);
-    	needRefresh |= proportionsUnknown || ratesUnknown;
-
-        return true;
        // we only get here if something is dirty in its inputs
-        //boolean recalculate = false;
-        /*if(m_pSubstModel.isDirty()){
+        boolean recalculate = false;
+        if(m_pSubstModel.isDirty()){
             recalculate = true;
 
-        }else */
-        /*if(modelChoose.get().somethingIsDirty()){
+        }else if(modelChoose.get().somethingIsDirty()){
 
 
             recalculate = true;
@@ -111,9 +91,10 @@ public class GammaSiteBMA extends SiteModel {
         }
 
         if(recalculate){
-            needRefresh = false;
+            ratesKnown = false;
         }
-        return m_pSubstModel.isDirty() || recalculate;*/
+        //return recalculate;
+        return recalculate;
 
 
     }
@@ -131,7 +112,7 @@ public class GammaSiteBMA extends SiteModel {
         categoryProportions[0] = modelChoose.get().getValue(INVAR_INDEX)*(1/(1+Math.exp(-logitInvar.getValue(0))));
         propVariable = 1.0 - categoryProportions[0];
         cat = 1;
-        
+
         //If including the gamma shape parameter.
         if (modelChoose.get().getValue(SHAPE_INDEX) == PRESENT) {
 
@@ -170,11 +151,11 @@ public class GammaSiteBMA extends SiteModel {
                 categoryRates[i + cat] = 1.0 / propVariable;
                 categoryProportions[i + cat] = propVariable/gammaCatCount;
             }
-            
+
         }
 
 
-        needRefresh = true;
+        ratesKnown = true;
     }
 
 }
