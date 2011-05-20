@@ -215,7 +215,8 @@ public class DirichletProcessPriorTest extends TestCase {
                         "assignment", assignment,
                         "alpha", alpha,
                         "xList", paramList,
-                        "distribution", distr
+                        "distribution", distr,
+                        "applyToList", false
                 );
 
                 //System.err.println(dpp.calculateLogP());
