@@ -10,19 +10,42 @@ import beast.core.parameter.ParameterList;
 @Description("This class is a wrapper that provides prior to parameter list.")
 public class ParameterListPrior extends Prior{
 
-    public Input<ParameterList> xList = new Input<ParameterList>("xList","points at which the density is calculated", Input.Validate.REQUIRED);
+    public Input<ParameterList> xListInput = new Input<ParameterList>(
+            "xList",
+            "points at which the density is calculated",
+            Input.Validate.REQUIRED
+    );
+
+    public Input<Boolean> applyToListInput = new Input<Boolean>(
+            "applyToList",
+            "Whether the prior is applied to the entire list",
+            Input.Validate.REQUIRED
+    );
 
     public ParameterListPrior(){
         m_x.setRule(Input.Validate.OPTIONAL);
     }
 
+    private boolean applyToList;
+    public void initAndValidate(){
+        super.initAndValidate();
+        applyToList = applyToListInput.get();
+
+    }
+
     @Override
 	public double calculateLogP() throws Exception {
-        logP = 0.0;
-		ParameterList parameterList = xList.get();
-        int dimParam = parameterList.getDimension();
-        for(int i = 0; i < dimParam; i ++){
-            logP += m_dist.calcLogP(parameterList.getParameter(i));
+        ParameterList parameterList = xListInput.get();
+        if(applyToList){
+            logP = m_dist.calcLogP(parameterList);
+        }else{
+            logP = 0.0;
+
+            int dimParam = parameterList.getDimension();
+            for(int i = 0; i < dimParam; i ++){
+                logP += m_dist.calcLogP(parameterList.getParameter(i));
+            }
+
         }
         //System.err.println("logP: "+logP);
 		return logP;

@@ -1,48 +1,53 @@
 package beast.math.distributions;
 
+import org.apache.commons.math.distribution.ContinuousDistribution;
+import beast.core.parameter.*;
 import beast.core.Input;
 import beast.core.Description;
-import beast.core.parameter.RealParameter;
-import beast.core.parameter.IntegerParameter;
+import beast.core.Valuable;
 
 import java.util.HashMap;
 
 /**
  * @author Chieh-Hsi Wu
  */
-@Description("This class that returns the dirichlet process prior.")
-public class DirichletProcessPrior extends ParameterListPrior {
+@Description("This class that the dirichlet process.")
+public class DirichletProcess extends ParametricDistribution{
+
+    public Input<ParametricDistribution> baseDistrInput = new Input<ParametricDistribution>(
+            "baseDistr",
+            "The base distribution of the dirichlet process",
+            Input.Validate.REQUIRED
+    );
     public Input<IntegerParameter> assignmentInput = new Input<IntegerParameter>(
             "assignment",
             "a parameter which species the assignment of elements to clusters",
             Input.Validate.REQUIRED
     );
-    
+
     public Input<RealParameter> alphaInput = new Input<RealParameter>(
             "alpha",
             "The concentration parameter of the Dirichlet process prior",
             Input.Validate.REQUIRED
     );
 
+    private ParametricDistribution baseDistribution;
     private double[] alphaPowers;
     private RealParameter alpha;
     private IntegerParameter assignment;
     private double[] denominators;
     private double[] gammas;
-    private boolean toRefresh;
 
-  
+
     public void initAndValidate(){
-
-        super.initAndValidate();
 
         alpha = alphaInput.get();
         assignment = assignmentInput.get();
+        baseDistribution = baseDistrInput.get();
 
         //Yes I know that we are only counting number of memebers is the existing clusters
         //So there won't be any clusters of size 0.
         //But for the sake of convenience for later computation I'm going to start from 0.
-        toRefresh  = true;
         refresh();
         gammas = new double[assignment.getDimension()+1];
         gammas[0] = Double.NaN;
@@ -56,35 +61,29 @@ public class DirichletProcessPrior extends ParameterListPrior {
         //Yes I know that we are only counting number of memebers is the existing clusters
         //So there won't be any clusters of size 0.
         //But for the sake of convenience for later computation I'm going to start from 0.
-        if(toRefresh){
-            alphaPowers = new double[assignment.getDimension()+1];
-            for(int i = 0; i < alphaPowers.length;i++){
-                alphaPowers[i] = Math.pow(alpha.getValue(),i);
-            }
 
-            denominators = new double[assignment.getDimension()+1];
-            denominators[0] = 1;
-            for(int i = 1; i < denominators.length;i++){
-                denominators[i] = denominators[i-1]*(alpha.getValue()+i-1);
-            }
-            toRefresh = false;
+        alphaPowers = new double[assignment.getDimension()+1];
+        for(int i = 0; i < alphaPowers.length;i++){
+            alphaPowers[i] = Math.pow(alpha.getValue(),i);
+        }
 
+        denominators = new double[assignment.getDimension()+1];
+        denominators[0] = 1;
+        for(int i = 1; i < denominators.length;i++){
+            denominators[i] = denominators[i-1]*(alpha.getValue()+i-1);
         }
 
     }
-
-    public boolean requiresRecalculation(){
-        if(alpha.somethingIsDirty()){
-            toRefresh = true;
+    public double calcLogP(Valuable xList) throws Exception {
+        if(requiresRecalculation()){
+            refresh();
         }
-        return super.requiresRecalculation();
-    }
+        int dimParam = xList.getDimension();
+        double logP = 0.0;
+        for(int i = 0; i < dimParam; i ++){
+            logP += baseDistribution.calcLogP(((ParameterList)xList).getParameter(i));
+        }
 
-
-
-    public double calculateLogP() throws Exception {
-        refresh();
-        super.calculateLogP();
         //System.err.println(logP);
         HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
         Integer[] assignments = assignment.getValues();
@@ -97,7 +96,7 @@ public class DirichletProcessPrior extends ParameterListPrior {
             }
         }
         Integer[] counts = map.values().toArray(new Integer[map.size()]);
-        if(counts.length != xListInput.get().getDimension()){
+        if(counts.length != dimParam){
             throw new RuntimeException();
         }
 
@@ -111,5 +110,13 @@ public class DirichletProcessPrior extends ParameterListPrior {
 
 
     }
-    
+    public boolean requiresRecalculation(){
+        return alpha.somethingIsDirty() || baseDistribution.isDirtyCalculation();
+    }
+
+    public ContinuousDistribution getDistribution(){
+        throw new RuntimeException("Dirichlet process is a discrete distribution.");
+    }
+
+
 }
