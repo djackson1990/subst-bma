@@ -85,6 +85,7 @@ public class DirichletProcessPrior extends ParameterListPrior {
     public double calculateLogP() throws Exception {
         refresh();
         super.calculateLogP();
+        //System.err.println(logP);
         HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
         Integer[] assignments = assignment.getValues();
 
