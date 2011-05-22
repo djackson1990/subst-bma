@@ -118,5 +118,9 @@ public class DirichletProcess extends ParametricDistribution{
         throw new RuntimeException("Dirichlet process is a discrete distribution.");
     }
 
+    public ParametricDistribution getBaseDistribution(){
+        return baseDistribution;
+    }
+
 
 }

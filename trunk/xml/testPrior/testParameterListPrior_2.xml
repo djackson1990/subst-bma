@@ -31,7 +31,7 @@
         </operator>
 
         <distribution spec="CompoundDistribution" id="Prior">
-            <distribution id="log.kappa.prior" spec="beast.math.distributions.ParameterListPrior">
+            <distribution id="log.kappa.prior" spec="beast.math.distributions.ParameterListPrior" applyToList="false">
                 <distribution id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="3"/>
                 <xList idref="parameterList"/>
             </distribution>

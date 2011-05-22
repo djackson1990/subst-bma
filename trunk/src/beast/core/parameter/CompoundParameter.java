@@ -24,9 +24,9 @@ public class CompoundParameter extends RealParameter2{
     public CompoundParameter(){
         m_pValues.setRule(Input.Validate.OPTIONAL);
     }
-    public CompoundParameter(RealParameter[] parameters){
+    public CompoundParameter(RealParameter2[] parameters){
         m_pValues.setRule(Input.Validate.OPTIONAL);
-        //initAndValidate(parameters);
+        initAndValidate(parameters);
     }
 
     
@@ -111,9 +111,9 @@ public class CompoundParameter extends RealParameter2{
     	try {
 	        @SuppressWarnings("unchecked")
 			
-            RealParameter[] copiedParameters = new RealParameter[parameterCount];
+            RealParameter2[] copiedParameters = new RealParameter2[parameterCount];
 	        for(int i = 0; i <  parameterCount;i++){
-                copiedParameters[i]=(RealParameter)(parameters.get(i)).copy();
+                copiedParameters[i]=(RealParameter2)(parameters.get(i)).copy();
             }
             CompoundParameter copy = new CompoundParameter(copiedParameters);
 	        return copy;
