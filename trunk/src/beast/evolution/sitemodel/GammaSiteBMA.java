@@ -25,13 +25,72 @@ public class GammaSiteBMA extends SiteModel {
     public static final int PRESENT = 1;
     public static final int ABSENT = 0;
 
+    private RealParameter logShape;
+    private RealParameter logitInvar;
+
     public GammaSiteBMA() {
         gammaCategoryCount.setRule(Input.Validate.REQUIRED);
     }
 
-    private RealParameter logShape;
-    private RealParameter logitInvar;
+
+@Override
     public void initAndValidate() throws Exception {
+        muParameter = muParameterInput.get();
+        if (muParameter == null) {
+        	muParameter = new RealParameter("1.0");
+        }
+
+        logShape = logShapeInput.get();
+        logitInvar = logitInvarInput.get();
+
+        //if (muParameter != null) {
+            muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);
+        //}
+
+        if ((getProportianInvariant() < 0 || getProportianInvariant() > 1)) {
+        	throw new Exception("proportion invariant should be between 0 and 1");
+        }
+        refresh();
+
+        addCondition(muParameterInput);
+        addCondition(invarParameterInput);
+        addCondition(shapeParameterInput);
+    }
+
+    @Override
+	protected void refresh() {
+        if (logShape != null) {
+            categoryCount = gammaCategoryCount.get();
+            if (categoryCount < 1) {
+            	System.out.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
+               	categoryCount = 1;
+            }
+
+            // The quantile calculator fails when the shape parameter goes much below
+            // 1E-3 so we have put a hard lower bound on it. If this is not there then
+            // the category rates can go to 0 and cause a -Inf likelihood (whilst this
+            // is not a problem as the state will be rejected, it could mask other issues
+            // and this seems the better approach.
+            logShape.setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        } else {
+            categoryCount = 1;
+        }
+
+        if (getProportianInvariant() > 0) {
+        	if (m_bPropInvariantIsCategory) {
+        		categoryCount += 1;
+        	}
+            logitInvar.setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        }
+
+        categoryRates = new double[categoryCount];
+        categoryProportions = new double[categoryCount];
+        calculateCategoryRates(null);
+        //ratesKnown = false;
+	}
+
+
+    /*public void initAndValidate() throws Exception {
 
         //seting the bound for mu
         muParameter = muParameterInput.get();
@@ -68,6 +127,10 @@ public class GammaSiteBMA extends SiteModel {
         addCondition(logShapeInput);
         addCondition(logitInvarInput);
     }
+
+    public void setPropInvariantIsCategory(boolean bPropInvariantIsCategory) {
+	     m_bPropInvariantIsCategory = bPropInvariantIsCategory;
+	}*/
 
     @Override
     protected boolean requiresRecalculation() {
@@ -157,5 +220,13 @@ public class GammaSiteBMA extends SiteModel {
 
         ratesKnown = true;
     }
+
+	public double getProportianInvariant() {
+
+        if (logitInvar == null) {
+        	return 0.0;
+        }
+		return 1.0/(1.0+Math.exp(-logitInvar.getValue()))*modelChoose.get().getValue(INVAR_INDEX);
+	}
 
 }
