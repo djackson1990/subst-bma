@@ -76,7 +76,7 @@ public class GammaSiteBMA extends SiteModel {
             categoryCount = 1;
         }
 
-        if (getProportianInvariant() > 0) {
+        if (logitInvar != null) {
         	if (m_bPropInvariantIsCategory) {
         		categoryCount += 1;
         	}
