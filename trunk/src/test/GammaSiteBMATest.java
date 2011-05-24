@@ -69,7 +69,7 @@ interface Instance {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "0 0",2);
+            modelChoose.init(0, 1, "0",2);
             return modelChoose;
         }
 
@@ -121,7 +121,7 @@ interface Instance {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "0 1",2);
+            modelChoose.init(0, 1, "1",2);
             return modelChoose;
         }
 
@@ -173,7 +173,7 @@ interface Instance {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "1 1",2);
+            modelChoose.init(0, 1, "3",2);
             return modelChoose;
         }
 
@@ -224,7 +224,7 @@ interface Instance {
 
         public IntegerParameter getModelChoose() throws Exception{
             IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 1, "1 1",2);
+            modelChoose.init(0, 1, "3",2);
             return modelChoose;
         }
 

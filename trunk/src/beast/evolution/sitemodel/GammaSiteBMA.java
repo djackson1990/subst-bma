@@ -24,6 +24,13 @@ public class GammaSiteBMA extends SiteModel {
     public static final int INVAR_INDEX = 1;
     public static final int PRESENT = 1;
     public static final int ABSENT = 0;
+    public static final int[][] INDICATORS = {
+            {ABSENT, ABSENT,},
+            {ABSENT, PRESENT},
+            {PRESENT, ABSENT},
+            {PRESENT, PRESENT}
+        };
+
 
     private RealParameter logShape;
     private RealParameter logitInvar;
@@ -33,8 +40,9 @@ public class GammaSiteBMA extends SiteModel {
     }
 
 
-@Override
+    @Override
     public void initAndValidate() throws Exception {
+
         muParameter = muParameterInput.get();
         if (muParameter == null) {
         	muParameter = new RealParameter("1.0");
@@ -50,11 +58,20 @@ public class GammaSiteBMA extends SiteModel {
         if ((getProportianInvariant() < 0 || getProportianInvariant() > 1)) {
         	throw new Exception("proportion invariant should be between 0 and 1");
         }
+
         refresh();
 
         addCondition(muParameterInput);
         addCondition(invarParameterInput);
         addCondition(shapeParameterInput);
+
+
+
+    }
+
+    private int getCurrModel(){
+        return modelChoose.get().getValue();
+
     }
 
     @Override
@@ -144,11 +161,11 @@ public class GammaSiteBMA extends SiteModel {
 
             recalculate = true;
         }else if(logShape.somethingIsDirty()){
-            if(modelChoose.get().getValue(SHAPE_INDEX) == PRESENT){
+            if(INDICATORS[getCurrModel()][SHAPE_INDEX] == PRESENT){
                 recalculate = true;
             }
         }else if(logitInvar.somethingIsDirty()){
-            if(modelChoose.get().getValue(INVAR_INDEX) == PRESENT){
+            if(INDICATORS[getCurrModel()][INVAR_INDEX] == PRESENT){
                 recalculate = true;
             }
         }
@@ -172,12 +189,12 @@ public class GammaSiteBMA extends SiteModel {
 
         categoryRates[0] = 0.0;
         //back transform from logit space
-        categoryProportions[0] = modelChoose.get().getValue(INVAR_INDEX)*(1/(1+Math.exp(-logitInvar.getValue(0))));
+        categoryProportions[0] = INDICATORS[getCurrModel()][INVAR_INDEX]*(1/(1+Math.exp(-logitInvar.getValue(0))));
         propVariable = 1.0 - categoryProportions[0];
         cat = 1;
 
         //If including the gamma shape parameter.
-        if (modelChoose.get().getValue(SHAPE_INDEX) == PRESENT) {
+        if (INDICATORS[getCurrModel()][SHAPE_INDEX] == PRESENT) {
 
             //back transform from log-space
             final double a = Math.exp(logShape.getValue(0));
@@ -226,7 +243,7 @@ public class GammaSiteBMA extends SiteModel {
         if (logitInvar == null) {
         	return 0.0;
         }
-		return 1.0/(1.0+Math.exp(-logitInvar.getValue()))*modelChoose.get().getValue(INVAR_INDEX);
+		return 1.0/(1.0+Math.exp(-logitInvar.getValue()))*INDICATORS[getCurrModel()][INVAR_INDEX];
 	}
 
 }
