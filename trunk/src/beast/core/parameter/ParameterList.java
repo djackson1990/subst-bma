@@ -120,6 +120,10 @@ public class ParameterList extends StateNode {
 
     }
 
+    public int indexOf(RealParameter2 param){
+        return parameterList.indexOf(param);
+    }
+
     public double getArrayValue(){
         throw new RuntimeException("As suggested by the name, this class represents a list, so it's not appropriate to return a single value");
 
