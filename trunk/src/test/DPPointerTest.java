@@ -139,12 +139,50 @@ public class DPPointerTest extends TestCase {
 
             newVal = new RealParameter2(new Double[]{5.0});
             index = 4;
-            assignment = new int[]{3,0,0,1,1};
+            //assignment = new int[]{3,0,0,1,1};
             operation5(pointer, paramList, index, newVal);
 
             for(int i = 0; i < expectedPointer.length; i++){
                 assertTrue(pointer.sameParameter(i,expectedPointer[i]));
             }
+
+            for(int i = 0; i < paramList.getDimension(); i++)
+                assertTrue(paramList.getParameter(i)==expectedList[i]);
+
+
+            index = 1;
+            existingValIndex = 4;
+            //assignment = new int[]{3,0,0,1,1};
+            operation6(pointer, paramList, index, existingValIndex, expectedPointer);
+
+            for(int i = 0; i < expectedPointer.length; i++)
+                assertTrue(pointer.sameParameter(i,expectedPointer[i]));
+
+
+            for(int i = 0; i < paramList.getDimension(); i++)
+                assertTrue(paramList.getParameter(i)==expectedList[i]);
+
+            newVal = new RealParameter2(new Double[]{6.0});
+            index = 0;
+            //assignment = new int[]{3,0,0,1,1};
+            operation7(pointer, paramList, index, newVal);
+
+            for(int i = 0; i < expectedPointer.length; i++)
+                assertTrue(pointer.sameParameter(i,expectedPointer[i]));
+
+
+            for(int i = 0; i < paramList.getDimension(); i++)
+                assertTrue(paramList.getParameter(i)==expectedList[i]);
+
+
+            index = 0;
+            existingValIndex = 3;
+            //assignment = new int[]{3,0,0,1,1};
+            operation8(pointer, paramList, index, existingValIndex, expectedPointer);
+
+            for(int i = 0; i < expectedPointer.length; i++)
+                assertTrue(pointer.sameParameter(i,expectedPointer[i]));
+
 
             for(int i = 0; i < paramList.getDimension(); i++)
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
@@ -302,5 +340,86 @@ public class DPPointerTest extends TestCase {
         pointer.setEverythingDirty(false);
         paramList.setEverythingDirty(false);
 
+    }
+
+
+    private void operation6(
+            DPPointer pointer,
+            ParameterList paramList,
+            int index,
+            int existingValIndex,
+            RealParameter2[] expectedPointer) throws Exception{
+
+        int listIndex = paramList.indexOf(expectedPointer[existingValIndex]);
+
+        pointer.point(index,paramList.getParameter(listIndex));
+
+        pointer.restore();
+
+        pointer.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
+
+
+    }
+
+    private void operation7(
+            DPPointer pointers,
+            ParameterList paramList,
+            int index,
+            RealParameter2 newVal) throws Exception{
+
+
+
+        DPValuable dpValuable = new DPValuable();
+        dpValuable.initByName(
+                "paramList", paramList,
+                "pointers", pointers
+        );
+
+        pointers.point(index,newVal);
+        paramList.addParameter(newVal);
+        int[] counts = dpValuable.clusterCounts();
+        for(int i = 0; i < counts.length;i++){
+            if(counts[i] == 0)
+                paramList.removeParameter(i);
+        }
+
+        pointers.restore();
+        paramList.restore();
+        dpValuable.restore();
+
+        pointers.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
+    }
+
+    private void operation8(
+            DPPointer pointers,
+            ParameterList paramList,
+            int index,
+            int existingValIndex,
+            RealParameter2[] expectedPointer) throws Exception{
+
+
+        int listIndex = paramList.indexOf(expectedPointer[existingValIndex]);
+
+        DPValuable dpValuable = new DPValuable();
+        dpValuable.initByName(
+                "paramList", paramList,
+                "pointers", pointers
+        );
+
+        pointers.point(index,paramList.getParameter(listIndex));
+        int[] counts = dpValuable.clusterCounts();
+        for(int i = 0; i < counts.length;i++){
+            if(counts[i] == 0)
+                paramList.removeParameter(i);
+        }
+
+        pointers.restore();
+        paramList.restore();
+        dpValuable.restore();
+
+        pointers.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
     }
 }

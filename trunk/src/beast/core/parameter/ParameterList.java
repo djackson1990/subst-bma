@@ -38,7 +38,7 @@ public class ParameterList extends StateNode {
 
     public void addParameter(RealParameter2 parameter){
         //System.err.println("add parameter");
-        //startEditing(null);
+        startEditing(null);
         parameterList.add(parameter);
     }
 
@@ -46,13 +46,17 @@ public class ParameterList extends StateNode {
         parameterList.add(parameter);
     }
     public void removeParameter(int pIndex){
-        //startEditing(null);
+        startEditing(null);
         parameterList.remove(pIndex);
     }
     public void setValue(int pIndex, int dim, double value) {
         startEditing(null);
         parameterList.get(pIndex).setValueQuietly(dim,value);
         lastParameterChanged = pIndex;
+    }
+
+    public int getLastParameterChanged(){
+        return lastParameterChanged;
     }
 
     public double getValue(int pIndex, int dim) {
