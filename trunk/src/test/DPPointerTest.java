@@ -91,13 +91,10 @@ public class DPPointerTest extends TestCase {
             RealParameter2 newVal = new RealParameter2(new Double[]{3.0});
             int index = 3;
             int[] assignment = new int[]{0,2,1,1,2};
-
             RealParameter2[] expectedPointer= new RealParameter2[assignment.length];
             RealParameter2[] expectedList = new RealParameter2[assignment.length];
-            
-
-
             operation1(pointer, paramList, index, newVal,assignment,expectedPointer,expectedList);
+
             for(int i = 0; i < expectedPointer.length; i++)
                 assertTrue(pointer.sameParameter(i,expectedPointer[i]));
 
@@ -105,9 +102,9 @@ public class DPPointerTest extends TestCase {
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
 
             index = 1;
-            int listIndex = 2;
+            int existingValIndex = 2;
             assignment = new int[]{0,2,1,3,2};
-            operation2(pointer, paramList, index, listIndex,assignment,expectedPointer);
+            operation2(pointer, paramList, index, existingValIndex,assignment,expectedPointer);
             for(int i = 0; i < expectedPointer.length; i++){
                 //System.err.println(expectedPointer[i]);
                 assertTrue(pointer.sameParameter(i,expectedPointer[i]));
@@ -118,8 +115,39 @@ public class DPPointerTest extends TestCase {
 
             index = 0;
             newVal = new RealParameter2(new Double[]{4.0});
+            assignment = new int[]{0,1,1,3,2};
             operation3(pointer, paramList, index, newVal,assignment,expectedPointer,expectedList);
 
+            for(int i = 0; i < expectedPointer.length; i++){
+                assertTrue(pointer.sameParameter(i,expectedPointer[i]));
+            }
+
+            for(int i = 0; i < paramList.getDimension(); i++)
+                assertTrue(paramList.getParameter(i)==expectedList[i]);
+
+            index = 3;
+            existingValIndex = 4;
+            assignment = new int[]{3,0,0,2,1};
+            operation4(pointer, paramList, index, existingValIndex,assignment,expectedPointer,expectedList);
+
+            for(int i = 0; i < expectedPointer.length; i++){
+                assertTrue(pointer.sameParameter(i,expectedPointer[i]));
+            }
+
+            for(int i = 0; i < paramList.getDimension(); i++)
+                assertTrue(paramList.getParameter(i)==expectedList[i]);
+
+            newVal = new RealParameter2(new Double[]{5.0});
+            index = 4;
+            assignment = new int[]{3,0,0,1,1};
+            operation5(pointer, paramList, index, newVal);
+
+            for(int i = 0; i < expectedPointer.length; i++){
+                assertTrue(pointer.sameParameter(i,expectedPointer[i]));
+            }
+
+            for(int i = 0; i < paramList.getDimension(); i++)
+                assertTrue(paramList.getParameter(i)==expectedList[i]);
 
 
         }catch(Exception e){
@@ -150,6 +178,9 @@ public class DPPointerTest extends TestCase {
         pointer.point(index,newVal);
         paramList.addParameter(newVal);
 
+        pointer.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
+
     }
     
     private void operation2(
@@ -168,6 +199,9 @@ public class DPPointerTest extends TestCase {
         expectedPointer[index] = expectedPointer[existingValIndex];
 
         pointer.point(index,paramList.getParameter(listIndex));
+
+        pointer.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
 
 
     }
@@ -188,11 +222,11 @@ public class DPPointerTest extends TestCase {
 
         int counter = 0;
         for(int i = 0; i < paramList.getDimension(); i++){
-            if(index != i){
+            if(assignment[index] != i){
                 expectedList[counter++] = paramList.getParameter(i);
             }
         }
-        expectedList[paramList.getDimension()] = newVal;
+        expectedList[counter] = newVal;
 
         DPValuable dpValuable = new DPValuable();
         dpValuable.initByName(
@@ -207,5 +241,66 @@ public class DPPointerTest extends TestCase {
             if(counts[i] == 0)
                 paramList.removeParameter(i);
         }
+
+        pointers.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
+    }
+
+    private void operation4(
+            DPPointer pointers,
+            ParameterList paramList,
+            int index,
+            int existingValIndex,
+            int[] assignment,
+            RealParameter2[] expectedPointer,
+            RealParameter2[] expectedList) throws Exception{
+
+        for(int i = 0; i < pointers.getDimension();i++){
+            expectedPointer[i] = paramList.getParameter(assignment[i]);
+        }
+
+        int listIndex = paramList.indexOf(expectedPointer[existingValIndex]);
+        expectedPointer[index] = expectedPointer[existingValIndex];
+        int counter = 0;
+        for(int i = 0; i < paramList.getDimension(); i++){
+            if(assignment[index] != i){
+                
+                expectedList[counter++] = paramList.getParameter(i);
+            }
+        }
+
+        DPValuable dpValuable = new DPValuable();
+        dpValuable.initByName(
+                "paramList", paramList,
+                "pointers", pointers
+        );
+
+        pointers.point(index,paramList.getParameter(listIndex));
+        int[] counts = dpValuable.clusterCounts();
+        for(int i = 0; i < counts.length;i++){
+            if(counts[i] == 0)
+                paramList.removeParameter(i);
+        }
+        pointers.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
+
+
+    }
+
+    private void operation5(
+            DPPointer pointer,
+            ParameterList paramList,
+            int index,
+            RealParameter2 newVal) throws Exception{
+      
+        pointer.point(index,newVal);
+        paramList.addParameter(newVal);
+
+        pointer.restore();
+        paramList.restore();
+        
+        pointer.setEverythingDirty(false);
+        paramList.setEverythingDirty(false);
+
     }
 }
