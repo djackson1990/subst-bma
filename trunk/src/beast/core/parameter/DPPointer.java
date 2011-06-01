@@ -16,22 +16,25 @@ import org.w3c.dom.Node;
 @Description("Array that points to some set of parameters")
 public class DPPointer extends StateNode {
     public Input<List<RealParameter2>> uniqueParametersInput = new Input<List<RealParameter2>>(
-            "parameter",
+            "uniqueParameters",
             "refrence to a parameter",
             new ArrayList<RealParameter2>(),
             Input.Validate.REQUIRED
     );
 
     public Input<IntegerParameter> assignmentInput = new Input<IntegerParameter>(
-            "assignment",
+            "initialAssignment",
             "a parameter which species the assignment of elements to clusters",
             Input.Validate.REQUIRED
     );
 
     private RealParameter2[] parameters;
     private RealParameter2[] storedParameters;
+    private int lastDirty = -1;
 
-
+    public DPPointer(){
+        
+    }
     public DPPointer(int dim){
         parameters = new RealParameter2[dim];
         storedParameters = new RealParameter2[dim];
@@ -49,6 +52,12 @@ public class DPPointer extends StateNode {
     }
 
     public void point(int dim, RealParameter2 parameter){
+        startEditing(null);
+        parameters[dim] = parameter;
+
+    }
+
+    protected void pointQuitely(int dim, RealParameter2 parameter){
         parameters[dim] = parameter;
 
     }
@@ -60,7 +69,7 @@ public class DPPointer extends StateNode {
     public DPPointer copy(){
         DPPointer copy = new DPPointer(getDimension());
         for(int i = 0; i < copy.getDimension(); i++){
-            copy.point(i, parameters[i]);
+            copy.pointQuitely(i, parameters[i]);
         }
         return copy;
     }
@@ -83,6 +92,10 @@ public class DPPointer extends StateNode {
     public int scale(double fScale){
         throw new RuntimeException("Scaling simply does not make sense in this case");
 
+    }
+
+    public int getLastDirty(){
+        return lastDirty;
     }
 
     public double getArrayValue(){
@@ -124,9 +137,13 @@ public class DPPointer extends StateNode {
         //todo
     }
 
-    private RealParameter2 getParameter(int dim){
+    public RealParameter2 getParameter(int dim){
         return parameters[dim];
 
+    }
+
+    public boolean sameParameter(int dim, RealParameter2 parameter){
+        return parameters[dim].getValue() == parameter.getValue();
     }
 
         /** Loggable implementation **/
