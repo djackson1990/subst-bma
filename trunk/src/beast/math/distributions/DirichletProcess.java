@@ -122,5 +122,9 @@ public class DirichletProcess extends ParametricDistribution{
         return baseDistribution;
     }
 
+    public double getConcParameter(){
+        return alpha.getValue();
+    }
+
 
 }

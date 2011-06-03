@@ -78,11 +78,11 @@ public class DPValuable extends CalculationNode implements Valuable {
         return clusterCounts[dim];
     }
 
-    public int[] clusterCounts(){
+    public int[] getClusterCounts(){
         if(pointersChanged){
             clusterCounts = new int[paramList.getDimension()];
             for(int i = 0; i < pointers.getDimension();i++ ){
-                clusterCounts[paramList.indexOf(pointers.getParameter(i))]++;
+                clusterCounts[pointers.indexInList(i,paramList)]++;
             }
             pointersChanged = false;
         }

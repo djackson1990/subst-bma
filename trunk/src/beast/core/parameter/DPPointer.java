@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 @Description("Array that points to some set of parameters")
 public class DPPointer extends StateNode {
     public Input<List<RealParameter2>> uniqueParametersInput = new Input<List<RealParameter2>>(
-            "uniqueParameters",
+            "uniqueParameter",
             "refrence to a parameter",
             new ArrayList<RealParameter2>(),
             Input.Validate.REQUIRED
@@ -137,9 +137,13 @@ public class DPPointer extends StateNode {
         //todo
     }
 
-    public RealParameter2 getParameter(int dim){
+    private RealParameter2 getParameter(int dim){
         return parameters[dim];
 
+    }
+
+    public int indexInList(int dim, ParameterList paramList){
+        return paramList.indexOf(parameters[dim]);
     }
 
     public boolean sameParameter(int dim, RealParameter2 parameter){

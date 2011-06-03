@@ -2,7 +2,6 @@ package test;
 
 import beast.core.parameter.*;
 import beast.core.State;
-import beast.math.distributions.ParametricDistribution;
 import junit.framework.TestCase;
 
 /**
@@ -274,7 +273,7 @@ public class DPPointerTest extends TestCase {
 
         pointers.point(index,newVal);
         paramList.addParameter(newVal);
-        int[] counts = dpValuable.clusterCounts();
+        int[] counts = dpValuable.getClusterCounts();
         for(int i = 0; i < counts.length;i++){
             if(counts[i] == 0)
                 paramList.removeParameter(i);
@@ -314,7 +313,7 @@ public class DPPointerTest extends TestCase {
         );
 
         pointers.point(index,paramList.getParameter(listIndex));
-        int[] counts = dpValuable.clusterCounts();
+        int[] counts = dpValuable.getClusterCounts();
         for(int i = 0; i < counts.length;i++){
             if(counts[i] == 0)
                 paramList.removeParameter(i);
@@ -378,7 +377,7 @@ public class DPPointerTest extends TestCase {
 
         pointers.point(index,newVal);
         paramList.addParameter(newVal);
-        int[] counts = dpValuable.clusterCounts();
+        int[] counts = dpValuable.getClusterCounts();
         for(int i = 0; i < counts.length;i++){
             if(counts[i] == 0)
                 paramList.removeParameter(i);
@@ -409,7 +408,7 @@ public class DPPointerTest extends TestCase {
         );
 
         pointers.point(index,paramList.getParameter(listIndex));
-        int[] counts = dpValuable.clusterCounts();
+        int[] counts = dpValuable.getClusterCounts();
         for(int i = 0; i < counts.length;i++){
             if(counts[i] == 0)
                 paramList.removeParameter(i);
