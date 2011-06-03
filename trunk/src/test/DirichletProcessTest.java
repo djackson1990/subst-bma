@@ -14,7 +14,7 @@ public class DirichletProcessTest extends TestCase {
         public ParametricDistribution getBaseDistribution();
         public ParameterList getParameterList();
         public RealParameter getAlpha() ;
-        public IntegerParameter getAssignment();
+        public DPValuable getDPValuable();
         public double getExpectedLogP();
     }
 
@@ -22,12 +22,13 @@ public class DirichletProcessTest extends TestCase {
         Normal normal;
         ParameterList paramList;
         RealParameter alpha;
-        IntegerParameter assignment;
+        DPValuable dpValuable;
+        DPPointer dpPointer;
         public void setup(){
             normal = new Normal();
             paramList = new ParameterList();
             alpha = new RealParameter();
-            assignment = new IntegerParameter();
+            dpValuable = new DPValuable();
             try{
                 normal.initByName(
                         "mean", "0",
@@ -42,8 +43,24 @@ public class DirichletProcessTest extends TestCase {
                         "parameter", param2,
                         "parameter", param3
                 );
+
+                IntegerParameter assignment = new IntegerParameter();
+                assignment.initByName("value","0 1 0 2 0 0 1 0");
+
+                dpPointer = new DPPointer();
+                dpPointer.initByName(
+                        "uniqueParameter",param1,
+                        "uniqueParameter",param2,
+                        "uniqueParameter",param3,
+                        "initialAssignment",assignment
+                );
+
                 alpha.initByName("value","0.5");
-                assignment.initByName("value","1 2 1 3 1 1 2 1");
+                dpValuable = new DPValuable();
+                dpValuable.initByName(
+                        "paramList",paramList,
+                        "pointers", dpPointer
+                );
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
@@ -61,8 +78,8 @@ public class DirichletProcessTest extends TestCase {
             return alpha;
         }
 
-        public IntegerParameter getAssignment(){
-            return assignment;
+        public DPValuable getDPValuable(){
+            return dpValuable;
 
         }
 
@@ -77,12 +94,13 @@ public class DirichletProcessTest extends TestCase {
         Normal normal;
         ParameterList paramList;
         RealParameter alpha;
-        IntegerParameter assignment;
+        DPValuable dpValuable;
+        DPPointer dpPointer;
         public void setup(){
             normal = new Normal();
             paramList = new ParameterList();
             alpha = new RealParameter();
-            assignment = new IntegerParameter();
+            dpValuable = new DPValuable();
             try{
                 normal.initByName(
                         "mean", "0",
@@ -92,13 +110,27 @@ public class DirichletProcessTest extends TestCase {
                 RealParameter2 param1 = new RealParameter2(new Double[]{-0.3,0.2,-0.1});
                 RealParameter2 param2 = new RealParameter2(new Double[]{-0.1,0.03,0.15});
                 RealParameter2 param3 = new RealParameter2(new Double[]{0.5,0.4,-0.01});
+
                 paramList.initByName(
                         "parameter", param1,
                         "parameter", param2,
                         "parameter", param3
                 );
                 alpha.initByName("value","0.5");
-                assignment.initByName("value","1 2 1 3 1 1 2 1");
+                IntegerParameter assignment = new IntegerParameter();
+                assignment.initByName("value","0 1 0 2 0 0 1 0");
+                dpPointer = new DPPointer();
+                dpPointer.initByName(
+                        "uniqueParameter",param1,
+                        "uniqueParameter",param2,
+                        "uniqueParameter",param3,
+                        "initialAssignment",assignment
+                );
+                dpValuable = new DPValuable();
+                dpValuable.initByName(
+                        "paramList",paramList,
+                        "pointers", dpPointer
+                );
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
@@ -116,8 +148,8 @@ public class DirichletProcessTest extends TestCase {
             return alpha;
         }
 
-        public IntegerParameter getAssignment(){
-            return assignment;
+        public DPValuable getDPValuable(){
+            return dpValuable;
 
         }
 
@@ -127,16 +159,17 @@ public class DirichletProcessTest extends TestCase {
 
 
     };
+
     Instance test2 = new Instance(){
         MultivariateNormal mvnorm;
         ParameterList paramList;
         RealParameter alpha;
-        IntegerParameter assignment;
+        DPValuable dpValuable;
+        DPPointer dpPointer;
         public void setup(){
             mvnorm = new MultivariateNormal();
             paramList = new ParameterList();
             alpha = new RealParameter();
-            assignment = new IntegerParameter();
             try{
                 RealParameter mean = new RealParameter();
                 mean.initByName("value", "0.04 -0.01 0.1");
@@ -166,7 +199,21 @@ public class DirichletProcessTest extends TestCase {
                         "parameter", param3
                 );
                 alpha.initByName("value","0.5");
-                assignment.initByName("value","1 2 1 3 1 1 2 1");
+                IntegerParameter assignment = new IntegerParameter();
+                assignment.initByName("value","0 1 0 2 0 0 1 0");
+
+                dpPointer = new DPPointer();
+                dpPointer.initByName(
+                        "uniqueParameter",param1,
+                        "uniqueParameter",param2,
+                        "uniqueParameter",param3,
+                        "initialAssignment",assignment
+                );
+                dpValuable = new DPValuable();
+                dpValuable.initByName(
+                        "paramList",paramList,
+                        "pointers", dpPointer
+                );
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
@@ -184,8 +231,8 @@ public class DirichletProcessTest extends TestCase {
             return alpha;
         }
 
-        public IntegerParameter getAssignment(){
-            return assignment;
+        public DPValuable getDPValuable(){
+            return dpValuable;
 
         }
 
@@ -202,14 +249,14 @@ public class DirichletProcessTest extends TestCase {
         try{
             for(Instance test:all){
                 test.setup();
-                IntegerParameter assignment = test.getAssignment();
+                DPValuable dpValuable = test.getDPValuable();
                 RealParameter alpha = test.getAlpha();
                 ParameterList paramList = test.getParameterList();
                 ParametricDistribution distr = test.getBaseDistribution();
                 DirichletProcess dp = new DirichletProcess();
 
                 dp.initByName(
-                        "assignment", assignment,
+                        "dpVal", dpValuable,
                         "alpha", alpha,
                         "baseDistr", distr
                 );

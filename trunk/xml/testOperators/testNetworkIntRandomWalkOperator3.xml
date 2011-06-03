@@ -10,7 +10,7 @@
 
 	    <distribution spec="CompoundDistribution" id="posterior">
             <distribution id="prior" spec="Prior">
-                <distribution spec="beast.math.distributions.DiscreteDistribution">
+                <distribution spec="beast.math.distributions.CategoricalDistribution">
                     <input name="probs" spec="RealParameter" value="0.08 0.08 0.27 0.26 0.05 0.26" lower="0" upper="1" dimension="6"/>
                 </distribution>
                 <x idref="ntd.indicator"/>

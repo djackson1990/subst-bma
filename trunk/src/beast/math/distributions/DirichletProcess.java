@@ -6,24 +6,24 @@ import beast.core.Input;
 import beast.core.Description;
 import beast.core.Valuable;
 
-import java.util.HashMap;
-
 /**
  * @author Chieh-Hsi Wu
  */
 @Description("This class that the dirichlet process.")
 public class DirichletProcess extends ParametricDistribution{
 
+    public Input<DPValuable> dpValuableInput = new Input<DPValuable>(
+            "dpVal",
+            "reports the counts in each cluster",
+            Input.Validate.REQUIRED
+    );
+
     public Input<ParametricDistribution> baseDistrInput = new Input<ParametricDistribution>(
             "baseDistr",
             "The base distribution of the dirichlet process",
             Input.Validate.REQUIRED
     );
-    public Input<IntegerParameter> assignmentInput = new Input<IntegerParameter>(
-            "assignment",
-            "a parameter which species the assignment of elements to clusters",
-            Input.Validate.REQUIRED
-    );
+    
 
     public Input<RealParameter> alphaInput = new Input<RealParameter>(
             "alpha",
@@ -34,7 +34,7 @@ public class DirichletProcess extends ParametricDistribution{
     private ParametricDistribution baseDistribution;
     private double[] alphaPowers;
     private RealParameter alpha;
-    private IntegerParameter assignment;
+    private DPValuable dpValuable;
     private double[] denominators;
     private double[] gammas;
 
@@ -42,14 +42,14 @@ public class DirichletProcess extends ParametricDistribution{
     public void initAndValidate(){
 
         alpha = alphaInput.get();
-        assignment = assignmentInput.get();
+        dpValuable = dpValuableInput.get();
         baseDistribution = baseDistrInput.get();
 
         //Yes I know that we are only counting number of memebers is the existing clusters
         //So there won't be any clusters of size 0.
         //But for the sake of convenience for later computation I'm going to start from 0.
         refresh();
-        gammas = new double[assignment.getDimension()+1];
+        gammas = new double[dpValuable.getPointerDimension()+1];
         gammas[0] = Double.NaN;
         gammas[1] = 1;
         for(int i = 2; i < gammas.length; i++){
@@ -62,12 +62,12 @@ public class DirichletProcess extends ParametricDistribution{
         //So there won't be any clusters of size 0.
         //But for the sake of convenience for later computation I'm going to start from 0.
 
-        alphaPowers = new double[assignment.getDimension()+1];
+        alphaPowers = new double[dpValuable.getPointerDimension()+1];
         for(int i = 0; i < alphaPowers.length;i++){
             alphaPowers[i] = Math.pow(alpha.getValue(),i);
         }
 
-        denominators = new double[assignment.getDimension()+1];
+        denominators = new double[dpValuable.getPointerDimension()+1];
         denominators[0] = 1;
         for(int i = 1; i < denominators.length;i++){
             denominators[i] = denominators[i-1]*(alpha.getValue()+i-1);
@@ -84,28 +84,14 @@ public class DirichletProcess extends ParametricDistribution{
             logP += baseDistribution.calcLogP(((ParameterList)xList).getParameter(i));
         }
 
-        //System.err.println(logP);
-        HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
-        Integer[] assignments = assignment.getValues();
-
-        for(int assign:assignments){
-            if(map.containsKey(assign)){
-                map.put(assign,map.get(assign)+1);
-            }else{
-                map.put(assign,1);
-            }
-        }
-        Integer[] counts = map.values().toArray(new Integer[map.size()]);
-        if(counts.length != dimParam){
-            throw new RuntimeException();
-        }
-
+        int[] counts = dpValuable.getClusterCounts();
+        
         logP+=Math.log(alphaPowers[counts.length]);
 
         for(int count: counts){
             logP+=Math.log(gammas[count]);
         }
-        logP-=Math.log(denominators[assignment.getDimension()]);
+        logP-=Math.log(denominators[dpValuable.getPointerDimension()]);
         return logP;
 
 

@@ -26,11 +26,13 @@ public class DirichletProcessPriorSampler extends Operator {
             "points at which the density is calculated",
             Input.Validate.REQUIRED
     );
+    
     public Input<DirichletProcess> dpInput = new Input<DirichletProcess>(
             "dirichletProcess",
             "An object of Dirichlet Process",
             Input.Validate.REQUIRED
     );
+
     public Input<Integer> sampleSizeInput = new Input<Integer>(
             "sampleSize",
             "The number of prelimiary proposals",
@@ -57,7 +59,7 @@ public class DirichletProcessPriorSampler extends Operator {
         dp = dpInput.get();
         sampleSize = sampleSizeInput.get();
         baseDistr = dp.getBaseDistribution();
-        dpVal = dpValuableInput.get();
+        dpVal = dpValuableInput.get();        
 
     }
 

@@ -35,7 +35,16 @@ public class DPValuable extends CalculationNode implements Valuable {
         paramList = paramListInput.get();
         pointers = pointersInput.get();
         pointersChanged = true;
-     
+    }
+
+    public DPValuable(){
+
+    }
+
+    public DPValuable(ParameterList paramList, DPPointer pointers){
+        this.paramList = paramList;
+        this.pointers = pointers;
+        pointersChanged = true;
     }
 
 
@@ -49,9 +58,7 @@ public class DPValuable extends CalculationNode implements Valuable {
 		super.store();
 	}
 	@Override
-	public void restore() {
-
-        int[] temp = clusterCounts;
+	public void restore() {int[] temp = clusterCounts;
         clusterCounts = storedClusterCounts;
         storedClusterCounts = temp;
         super.restore();
@@ -59,7 +66,8 @@ public class DPValuable extends CalculationNode implements Valuable {
 
     @Override
 	public boolean requiresRecalculation() {
-		return true;
+        pointersChanged =pointers.somethingIsDirty();
+		return pointers.somethingIsDirty();
 	}
 
     /** Valuable implementation follows **/
@@ -70,7 +78,6 @@ public class DPValuable extends CalculationNode implements Valuable {
 
     @Override
 	public double getArrayValue() {
-
 		return clusterCounts[0];
 	}
 
@@ -84,9 +91,11 @@ public class DPValuable extends CalculationNode implements Valuable {
             for(int i = 0; i < pointers.getDimension();i++ ){
                 clusterCounts[pointers.indexInList(i,paramList)]++;
             }
-            pointersChanged = false;
         }
         return clusterCounts;
     }
 
+    public int getPointerDimension(){
+        return pointers.getDimension();
+    }
 }
