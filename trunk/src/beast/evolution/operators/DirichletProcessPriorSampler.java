@@ -2,7 +2,6 @@ package beast.evolution.operators;
 
 import beast.core.Operator;
 import beast.core.Input;
-import beast.core.Distribution;
 import beast.core.Description;
 import beast.core.parameter.*;
 import beast.math.distributions.DirichletProcess;
@@ -39,11 +38,11 @@ public class DirichletProcessPriorSampler extends Operator {
             Input.Validate.REQUIRED
     );
 
-    public Input<Distribution> likelihoodInput = new Input<Distribution>(
+    /*public Input<Distribution> likelihoodInput = new Input<Distribution>(
             "likelihood",
             "The likelihood given the data",
             Input.Validate.REQUIRED
-    );
+    );*/
 
     public Input<DPValuable> dpValuableInput = new Input<DPValuable>(
             "dpVal",
@@ -97,15 +96,17 @@ public class DirichletProcessPriorSampler extends Operator {
             for(i = 0; i < dimList; i++){
                 //n_{-index,i}/(n - 1 + alpha)
                 fullConditional[i] = clusterCounts[i]/(dimPointer - 1 + concVal);
+                //System.err.println("fullConditional[i]: "+fullConditional[i]+", val: "+paramList.getParameter(i));
 
             }
             for(; i < fullConditional.length; i++){
                 //alpha/m/(n - 1 + alpha)
                 fullConditional[i] = concVal/sampleSize/(dimPointer - 1 + concVal);
+                //System.err.println("fullConditional[i]: "+fullConditional[i]+", val: "+i);
             }
 
             int proposedIndex = Randomizer.randomChoicePDF(fullConditional);
-
+            //System.err.println("proposedIndex: "+proposedIndex);
             if(proposedIndex < dimList){
                 //take up an existing value
                 pointers.point(index, paramList.getParameter(proposedIndex));
@@ -115,10 +116,15 @@ public class DirichletProcessPriorSampler extends Operator {
                 paramList.addParameter(preliminaryProposals[proposedIndex-dimList]);
             }
 
+            /*for(i = 0; i < clusterCounts.length;i++){
+                System.err.println(paramList.getParameter(i).getValue()+", cluster counts: "+clusterCounts[i]);
+            }*/
+
             //If any cluster has no member then it is removed.
             for(i = 0; i < clusterCounts.length;i++){
                 if(clusterCounts[i] ==0){
                     paramList.removeParameter(i);
+                    break;
                 }
 
             }
@@ -136,11 +142,14 @@ public class DirichletProcessPriorSampler extends Operator {
 
             Double[] sample = new Double[dimValue];
             for(int j = 0;j < dimValue;j++){
+
                 sample[j] = baseDistr.inverseCumulativeProbability(Randomizer.nextDouble());
+                //System.err.print(sample[j]+" ");
             }
             preliminaryProposals[i] = new RealParameter2(sample);
 
         }
+        //System.err.println();
         return preliminaryProposals;
 
     }

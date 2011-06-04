@@ -19,7 +19,7 @@
 
     <input spec="DirichletProcess" id="dp">
         <input name="dpVal" idref="dpValuable"/>
-        <input name="baseDistr" spec="beast.math.distributions.UniformDistribution" id="unif"/>
+        <input name="baseDistr" id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.3"/>
         <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
     </input>
 
@@ -43,7 +43,7 @@
             <log idref="dpValuable"/>
         </logger>
 
-        <logger logEvery="1" fileName="testDirichletProcessPrior_1.log">
+        <logger logEvery="1" fileName="testDirichletProcessPrior_2.log">
             <log idref="pointer"/>
             <log idref="dpValuable"/>
         </logger>

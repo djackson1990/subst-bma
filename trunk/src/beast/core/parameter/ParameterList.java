@@ -47,6 +47,7 @@ public class ParameterList extends StateNode {
     }
     public void removeParameter(int pIndex){
         startEditing(null);
+        //System.err.println("size: "+parameterList.size());
         parameterList.remove(pIndex);
     }
     public void setValue(int pIndex, int dim, double value) {

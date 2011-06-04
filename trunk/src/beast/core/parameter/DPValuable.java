@@ -2,12 +2,14 @@ package beast.core.parameter;
 
 import beast.core.*;
 
+import java.io.PrintStream;
+
 /**
  * @author Chieh-Hsi Wu
  */
 
 @Description("Summarizes a set of valuables from a Dirichlet prior process")
-public class DPValuable extends CalculationNode implements Valuable {
+public class DPValuable extends CalculationNode implements Valuable, Loggable{
 
     //ParameterList
     public Input<ParameterList> paramListInput = new Input<ParameterList>(
@@ -97,5 +99,17 @@ public class DPValuable extends CalculationNode implements Valuable {
 
     public int getPointerDimension(){
         return pointers.getDimension();
+    }
+
+     public void init(PrintStream out) throws Exception{
+        out.print(getID()+"\t");
+
+    }
+
+    public void log(int nSample, PrintStream out){
+        out.print(paramList.getDimension() + "\t");
+    }
+
+    public void close(PrintStream out){
     }
 }

@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 /**
  * @author Chieh-Hsi Wu
  */
-public class CategorialDistributionTest extends TestCase {
+public class CategoricalDistributionTest extends TestCase {
 
     interface Instance {
 

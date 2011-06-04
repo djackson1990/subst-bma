@@ -12,7 +12,7 @@ import org.apache.commons.math.MathException;
 @Description("This class represents a discrete distirbution on integers.")
 public class CategoricalDistribution extends ParametricDistribution {
     public Input<RealParameter> m_probs = new Input<RealParameter>("probs","Probabilities of each integer value", Input.Validate.REQUIRED);
-    CategorialImpl m_dist = new CategorialImpl();
+    CategoricalImpl m_dist = new CategoricalImpl();
 
     public void initAndValidate(){
         refresh();
@@ -31,7 +31,7 @@ public class CategoricalDistribution extends ParametricDistribution {
 
     }
 
-    class CategorialImpl extends AbstractIntegerDistribution{
+    class CategoricalImpl extends AbstractIntegerDistribution{
         private Double[] probs;
 
         public void setProbabilityVector(Double[] probs){
