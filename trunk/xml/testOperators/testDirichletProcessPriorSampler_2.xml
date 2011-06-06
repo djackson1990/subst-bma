@@ -23,7 +23,7 @@
         <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
     </input>
 
-    <run spec="MCMC" id="mcmc" chainLength="10000"> <!--autoOptimize="true"-->
+    <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
             <input name='stateNode' idref='parameterList'/>
             <input name='stateNode' idref='pointer'/>
@@ -38,12 +38,12 @@
             <input name="dpVal" idref="dpValuable"/>
         </operator>
 
-        <logger logEvery="10">
+        <logger logEvery="10000">
             <log idref="pointer"/>
             <log idref="dpValuable"/>
         </logger>
 
-        <logger logEvery="1" fileName="testDirichletProcessPrior_2.log">
+        <logger logEvery="10" fileName="testDirichletProcessPrior_2.log">
             <log idref="pointer"/>
             <log idref="dpValuable"/>
         </logger>
