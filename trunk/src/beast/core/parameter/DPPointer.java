@@ -31,6 +31,7 @@ public class DPPointer extends StateNode {
     private RealParameter2[] parameters;
     private RealParameter2[] storedParameters;
     private int lastDirty = -1;
+    private int storedLastDirty = -1;
 
     public DPPointer(){
         
@@ -53,6 +54,7 @@ public class DPPointer extends StateNode {
 
     public void point(int dim, RealParameter2 parameter){
         startEditing(null);
+        lastDirty = dim;
         parameters[dim] = parameter;
 
     }
@@ -79,11 +81,13 @@ public class DPPointer extends StateNode {
     }
 
     public void store(){
+        storedLastDirty = lastDirty;
         System.arraycopy(parameters,0,storedParameters,0,parameters.length);
     }
 
     @Override
 	public void restore() {
+        lastDirty = storedLastDirty;
         RealParameter2[] temp = parameters;
         parameters = storedParameters;
         storedParameters = temp;
@@ -142,6 +146,11 @@ public class DPPointer extends StateNode {
 
     }
 
+    public double getParameterValue(int dim){
+        return parameters[dim].getValue();
+
+    }
+
     public int indexInList(int dim, ParameterList paramList){
         return paramList.indexOf(parameters[dim]);
     }
@@ -175,5 +184,19 @@ public class DPPointer extends StateNode {
             }
         }
 
+    }
+
+    public boolean pointEqual(int index1, int index2){
+        return parameters[index1] == parameters[index2];
+    }
+
+    public String toString(){
+        final StringBuffer buf = new StringBuffer();
+        int dimParam = getDimension();
+        buf.append(getID()+"["+dimParam+"]:\n");
+        for(int iParam = 0; iParam < dimParam; iParam++){
+            buf.append(getParameter(iParam).toString()).append("\t");
+        }
+        return buf.toString();
     }
 }

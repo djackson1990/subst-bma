@@ -4,27 +4,12 @@
     <input spec="ParameterList" id="parameterList">
         <parameter spec="RealParameter2" id="parameter1" value="0.0" upper="Infinity" lower="-Infinity"/>
         <parameter spec="RealParameter2" id="parameter2" value="1.0" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="RealParameter2" id="parameter3" value="2.0" upper="Infinity" lower="-Infinity"/>
     </input>
 
     <input spec="DPPointer" id="pointer">
         <input name="uniqueParameter" idref="parameter1"/>
-        <input name="uniqueParameter" idref="parameter2"/>
-        <input name="initialAssignment" spec="IntegerParameter" value="0 1" lower="0"/>
-    </input>
-
-    <input spec="DPValuable" id="dpValuable">
-        <input spec="ParameterList" name="paramList" idref="parameterList"/>
-        <input spec="DPPointer" name="pointers" idref="pointer"/>
-    </input>
-
-    
-    
-    <input spec="DirichletProcess" id="dp">
-        <input name="dpVal" idref="dpValuable"/>
-        <input name="baseDistr" spec="CategoricalDistribution" id="categorical">
-            <input name="probs" spec="RealParameter" id="probabilities" value="0.2 0.8" lower="0.0" upper="1.0"/>
-        </input>
-        <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0 0 0" lower="0"/>
     </input>
 
     <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
@@ -33,21 +18,26 @@
             <input name='stateNode' idref='pointer'/>
         </state>
 
-        <distribution spec="CompoundDistribution" id="posterior"/>
+        <distribution spec="CompoundDistribution" id="Posterior">
+            <distribution id="prior" spec="beast.math.distributions.Prior">
+                <input name="distribution" spec="AdHocClusterDistribution" id="cluster.prior"/>
+                <input name="x" idref="pointer"/>
+            </distribution>
+        </distribution>
 
-        <operator id="dpps" spec="DirichletProcessPriorSampler" weight="1" sampleSize="5">
+        <operator id="csop" spec="ClusterSwitchingOperator" weight="1">
             <input name="xList" idref="parameterList"/>
             <input name="pointers" idref="pointer"/>
-            <input name="dirichletProcess" idref="dp"/>
-            <input name="dpVal" idref="dpValuable"/> 
         </operator>
 
-        <logger logEvery="10000">
+        <logger logEvery="100">
             <log idref="pointer"/>
+            <log idref="prior"/>
         </logger>
 
-        <logger logEvery="1" fileName="testDPValuable_1.log">
+        <logger logEvery="10" fileName="testClusterSwitchingOperator_2.log">
             <log idref="pointer"/>
+            <log idref="prior"/>
         </logger>
     </run>
 </beast>
