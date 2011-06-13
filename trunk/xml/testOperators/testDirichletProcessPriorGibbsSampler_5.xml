@@ -19,8 +19,8 @@
 
     <input spec="DirichletProcess" id="dp">
         <input name="dpVal" idref="dpValuable"/>
-        <input name="baseDistr" spec="beast.math.distributions.UniformDistribution" id="unif"/>
-        <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
+        <input name="baseDistr" spec="ContinuousCategoricalDistribution2" id="unif"/>
+        <input name="alpha" spec="RealParameter" value="1" lower="0.0" upper="Infinity"/>
     </input>
 
     <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
@@ -53,18 +53,18 @@
             <input name="parameters" idref="parameterList"/>
         </operator>
 
-        <logger logEvery="100000">
+        <logger logEvery="10000">
             <log idref="posterior"/>
             <log idref="prior"/>
-            <log idref="cluster.lik"/>
+            <!--log idref="cluster.lik"/-->
             <log idref="pointer"/>
             <log idref="dpValuable"/>
         </logger>
 
-        <logger logEvery="10" fileName="testDirichletProcessPriorGibbsSampler_4.log">
+        <logger logEvery="10" fileName="testDirichletProcessPriorGibbsSampler_5.log">
             <log idref="posterior"/>
             <log idref="prior"/>
-            <log idref="cluster.lik"/>
+            <!--log idref="cluster.lik"/-->
             <log idref="pointer"/>
             <log idref="dpValuable"/>
         </logger>

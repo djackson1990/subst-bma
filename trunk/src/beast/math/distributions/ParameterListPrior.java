@@ -37,6 +37,7 @@ public class ParameterListPrior extends Prior{
 	public double calculateLogP() throws Exception {
         ParameterList parameterList = xListInput.get();
         if(applyToList){
+            //System.err.println("logP: "+logP);
             logP = m_dist.calcLogP(parameterList);
         }else{
             logP = 0.0;
@@ -47,7 +48,7 @@ public class ParameterListPrior extends Prior{
             }
 
         }
-        //System.err.println("logP: "+logP);
+
 		return logP;
 	}
 

@@ -10,13 +10,14 @@ import beast.util.Randomizer;
  */
 @Description("This random walk operator performs is adjusted so that it can perform" +
         " extended random-walk on a list of parameters.")
-public class PLExtendedRealRandomWalkOperator extends ExtendedRealRandomWalkOperator{
+public class PLExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
      public Input<ParameterList> parameterListInput =
                 new Input<ParameterList>("parameters", "the parameter to operate a random walk on.", Input.Validate.REQUIRED);
 
     public PLExtendedRealRandomWalkOperator(){
         super();
-        cpInput.setRule(Input.Validate.OPTIONAL);
+        //cpInput.setRule(Input.Validate.OPTIONAL);
+        parameterInput.setRule(Input.Validate.OPTIONAL);
     }
 
     private ParameterList parameterList;
@@ -25,9 +26,10 @@ public class PLExtendedRealRandomWalkOperator extends ExtendedRealRandomWalkOper
 
     public void initAndValidate() {
         parameterList = parameterListInput.get();
-        String[] windowSizesStr =  windowSizesInput.get().split("\\s+");
-        windowSizes = new double[parameterList.getParameterDimension()];
-        setupWindowSizes(windowSizesStr);
+        windowSize = windowSizeInput.get();
+        //String[] windowSizesStr =  windowSizesInput.get().split("\\s+");
+        //windowSizes = new double[parameterList.getParameterDimension()];
+        //setupWindowSizes(windowSizesStr);
     }
 
     /**
@@ -41,24 +43,39 @@ public class PLExtendedRealRandomWalkOperator extends ExtendedRealRandomWalkOper
         int iParam = Randomizer.nextInt(parameterList.getDimension());
         int iValue = Randomizer.nextInt(parameterList.getParameterDimension());
         double value = parameterList.getValue(iParam,iValue);
-        double newValue = getProposedVal(
+        /*double newValue = getProposedVal(
                 value, //original value
                 iValue,     //index of the value
                 m_bUseGaussian, //whether to use gaussian moves
                 windowSizes);   //window sizes
+                */
 
+        double newValue = value;
+        double step= Randomizer.nextDouble() * 2 * windowSize - windowSize;
+        newValue += step;
+
+        /*for(int i = 0;i < parameterList.getDimension();i++){
+            System.err.print(parameterList.getParameter(i).getValue()+" ");
+        }*/
+        /*System.err.println("old: "+value+", new: "+newValue+", step: "+step);
+        System.err.println("iParam: "+iParam+
+                ", lower: "+parameterList.getParameterLower(iParam)+
+                ", upper: "+parameterList.getParameterUpper(iParam));*/
         if (newValue < parameterList.getParameterLower(iParam) || newValue > parameterList.getParameterUpper(iParam)) {
+            //System.err.println("flag1");
         	return Double.NEGATIVE_INFINITY;
         }
         if (newValue == value) {
+            System.err.println("flag2");
         	// this saves calculating the posterior
         	return Double.NEGATIVE_INFINITY;
         }
 
         parameterList.setValue(iParam, iValue, newValue);
 
-        lastChangedParameterIndex = iParam;
-        lastChangedValueIndex = iValue;
+
+        //lastChangedParameterIndex = iParam;
+        //lastChangedValueIndex = iValue;
 
 
         return 0.0;

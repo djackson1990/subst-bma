@@ -9,7 +9,6 @@ import beast.math.distributions.DirichletProcess;
 import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
 
-import java.util.ArrayList;
 
 /**
  * @author Chieh-Hsi Wu
@@ -71,7 +70,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         //Randomly pick an index to update, gets it's current value and its position in the parameter list
         int dimPointer = pointers.getDimension();
         int index = Randomizer.nextInt(dimPointer);
-        //System.err.println("index: "+index);
+        //System.err.println("index: "+index+" "+pointers.getParameterValue(0)+" "+pointers.getParameterValue(1));
         RealParameter2 currVal = paramList.getParameter(pointers.indexInList(index,paramList));
         int listIndex = paramList.indexOf(currVal);
 
@@ -104,8 +103,14 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         try{
 
             //Generate a sample of proposals
-            RealParameter2[] preliminaryProposals = sampleFromBaseDistribution(dimValue);
-            int dimList = paramList.getDimension();
+            RealParameter2[] preliminaryProposals = sampleFromBaseDistribution(dimValue,paramList);
+            //System.err.println("zero count: "+zeroCount);
+            //If the a singleton has been picked
+            if(zeroCount > -1){
+                preliminaryProposals[0] = paramList.getParameter(zeroCount);
+
+            }
+            //int dimList = paramList.getDimension();
             int i;
             double concVal =dp.getConcParameter();
 
@@ -122,7 +127,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 logFullCond[i] = logFullCond[i]+lik.calculateLogP();
                 //System.err.println(logFullCond[i]);
                 //System.err.println("fullConditional[i]: "+fullConditional[i]+", val: "+paramList.getParameter(i));
-
+                //System.err.println("logFullCond[i]: "+logFullCond[i]+", val: "+existingVals[i]);
             }
             for(; i < logFullCond.length; i++){
                 //alpha/m/(n - 1 + alpha)
@@ -131,13 +136,14 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 pointers.point(index, preliminaryProposals[i-counter]);
                 logFullCond[i] = logFullCond[i]+lik.calculateLogP();
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
-                //System.err.println("fullConditional[i]: "+fullConditional[i]+", val: "+i);
+                //System.err.println("logFullCond[i]: "+logFullCond[i]+", val: "+preliminaryProposals[i-counter]);
             }
 
             double smallestVal = logFullCond[0];
             for(i = 1; i < logFullCond.length;i++){
                // if(smallestVal == Double.NEGATIVE_INFINITY ||
                //         logFullCond[i] < smallestVal & logFullCond[i]!=Double.NEGATIVE_INFINITY){
+                if(smallestVal > logFullCond[i])
                     smallestVal = logFullCond[i];
                 //}
             }
@@ -164,6 +170,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 //take up a new value
                 pointers.point(index, preliminaryProposals[proposedIndex-counter]);
                 paramList.addParameter(preliminaryProposals[proposedIndex-counter]);
+               // System.err.println("paramList size: "+paramList.getDimension());
                 //System.err.println("proposedIndex: "+proposedIndex+"; newVal: "+preliminaryProposals[proposedIndex-counter]);
             }
 
@@ -183,7 +190,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         return Double.POSITIVE_INFINITY;
     }
 
-    public RealParameter2[] sampleFromBaseDistribution(int dimValue) throws Exception{
+    public RealParameter2[] sampleFromBaseDistribution(int dimValue, ParameterList paramList) throws Exception{
         RealParameter2[] preliminaryProposals = new RealParameter2[sampleSize];
 
         for(int i = 0; i < sampleSize; i++){
@@ -192,9 +199,16 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
             for(int j = 0;j < dimValue;j++){
 
                 sample[j] = baseDistr.inverseCumulativeProbability(Randomizer.nextDouble());
+                /*double s= Randomizer.nextDouble();
+                if(s<0.4){
+                    sample[j] = Randomizer.nextDouble()*0.5;
+                }else{
+                    sample[j] = Randomizer.nextDouble()*0.5+0.5;
+
+                }*/
                 //System.err.print(sample[j]+" ");
             }
-            preliminaryProposals[i] = new RealParameter2(sample);
+            preliminaryProposals[i] = new RealParameter2(sample,paramList.getParameterLower(),paramList.getParameterUpper());
 
         }
         //System.err.println();

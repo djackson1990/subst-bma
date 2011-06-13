@@ -65,6 +65,14 @@ public class ParameterList extends StateNode {
 
     }
 
+    public double getParameterUpper(){
+        return getParameter(0).getUpper();
+    }
+
+    public double getParameterLower(){
+        return getParameter(0).getLower();
+    }
+
     public double getParameterUpper(int iParam){
         return getParameter(iParam).getUpper();
     }
