@@ -19,7 +19,7 @@
 
     <input spec="DirichletProcess" id="dp">
         <input name="dpVal" idref="dpValuable"/>
-        <input name="baseDistr" spec="beast.math.distributions.UniformDistribution" id="unif"/>
+        <input name="baseDistr" spec="beast.math.distributions.UniformDistribution" id="unif" lower="0" upper="1.0"/>
         <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
     </input>
 

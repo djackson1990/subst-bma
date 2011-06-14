@@ -72,7 +72,7 @@ public class UniformDistribution extends ParametricDistribution{
 
 		@Override
 		public double density(double x) {
-			return 1/(upper-lower);
+			return 1.0/(upper-lower);
 		}
 		@Override
 		public double logDensity(double x) {
