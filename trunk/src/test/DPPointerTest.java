@@ -84,6 +84,8 @@ public class DPPointerTest extends TestCase {
 
     }
 
+
+
     public void operationEx1(DPPointer pointer,ParameterList paramList){
         try{
 
