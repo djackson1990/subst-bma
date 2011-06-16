@@ -35,9 +35,9 @@ public class DPPointerTest extends TestCase {
                 IntegerParameter initAssign = new IntegerParameter(new Integer[]{0,2,1,1,2});
                 pointer = new DPPointer();
                 pointer.initByName(
-                        "uniqueParameters", parameter1,
-                        "uniqueParameters", parameter2,
-                        "uniqueParameters", parameter3,
+                        "uniqueParameter", parameter1,
+                        "uniqueParameter", parameter2,
+                        "uniqueParameter", parameter3,
                         "initialAssignment", initAssign
                 );
                 pointer.setID("pointer");
