@@ -77,7 +77,6 @@ public class DPSiteModel extends CalculationNode {
 
         public Double getValue(){
             return pointers.getParameterValue(index);
-
         }
 
 
