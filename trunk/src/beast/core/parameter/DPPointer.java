@@ -80,6 +80,11 @@ public class DPPointer extends StateNode {
         setSomethingIsDirty(isDirty);
     }
 
+    public boolean isParameterDirty(int index){
+        return parameters[index].somethingIsDirty();
+
+    }
+
     public void store(){
         storedLastDirty = lastDirty;
         System.arraycopy(parameters,0,storedParameters,0,parameters.length);

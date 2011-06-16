@@ -28,9 +28,10 @@ public class DPSiteModel extends CalculationNode {
             Input.Validate.REQUIRED
     );
 
-    SiteModel[] siteModels;
-    DPPointer pointers;
-    ParameterList paramList;
+    private SiteModel[] siteModels;
+    private DPPointer pointers;
+    private ParameterList paramList;
+    private boolean[] ratesDirty;
     public void initAndValidate() throws Exception{
         JC69 jc = new JC69();
         pointers = pointersInput.get();
@@ -46,9 +47,12 @@ public class DPSiteModel extends CalculationNode {
             );
             siteModels[i] = siteModel;
         }
+        ratesDirty = new boolean [dim];
         
         
     }
+
+
 
     public SiteModel getSiteModel(int index){
         return siteModels[index];
@@ -58,8 +62,25 @@ public class DPSiteModel extends CalculationNode {
         return siteModels.length;
     }
 
+    public boolean[] getSiteDirtiness(){
+        return ratesDirty;
+    }
+
     public boolean requriesRecalculation(){
-        return pointers.somethingIsDirty() || paramList.somethingIsDirty();
+        boolean recalculate = false;
+        
+        if(paramList.somethingIsDirty()){
+            recalculate = true;
+            for(int i = 0; i < ratesDirty.length;i++){
+                ratesDirty[i] = pointers.isParameterDirty(i);
+            }
+        }else if (pointers.somethingIsDirty()){
+            recalculate = true;
+            ratesDirty = new boolean[ratesDirty.length];
+            ratesDirty[pointers.getLastDirty()] = true;
+        }
+
+        return recalculate;
     }
 
 

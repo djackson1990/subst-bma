@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
+<project relativePaths="false" version="4">
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
@@ -21,10 +21,95 @@
     <option name="LOCALE" />
     <option name="OPEN_IN_BROWSER" value="true" />
   </component>
+  <component name="ProjectDetails">
+    <option name="projectName" value="SubstBMA" />
+  </component>
+  <component name="ProjectFileVersion" converted="true" />
+  <component name="ProjectKey">
+    <option name="state" value="project://C:\Users\Jessie Wu\Documents\Jessie\BEAST\SubstBMA\.idea\misc.xml" />
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="ResourceManagerContainer">
+    <option name="myResourceBundles">
+      <value>
+        <list size="0" />
+      </value>
+    </option>
+  </component>
   <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="C:/Users/Jessie Wu/Documents/Jessie/BEAST/BEAST2">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://beast2.googlecode.com/svn/branches">
+                    <value>
+                      <list>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1278954040321" />
+                          <option name="revision" value="81" />
+                          <option name="url" value="https://beast2.googlecode.com/svn/branches/AR_test_branch" />
+                        </SvnBranchItem>
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="https://beast2.googlecode.com/svn/tags">
+                    <value>
+                      <list>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1281005898784" />
+                          <option name="revision" value="127" />
+                          <option name="url" value="https://beast2.googlecode.com/svn/tags/pre_AR_polling_system" />
+                        </SvnBranchItem>
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="https://beast2.googlecode.com/svn/wiki">
+                    <value>
+                      <list>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1282559381798" />
+                          <option name="revision" value="153" />
+                          <option name="url" value="https://beast2.googlecode.com/svn/wiki/Dirtiness.wiki" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1279250944074" />
+                          <option name="revision" value="90" />
+                          <option name="url" value="https://beast2.googlecode.com/svn/wiki/VisionScopeRequirements.wiki" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1278626411895" />
+                          <option name="revision" value="69" />
+                          <option name="url" value="https://beast2.googlecode.com/svn/wiki/CodingStyle.wiki" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1278591181859" />
+                          <option name="revision" value="67" />
+                          <option name="url" value="https://beast2.googlecode.com/svn/wiki/Design.wiki" />
+                        </SvnBranchItem>
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://beast2.googlecode.com/svn/branches" />
+                  <option value="https://beast2.googlecode.com/svn/tags" />
+                  <option value="https://beast2.googlecode.com/svn/wiki" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://beast2.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="myVersion" value="124" />
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
