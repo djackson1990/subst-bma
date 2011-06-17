@@ -9,7 +9,7 @@ import beast.evolution.sitemodel.SiteModel;
 /**
  * @author Chieh-Hsi Wu
  */
-public class DPSiteModelTest extends TestCase {
+public class OldDPSiteModelTest extends TestCase {
     interface Instance {
         public void setup();
         public DPPointer getDPPointer();
