@@ -10,6 +10,8 @@ import beast.evolution.tree.Node;
 public class JC69 extends SubstitutionModel.Base{
 
     int STATE_COUNT = 4;
+
+    public static final double[] FREQUENCIES = {0.25, 0.25, 0.25, 0.25};
     @Override
 
     public void initAndValidate(){}
@@ -19,6 +21,10 @@ public class JC69 extends SubstitutionModel.Base{
 		}
 		throw new Exception("Can only handle nucleotide data");
 	}
+
+    public double[] getFrequencies() {
+    		return FREQUENCIES;
+    	}
 
     /**
      * This function returns the Eigen vectors.
@@ -36,14 +42,15 @@ public class JC69 extends SubstitutionModel.Base{
             double fEndTime,
             double fRate,
             double[] matrix) {
+        //System.err.println("matrix: "+matrix.length);
 
         int k = 0;
         for(int i = 0; i < STATE_COUNT;i++){
             for(int j = 0; j < STATE_COUNT;j++){
                 if(i==j){
-                    matrix[k++] = (1.0+3.0*Math.exp(-4.0/3.0*(fEndTime-fStartTime)*fRate))/4.0;
+                    matrix[k++] = (1.0+3.0*Math.exp(-4.0/3.0*(fStartTime-fEndTime)*fRate))/4.0;
                 }else{
-                    matrix[k++] = (1.0-Math.exp(-4.0/3.0*(fEndTime-fStartTime)*fRate))/4.0;
+                    matrix[k++] = (1.0-Math.exp(-4.0/3.0*(fStartTime-fEndTime)*fRate))/4.0;
                 }
 
             }

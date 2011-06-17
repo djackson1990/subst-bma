@@ -23,7 +23,7 @@
         <input name="alpha" spec="RealParameter" value="1" lower="0.0" upper="Infinity"/>
     </input>
 
-    <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
+    <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
         <state>
             <input name='stateNode' idref='parameterList'/>
             <input name='stateNode' idref='pointer'/>
@@ -53,7 +53,7 @@
             <input name="parameters" idref="parameterList"/>
         </operator>
 
-        <logger logEvery="10000">
+        <logger logEvery="1000000">
             <log idref="posterior"/>
             <log idref="prior"/>
             <!--log idref="cluster.lik"/-->

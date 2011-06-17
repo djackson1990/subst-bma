@@ -26,63 +26,62 @@
         </sequence>
     </data>
 
-    <!-- The HKY substitution model (Hasegawa, Kishino & Yano, 1985)             -->
-    <input spec='HKY' id='hky'>
-        <kappa idref='hky.kappa'/>
-        <frequencies id='freqs' spec='Frequencies'>
-            <data idref='alignment'/>
-        </frequencies>
+    <input spec="ParameterList" id="parameterList">
+        <parameter spec="RealParameter2" id="parameter1" value="0.1" upper="Infinity" lower="-Infinity"/>
     </input>
 
-    <!-- site model                                                              -->
-    <input spec='SiteModel' id="siteModel">
-        <substModel idref='hky'/>
+    <input spec="DPPointer" id="pointers">
+        <input name="uniqueParameter" idref="parameter1"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0" dimension="768" lower="0" upper="768"/>
+    </input>
+
+    <input spec="DPSiteModel" id="spSiteModel">
+        <input name="pointers" idref="pointers"/>
+        <input name="paramList" idref="parameterList"/>
     </input>
 
     <input spec="StrictClockModel" id="strict.clock">
         <input name="clock.rate" spec="RealParameter" id="mu" value="1.0" lower="0.0"/>
     </input>
 
-    <input spec='DPTreeLikelihood1' id="treeLikelihood">
+    <input spec='DPTreeLikelihood' id="treeLikelihood">
         <data idref="alignment"/>
         <tree idref="tree"/>
-        <siteModel idref="siteModel"/>
+        <dpSiteModel idref="spSiteModel"/>
         <branchRateModel idref="strict.clock"/>
     </input>
 
-    <!--input spec='TreeLikelihood' id="treeLikelihood">
-        <data idref="alignment"/>
-        <tree idref="tree"/>
-        <siteModel idref="siteModel"/>
-    </input-->
 
-    <parameter id="hky.kappa" value="1.0" lower="0.0"/>
+
 
     <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
         <taxa idref='alignment'/>
     </tree>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <run spec="MCMC" id="mcmc" chainLength="1000000">
         <state storeEvery='100'>
-            <stateNode idref="hky.kappa"/>
+            <stateNode idref="parameterList"/>
+            <stateNode idref="pointers"/>
             <stateNode idref="tree"/>
         </state>
 
         <distribution id='likelihood' idref="treeLikelihood"/>
 
-        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
-        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
+        <!--operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/-->
         <operator spec='Uniform' weight="10" tree="@tree"/>
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
         <operator spec='WilsonBalding' weight="1" tree="@tree"/>
+        <!--operator id="csop" spec="ClusterSwitchingOperator" weight="1">
+            <input name="xList" idref="parameterList"/>
+            <input name="pointers" idref="pointers"/>
+        </operator-->
 
-        <logger logEvery="1000" fileName="testDPLikelihood1.log">
+        <logger logEvery="1000" fileName="testDPLikelihood2.log">
 	        <model idref='likelihood'/>
             <log idref="likelihood"/>
-            <log idref='hky.kappa'/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
         <logger logEvery="1000" fileName="testDPLikelihood1.trees">
@@ -92,8 +91,6 @@
 	        <model idref='likelihood'/>
             <log idref="likelihood"/>
     	    <ESS spec='ESS' name='log' arg="@likelihood"/>
-            <log idref='hky.kappa'/>
-    	    <ESS spec='ESS' name='log' arg="@hky.kappa"/>
         </logger>
     </run>
 

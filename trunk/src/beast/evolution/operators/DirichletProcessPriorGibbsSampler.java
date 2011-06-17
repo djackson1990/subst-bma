@@ -167,9 +167,22 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 pointers.point(index, existingVals[proposedIndex]);
                 //System.err.println("proposedIndex: "+proposedIndex+"; existingVal: "+existingVals[proposedIndex]);
             }else{
+                RealParameter proposal = preliminaryProposals[proposedIndex-counter];
+                if(zeroCount > -1){
+                    int paramListIndex = pointers.indexInList(index,paramList);
+
+                    for(i = 0; i < dimValue;i++){
+                        paramList.setValue(paramListIndex,i,proposal.getValue(i));
+
+
+                    }
+                    zeroCount = -1;
+
+                }else{
                 //take up a new value
-                pointers.point(index, preliminaryProposals[proposedIndex-counter]);
-                paramList.addParameter(preliminaryProposals[proposedIndex-counter]);
+                    pointers.point(index, preliminaryProposals[proposedIndex-counter]);
+                    paramList.addParameter(preliminaryProposals[proposedIndex-counter]);
+                }
                // System.err.println("paramList size: "+paramList.getDimension());
                 //System.err.println("proposedIndex: "+proposedIndex+"; newVal: "+preliminaryProposals[proposedIndex-counter]);
             }

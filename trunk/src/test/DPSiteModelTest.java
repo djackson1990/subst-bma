@@ -3,7 +3,7 @@ package test;
 import junit.framework.TestCase;
 import beast.core.parameter.*;
 import beast.core.State;
-import beast.evolution.sitemodel.DPSiteModel;
+import beast.evolution.sitemodel.DPSiteModelOld;
 import beast.evolution.sitemodel.SiteModel;
 
 /**
@@ -109,37 +109,37 @@ public class DPSiteModelTest extends TestCase {
                 test.setup();
                 DPPointer pointers = test.getDPPointer();
                 ParameterList paramList = test.getParameterList();
-                DPSiteModel dpSiteModel = new DPSiteModel();
-                dpSiteModel.initByName(
+                DPSiteModelOld dpSiteModelOld = new DPSiteModelOld();
+                dpSiteModelOld.initByName(
                         "paramList", paramList,
                         "pointers", pointers
                 );
-                for(int i = 0; i < dpSiteModel.getSiteModelCount();i++){
-                    SiteModel siteModel = dpSiteModel.getSiteModel(i);
+                for(int i = 0; i < dpSiteModelOld.getSiteModelCount();i++){
+                    SiteModel siteModel = dpSiteModelOld.getSiteModel(i);
                     double[] rates = siteModel.getCategoryRates(null);
                     assertEquals(rates[0],pointers.getParameterValue(i));
                 }
 
                 test.operation1();
                 double[] op1Outcome = test.getOperation1Outcome();
-                for(int i = 0; i < dpSiteModel.getSiteModelCount();i++){
-                    SiteModel siteModel = dpSiteModel.getSiteModel(i);
+                for(int i = 0; i < dpSiteModelOld.getSiteModelCount();i++){
+                    SiteModel siteModel = dpSiteModelOld.getSiteModel(i);
                     double[] rates = siteModel.getCategoryRates(null);
                     assertEquals(rates[0],op1Outcome[i]);
                 }
 
                 test.operation2();
                 double[] op2Outcome = test.getOperation2Outcome();
-                for(int i = 0; i < dpSiteModel.getSiteModelCount();i++){
-                    SiteModel siteModel = dpSiteModel.getSiteModel(i);
+                for(int i = 0; i < dpSiteModelOld.getSiteModelCount();i++){
+                    SiteModel siteModel = dpSiteModelOld.getSiteModel(i);
                     double[] rates = siteModel.getCategoryRates(null);
                     assertEquals(rates[0],op2Outcome[i]);
                 }
 
                 test.operation3();
                 double[] op3Outcome = test.getOperation3Outcome();
-                for(int i = 0; i < dpSiteModel.getSiteModelCount();i++){
-                    SiteModel siteModel = dpSiteModel.getSiteModel(i);
+                for(int i = 0; i < dpSiteModelOld.getSiteModelCount();i++){
+                    SiteModel siteModel = dpSiteModelOld.getSiteModel(i);
                     double[] rates = siteModel.getCategoryRates(null);
                     assertEquals(rates[0],op3Outcome[i]);
                 }

@@ -26,7 +26,7 @@ public class ClusterSwitchingOperator extends Operator {
 
     public double proposal(){
         DPPointer pointers = pointersInput.get(this);
-        ParameterList paramList = xListInput.get(this);
+        ParameterList paramList = xListInput.get();
         int index = Randomizer.nextInt(pointers.getDimension());
         int currIndex = pointers.indexInList(index,paramList);
         int dimList = paramList.getDimension();

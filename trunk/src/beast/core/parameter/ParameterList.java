@@ -20,12 +20,17 @@ public class ParameterList extends StateNode {
 
     private ArrayList<RealParameter2> parameterList;
     private ArrayList<RealParameter2> storedParameterList;
-    private int lastParameterChanged = -1;
+    private int changedIndex = -1;
+    private int removedIndex = -1;
+
+    ChangeType changeType = ChangeType.ALL;
     
     public ParameterList(){
         parameterList = new ArrayList<RealParameter2>();
         storedParameterList = new ArrayList<RealParameter2>();
     }
+
+
 
     public void initAndValidate(){
         //System.err.println("initialize parameter list");
@@ -44,20 +49,28 @@ public class ParameterList extends StateNode {
 
     public void addParameterQuietly(RealParameter2 parameter){
         parameterList.add(parameter);
+        changeType = ChangeType.ADDED;
     }
     public void removeParameter(int pIndex){
         startEditing(null);
         //System.err.println("size: "+parameterList.size());
         parameterList.remove(pIndex);
+        changeType = ChangeType.REMOVED;
+        removedIndex = pIndex;
     }
     public void setValue(int pIndex, int dim, double value) {
         startEditing(null);
         parameterList.get(pIndex).setValueQuietly(dim,value);
-        lastParameterChanged = pIndex;
+        changedIndex = pIndex;
+        changeType = ChangeType.VALUE_CHANGED;
     }
 
-    public int getLastParameterChanged(){
-        return lastParameterChanged;
+    public int getChangedIndex(){
+        return changedIndex;
+    }
+
+    public int getRemovedIndex(){
+        return removedIndex;
     }
 
     public double getValue(int pIndex, int dim) {
@@ -111,8 +124,13 @@ public class ParameterList extends StateNode {
         for(RealParameter2 parameter:parameterList){
             parameter.restore();
         }
+        changeType = ChangeType.ALL;
         //System.out.println("restoring");
 
+    }
+
+    public ChangeType getChangeType(){
+        return changeType;
     }
 
     public ParameterList copy(){
@@ -224,4 +242,6 @@ public class ParameterList extends StateNode {
     public int scale(double fScale){
         throw new RuntimeException("Not appropriate for a list!");
     }
+
+    
 }

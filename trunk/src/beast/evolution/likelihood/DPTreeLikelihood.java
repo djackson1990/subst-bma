@@ -6,7 +6,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AlignmentSubset;
 import beast.evolution.tree.Tree;
 import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.sitemodel.DPSiteModel;
+import beast.evolution.sitemodel.DPSiteModelOld;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.substitutionmodel.HKY;
@@ -27,17 +27,18 @@ public class DPTreeLikelihood extends Distribution {
     public Input<Alignment> alignmentInput = new Input<Alignment>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);
     public Input<Tree> treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Input.Validate.REQUIRED);
     //public Input<SiteModel.Base> siteModelInput = new Input<SiteModel.Base>("siteModel", "site model for leafs in the beast.tree", Input.Validate.REQUIRED);
-    public Input<DPSiteModel> dpSiteModelInput = new Input<DPSiteModel>("dpSiteModel", "site model for leafs in the beast.tree", Input.Validate.REQUIRED);
+    public Input<DPSiteModelOld> dpSiteModelInput = new Input<DPSiteModelOld>("dpSiteModelOld", "site model for leafs in the beast.tree", Input.Validate.REQUIRED);
     public Input<BranchRateModel.Base> branchRateModelInput = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
 
     public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
     ArrayList<TreeLikelihood> compoundLik;
-    public DPSiteModel dpSiteModel;
+    public DPSiteModelOld dpSiteModelOld;
     boolean[] dirtyLikelihoods;
     private boolean[] allSitesDirty;
+
     public void initAndValidate() throws Exception{
-        dpSiteModel = dpSiteModelInput.get();
+        dpSiteModelOld = dpSiteModelInput.get();
 
         Alignment alignment = alignmentInput.get();
         int siteCount = alignment.getSiteCount();
@@ -50,7 +51,7 @@ public class DPTreeLikelihood extends Distribution {
                 treeLikelihood.initByName(
                     "data", site,
                     "tree", treeInput.get(),
-                    "siteModel", dpSiteModel.getSiteModel(i),
+                    "siteModel", dpSiteModelOld.getSiteModel(i),
                     "branchRateModel", branchRateModelInput.get()
             );
             compoundLik.add(treeLikelihood);
@@ -68,6 +69,7 @@ public class DPTreeLikelihood extends Distribution {
 
         for(int i = 0; i < compoundLik.size();i++) {
         	if (dirtyLikelihoods[i]) {
+                //System.err.println(i+" "+dirtyLikelihoods[i]);
         		logP += compoundLik.get(i).calculateLogP();
         	} else {
         		logP += compoundLik.get(i).getCurrentLogP();
@@ -125,11 +127,12 @@ public class DPTreeLikelihood extends Distribution {
     @Override
     protected boolean requiresRecalculation() {
         boolean recalculate = false;
-        if(treeInput.get().somethingIsDirty()){
+        if(treeInput.get().somethingIsDirty() || branchRateModelInput.get().isDirtyCalculation()){
             recalculate=true;
+            //System.err.println("recalculated all");
             dirtyLikelihoods = allSitesDirty;
-        }else if(dpSiteModel.isDirtyCalculation()){
-            dirtyLikelihoods = dpSiteModel.getSiteDirtiness();
+        }else if(dpSiteModelOld.isDirtyCalculation()){
+            dirtyLikelihoods = dpSiteModelOld.getSiteDirtiness();
             recalculate = true;
 
         }
