@@ -70,19 +70,22 @@ public class DPSiteModelOld extends CalculationNode {
 
         boolean recalculate = false;
         //System.err.println("dirty0");
-        if(paramList.somethingIsDirty()){
-            recalculate = true;
-            //System.err.println("dirty1");
-            for(int i = 0; i < ratesDirty.length;i++){
-                //System.err.println("dirty1: "+i);
-                ratesDirty[i] = pointers.isParameterDirty(i);
-            }
-        }else if (pointers.somethingIsDirty()){
+
+        if (pointers.somethingIsDirty() & pointers.getLastDirty() > -1){
             recalculate = true;
             //System.err.println("dirty2");
             ratesDirty = new boolean[ratesDirty.length];
             ratesDirty[pointers.getLastDirty()] = true;
+        }else if(paramList.somethingIsDirty()){
+            recalculate = true;
+            //System.err.println("dirty1");
+            for(int i = 0; i < ratesDirty.length;i++){
+
+                ratesDirty[i] = pointers.isParameterDirty(i);
+                //System.err.println("dirty1: "+ratesDirty[i]);
+            }
         }
+
 
         return recalculate;
     }

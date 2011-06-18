@@ -45,11 +45,13 @@ public class ParameterList extends StateNode {
         //System.err.println("add parameter");
         startEditing(null);
         parameterList.add(parameter);
+        //throw new RuntimeException("stopping fucking with my code!");
     }
 
     public void addParameterQuietly(RealParameter2 parameter){
         parameterList.add(parameter);
         changeType = ChangeType.ADDED;
+
     }
     public void removeParameter(int pIndex){
         startEditing(null);
@@ -57,12 +59,16 @@ public class ParameterList extends StateNode {
         parameterList.remove(pIndex);
         changeType = ChangeType.REMOVED;
         removedIndex = pIndex;
+        //throw new RuntimeException("stopping fucking with my code!");
     }
     public void setValue(int pIndex, int dim, double value) {
         startEditing(null);
+
         parameterList.get(pIndex).setValueQuietly(dim,value);
+        parameterList.get(pIndex).setEverythingDirty(true);
         changedIndex = pIndex;
         changeType = ChangeType.VALUE_CHANGED;
+        //throw new RuntimeException("stopping fucking with my code!");
     }
 
     public int getChangedIndex(){

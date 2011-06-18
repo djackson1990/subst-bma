@@ -51,10 +51,12 @@ public class DirichletProcess extends ParametricDistribution{
         refresh();
         gammas = new double[dpValuable.getPointerDimension()+1];
         gammas[0] = Double.NaN;
-        gammas[1] = 1;
+        gammas[1] = 0;
         for(int i = 2; i < gammas.length; i++){
-            gammas[i] = gammas[i-1]*(i-1);
+            gammas[i] = gammas[i-1]+Math.log(i-1);
+            System.err.print(gammas[i]+" ");
         }
+        System.err.println();
     }
 
     public void refresh(){
@@ -68,9 +70,9 @@ public class DirichletProcess extends ParametricDistribution{
         }
 
         denominators = new double[dpValuable.getPointerDimension()+1];
-        denominators[0] = 1;
+        denominators[0] = 0;
         for(int i = 1; i < denominators.length;i++){
-            denominators[i] = denominators[i-1]*(alpha.getValue()+i-1);
+            denominators[i] = denominators[i-1]+Math.log((alpha.getValue()+i-1));
         }
 
     }
@@ -83,15 +85,21 @@ public class DirichletProcess extends ParametricDistribution{
         for(int i = 0; i < dimParam; i ++){
             logP += baseDistribution.calcLogP(((ParameterList)xList).getParameter(i));
         }
+        //System.err.println("flag1: "+logP);
 
         int[] counts = dpValuable.getClusterCounts();
         
         logP+=Math.log(alphaPowers[counts.length]);
+        //System.err.println("flag2: "+logP);
 
         for(int count: counts){
-            logP+=Math.log(gammas[count]);
+            logP+=gammas[count];
         }
-        logP-=Math.log(denominators[dpValuable.getPointerDimension()]);
+        //System.err.println("flag3: "+logP);
+        logP-=denominators[dpValuable.getPointerDimension()];
+        //System.err.println("flag4: "+logP);
+        //if(Double.isNaN(logP))
+        //    throw new RuntimeException("wrong!!!");
         return logP;
 
 

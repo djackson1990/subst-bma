@@ -61,14 +61,29 @@ public class DPTreeLikelihood extends Distribution {
         //System.err.println("Number of likelihoods: "+compoundLik.size());
     }
 
-
-
     @Override
-    public double calculateLogP() throws Exception {
-        logP = 0;
+    /*public double calculateLogP() throws Exception {
+        logP = calcLogP();
+        return logP;
+
+    }*/
+
+    public double calculateLogP() throws Exception{
+        logP = calcLogP();
+        //System.err.println("logP: "+logP);
+        return logP;
+
+    }
+
+
+    public double calcLogP() throws Exception {
+
+        double logP = 0;
+        int counter = 0;
 
         for(int i = 0; i < compoundLik.size();i++) {
         	if (dirtyLikelihoods[i]) {
+                counter++;
                 //System.err.println(i+" "+dirtyLikelihoods[i]);
         		logP += compoundLik.get(i).calculateLogP();
         	} else {
@@ -78,6 +93,8 @@ public class DPTreeLikelihood extends Distribution {
             	return logP;
             }
         }
+        //System.err.println("logP: "+logP);
+        //System.err.println("counter: "+counter);
 
         return logP;
     }
@@ -87,6 +104,7 @@ public class DPTreeLikelihood extends Distribution {
             treeLik.store();
         }
         super.store();
+        //System.err.println("storedLogL: "+storedLogP);
     }
 
     public void restore(){
@@ -134,8 +152,10 @@ public class DPTreeLikelihood extends Distribution {
         }else if(dpSiteModelOld.isDirtyCalculation()){
             dirtyLikelihoods = dpSiteModelOld.getSiteDirtiness();
             recalculate = true;
+            //System.err.println("recalculated sites");
 
         }
+
       return recalculate;
     }
 

@@ -49,6 +49,10 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
         pointersChanged = true;
     }
 
+    public String printParameterList(){
+        return paramList.toString();
+    }
+
 
     /** CalculationNode methods **/
     // smarter vesions to be computed

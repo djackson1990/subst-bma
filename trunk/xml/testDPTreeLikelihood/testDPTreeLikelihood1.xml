@@ -30,7 +30,8 @@
     <input spec='HKY' id='hky'>
         <kappa idref='hky.kappa'/>
         <frequencies id='freqs' spec='Frequencies'>
-            <data idref='alignment'/>
+            <!--data idref='alignment'/-->
+            <input spec="RealParameter" name="frequencies" value="0.25 0.25 0.25 0.25" lower="0" upper="1"/>
         </frequencies>
     </input>
 

@@ -8,6 +8,7 @@ import beast.core.parameter.*;
 import beast.math.distributions.DirichletProcess;
 import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
+import beast.evolution.likelihood.DPTreeLikelihood;
 
 
 /**
@@ -61,11 +62,15 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         dpVal = dpValuableInput.get();
 
     }
+    private int counter = 0;
 
     public double proposal(){
+        this.counter++;
+
+
         //Get the pointer and the list of unique values
         DPPointer pointers = pointersInput.get(this);
-        ParameterList paramList = xListInput.get(this);
+        ParameterList paramList = xListInput.get();
 
         //Randomly pick an index to update, gets it's current value and its position in the parameter list
         int dimPointer = pointers.getDimension();
@@ -99,7 +104,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
 
             }
         }
-
+        //System.err.println("paramList size1: "+paramList.getDimension());
         try{
 
             //Generate a sample of proposals
@@ -124,7 +129,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 pointers.point(index, existingVals[i]);
                 //System.err.println("clusterCounts[i]: "+clusterCounts[i]);
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
-                logFullCond[i] = logFullCond[i]+lik.calculateLogP();
+                logFullCond[i] = logFullCond[i]+((DPTreeLikelihood)lik).calcLogP();
                 //System.err.println(logFullCond[i]);
                 //System.err.println("fullConditional[i]: "+fullConditional[i]+", val: "+paramList.getParameter(i));
                 //System.err.println("logFullCond[i]: "+logFullCond[i]+", val: "+existingVals[i]);
@@ -134,7 +139,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 logFullCond[i] = Math.log(concVal/sampleSize/(dimPointer - 1 + concVal));
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
                 pointers.point(index, preliminaryProposals[i-counter]);
-                logFullCond[i] = logFullCond[i]+lik.calculateLogP();
+                logFullCond[i] = logFullCond[i]+((DPTreeLikelihood)lik).calcLogP();
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
                 //System.err.println("logFullCond[i]: "+logFullCond[i]+", val: "+preliminaryProposals[i-counter]);
             }
@@ -154,6 +159,8 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 //if(logFullCond[i] == Double.NEGATIVE_INFINITY){
                 //    fullConditional[i] = 0.0;
                 //}else{
+                //if(this.counter>3240)
+                //    System.err.println("logfc: "+logFullCond[i]+" "+i);
                     fullConditional[i] = Math.exp(logFullCond[i]-smallestVal);
                 //}
                 //System.err.println("fc: "+fullConditional[i]);
@@ -165,7 +172,8 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
             if(proposedIndex < counter){
                 //take up an existing value
                 pointers.point(index, existingVals[proposedIndex]);
-                //System.err.println("proposedIndex: "+proposedIndex+"; existingVal: "+existingVals[proposedIndex]);
+                //if(this.counter>6000)
+                //    System.err.println("proposedIndex: "+proposedIndex+"; existingVal: "+existingVals[proposedIndex]);
             }else{
                 RealParameter proposal = preliminaryProposals[proposedIndex-counter];
                 if(zeroCount > -1){
@@ -181,10 +189,12 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 }else{
                 //take up a new value
                     pointers.point(index, preliminaryProposals[proposedIndex-counter]);
+                    paramList = xListInput.get(this);
                     paramList.addParameter(preliminaryProposals[proposedIndex-counter]);
                 }
-               // System.err.println("paramList size: "+paramList.getDimension());
-                //System.err.println("proposedIndex: "+proposedIndex+"; newVal: "+preliminaryProposals[proposedIndex-counter]);
+                //System.err.println("paramList size2: "+paramList.getDimension());
+                //if(this.counter>6000)
+                //    System.err.println("proposedIndex: "+proposedIndex+"; newVal: "+preliminaryProposals[proposedIndex-counter]);
             }
 
             /*for(i = 0; i < clusterCounts.length;i++){
@@ -193,9 +203,14 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
 
             //If any cluster has no member then it is removed.
             if(zeroCount > -1){
-               paramList.removeParameter(zeroCount);
+                paramList = xListInput.get(this);
+                paramList.removeParameter(zeroCount);
+                //if(this.counter>3240)
+                //    System.err.println("Removing cluster");
 
             }
+
+            //System.err.println(counter);
 
         }catch(Exception e){
                 throw new RuntimeException(e);
