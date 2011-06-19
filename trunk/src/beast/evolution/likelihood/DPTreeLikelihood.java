@@ -68,8 +68,12 @@ public class DPTreeLikelihood extends Distribution {
 
     }*/
 
+
+
     public double calculateLogP() throws Exception{
-        logP = calcLogP();
+        if(isDirtyCalculation()){
+            logP = calcLogP();
+        }
         //System.err.println("logP: "+logP);
         return logP;
 

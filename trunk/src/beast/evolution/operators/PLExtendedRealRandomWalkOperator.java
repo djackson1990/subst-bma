@@ -10,14 +10,13 @@ import beast.util.Randomizer;
  */
 @Description("This random walk operator performs is adjusted so that it can perform" +
         " extended random-walk on a list of parameters.")
-public class PLExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
+public class PLExtendedRealRandomWalkOperator extends ExtendedRealRandomWalkOperator{
      public Input<ParameterList> parameterListInput =
                 new Input<ParameterList>("parameters", "the parameter to operate a random walk on.", Input.Validate.REQUIRED);
-
+     
     public PLExtendedRealRandomWalkOperator(){
         super();
-        //cpInput.setRule(Input.Validate.OPTIONAL);
-        parameterInput.setRule(Input.Validate.OPTIONAL);
+        cpInput.setRule(Input.Validate.OPTIONAL);
     }
 
     private ParameterList parameterList;
@@ -26,11 +25,13 @@ public class PLExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
 
     public void initAndValidate() {
         parameterList = parameterListInput.get();
-        windowSize = windowSizeInput.get();
-        //String[] windowSizesStr =  windowSizesInput.get().split("\\s+");
-        //windowSizes = new double[parameterList.getParameterDimension()];
-        //setupWindowSizes(windowSizesStr);
+        //windowSize = windowSizeInput.get();
+        String[] windowSizesStr =  windowSizesInput.get().split("\\s+");
+        windowSizes = new double[parameterList.getParameterDimension()];
+        setupWindowSizes(windowSizesStr);
     }
+
+  
 
     /**
      * override this for proposals,
@@ -51,7 +52,7 @@ public class PLExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
                 */
 
         double newValue = value;
-        double step= Randomizer.nextDouble() * 2 * windowSize - windowSize;
+        double step= Randomizer.nextDouble() * 2 * windowSizes[iValue] - windowSizes[iValue];
         newValue += step;
 
         /*for(int i = 0;i < parameterList.getDimension();i++){
@@ -66,7 +67,6 @@ public class PLExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
         	return Double.NEGATIVE_INFINITY;
         }
         if (newValue == value) {
-            System.err.println("flag2");
         	// this saves calculating the posterior
         	return Double.NEGATIVE_INFINITY;
         }
@@ -74,8 +74,8 @@ public class PLExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
         parameterList.setValue(iParam, iValue, newValue);
 
 
-        //lastChangedParameterIndex = iParam;
-        //lastChangedValueIndex = iValue;
+        lastChangedParameterIndex = iParam;
+        lastChangedValueIndex = iValue;
 
 
         return 0.0;

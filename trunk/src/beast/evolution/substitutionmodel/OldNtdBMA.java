@@ -136,7 +136,7 @@ public class OldNtdBMA extends SubstitutionModel.Base{
     	double [] fFreqs;
 
         if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
-            fFreqs = frequencies.get().getFreqs();
+            fFreqs = frequenciesInput.get().getFreqs();
         }else{
             fFreqs = UNIF_DIST;
         }
@@ -274,7 +274,7 @@ public class OldNtdBMA extends SubstitutionModel.Base{
 
         if(modelChoose.get().somethingIsDirty()){
             recalculate = true;
-        }else if(frequencies.get().isDirtyCalculation() &&
+        }else if(frequenciesInput.get().isDirtyCalculation() &&
                 INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
 
             recalculate = true;
@@ -326,7 +326,7 @@ public class OldNtdBMA extends SubstitutionModel.Base{
     public double[] getFrequencies() {
         if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
             //System.out.println("estimate freqs");
-            return frequencies.get().getFreqs();
+            return frequenciesInput.get().getFreqs();
         }else{
 
             return UNIF_DIST;

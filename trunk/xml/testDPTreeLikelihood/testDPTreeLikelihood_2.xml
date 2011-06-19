@@ -59,7 +59,7 @@
     <input spec="DirichletProcess" id="dp">
         <input name="dpVal" idref="dpValuable"/>
         <input name="baseDistr" spec="beast.math.distributions.Gamma" id="base" alpha="10" beta="0.1" />
-        <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
+        <input name="alpha" spec="RealParameter" value="5.0" lower="0.0" upper="Infinity"/>
     </input>
 
 
@@ -92,14 +92,14 @@
             </distribution>
         </distribution>
 
-        <operator id="dpps" spec="DirichletProcessPriorGibbsSampler" weight="1" sampleSize="1">
+        <operator id="dpps" spec="DirichletProcessPriorGibbsSampler" weight="50" sampleSize="1">
             <input name='likelihood' idref="treeLikelihood"/>
             <input name="xList" idref="parameterList"/>
             <input name="pointers" idref="pointers"/>
             <input name="dirichletProcess" idref="dp"/>
             <input name="dpVal" idref="dpValuable"/>
         </operator>
-        <operator id="errwo" spec="PLExtendedRealRandomWalkOperator" windowSize="0.1" weight="1">
+        <operator id="errwo" spec="PLExtendedRealRandomWalkOperator" windowSizes="0.1" weight="3">
             <input name="parameters" idref="parameterList"/>
         </operator>
 

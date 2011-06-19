@@ -32,11 +32,11 @@ public class DirichletProcess extends ParametricDistribution{
     );
 
     private ParametricDistribution baseDistribution;
-    private double[] alphaPowers;
-    private RealParameter alpha;
-    private DPValuable dpValuable;
-    private double[] denominators;
-    private double[] gammas;
+   double[] alphaPowers;
+    RealParameter alpha;
+    DPValuable dpValuable;
+    double[] denominators;
+    double[] gammas;
 
 
     public void initAndValidate(){
@@ -48,15 +48,23 @@ public class DirichletProcess extends ParametricDistribution{
         //Yes I know that we are only counting number of memebers is the existing clusters
         //So there won't be any clusters of size 0.
         //But for the sake of convenience for later computation I'm going to start from 0.
+
+
+        initialise();
+
+    }
+
+    public void initialise(){
+        //Yes I know that we are only counting number of memebers is the existing clusters
+        //So there won't be any clusters of size 0.
+        //But for the sake of convenience for later computation I'm going to start from 0.
         refresh();
         gammas = new double[dpValuable.getPointerDimension()+1];
         gammas[0] = Double.NaN;
         gammas[1] = 0;
         for(int i = 2; i < gammas.length; i++){
             gammas[i] = gammas[i-1]+Math.log(i-1);
-            System.err.print(gammas[i]+" ");
         }
-        System.err.println();
     }
 
     public void refresh(){
@@ -88,7 +96,7 @@ public class DirichletProcess extends ParametricDistribution{
         //System.err.println("flag1: "+logP);
 
         int[] counts = dpValuable.getClusterCounts();
-        
+
         logP+=Math.log(alphaPowers[counts.length]);
         //System.err.println("flag2: "+logP);
 

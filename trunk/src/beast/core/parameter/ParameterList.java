@@ -15,40 +15,40 @@ import org.w3c.dom.Node;
  */
 @Description("This class stores a list of parameters and the size of the list can change.")
 public class ParameterList extends StateNode {
-    public Input<List<RealParameter2>> parametersInput =
-                new Input<List<RealParameter2>>("parameter", "refrence to a parameter", new ArrayList<RealParameter2>(), Input.Validate.REQUIRED);
+    public Input<List<RealParameter>> parametersInput =
+                new Input<List<RealParameter>>("parameter", "refrence to a parameter", new ArrayList<RealParameter>(), Input.Validate.REQUIRED);
 
-    private ArrayList<RealParameter2> parameterList;
-    private ArrayList<RealParameter2> storedParameterList;
+    private ArrayList<RealParameter> parameterList;
+    private ArrayList<RealParameter> storedParameterList;
     private int changedIndex = -1;
     private int removedIndex = -1;
 
     ChangeType changeType = ChangeType.ALL;
     
     public ParameterList(){
-        parameterList = new ArrayList<RealParameter2>();
-        storedParameterList = new ArrayList<RealParameter2>();
+        parameterList = new ArrayList<RealParameter>();
+        storedParameterList = new ArrayList<RealParameter>();
     }
 
 
 
     public void initAndValidate(){
         //System.err.println("initialize parameter list");
-        List<RealParameter2> parameterList  = parametersInput.get();
-        for(RealParameter2 parameter: parameterList){
+        List<RealParameter> parameterList  = parametersInput.get();
+        for(RealParameter parameter: parameterList){
             this.parameterList.add(parameter);
         }
     }
 
 
-    public void addParameter(RealParameter2 parameter){
+    public void addParameter(RealParameter parameter){
         //System.err.println("add parameter");
         startEditing(null);
         parameterList.add(parameter);
         //throw new RuntimeException("stopping fucking with my code!");
     }
 
-    public void addParameterQuietly(RealParameter2 parameter){
+    public void addParameterQuietly(RealParameter parameter){
         parameterList.add(parameter);
         changeType = ChangeType.ADDED;
 
@@ -102,7 +102,7 @@ public class ParameterList extends StateNode {
 
     
 
-    public RealParameter2 getParameter(int pIndex){
+    public RealParameter getParameter(int pIndex){
         return parameterList.get(pIndex);
     }
 
@@ -114,8 +114,8 @@ public class ParameterList extends StateNode {
 
 
     protected void store(){
-        storedParameterList = new ArrayList<RealParameter2>();
-        for(RealParameter2 parameter:parameterList){
+        storedParameterList = new ArrayList<RealParameter>();
+        for(RealParameter parameter:parameterList){
             parameter.store();
             storedParameterList.add(parameter);
         }
@@ -124,10 +124,10 @@ public class ParameterList extends StateNode {
 
     public void restore(){
         m_bHasStartedEditing = false;
-        ArrayList<RealParameter2> tempList = storedParameterList;
+        ArrayList<RealParameter> tempList = storedParameterList;
         storedParameterList = parameterList;
         parameterList = tempList;
-        for(RealParameter2 parameter:parameterList){
+        for(RealParameter parameter:parameterList){
             parameter.restore();
         }
         changeType = ChangeType.ALL;
@@ -141,8 +141,8 @@ public class ParameterList extends StateNode {
 
     public ParameterList copy(){
         ParameterList copy = new ParameterList();
-        for(RealParameter2 parameter: parameterList){
-            copy.addParameterQuietly((RealParameter2)parameter.copy());
+        for(RealParameter parameter: parameterList){
+            copy.addParameterQuietly((RealParameter)parameter.copy());
         }
         return copy;
     }
@@ -157,7 +157,7 @@ public class ParameterList extends StateNode {
 
     }
 
-    public int indexOf(RealParameter2 param){
+    public int indexOf(RealParameter param){
         return parameterList.indexOf(param);
     }
 

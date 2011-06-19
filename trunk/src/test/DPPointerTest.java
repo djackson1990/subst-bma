@@ -202,8 +202,8 @@ public class DPPointerTest extends TestCase {
             int index,
             RealParameter2 newVal,
             int[] assignment,
-            RealParameter2[] expectedPointer,
-            RealParameter2[] expectedList) throws Exception{
+            RealParameter[] expectedPointer,
+            RealParameter[] expectedList) throws Exception{
 
 
         for(int i = 0; i < expectedPointer.length; i++)
@@ -228,7 +228,7 @@ public class DPPointerTest extends TestCase {
             int index,
             int existingValIndex,
             int[] assignment,
-            RealParameter2[] expectedPointer) throws Exception{
+            RealParameter[] expectedPointer) throws Exception{
 
         for(int i = 0; i < pointer.getDimension();i++){
             expectedPointer[i] = paramList.getParameter(assignment[i]);
@@ -249,10 +249,10 @@ public class DPPointerTest extends TestCase {
             DPPointer pointers,
             ParameterList paramList,
             int index,
-            RealParameter2 newVal,
+            RealParameter newVal,
             int[] assignment,
-            RealParameter2[] expectedPointer,
-            RealParameter2[] expectedList) throws Exception{
+            RealParameter[] expectedPointer,
+            RealParameter[] expectedList) throws Exception{
 
 
         for(int i = 0; i < expectedPointer.length; i++)
@@ -291,8 +291,8 @@ public class DPPointerTest extends TestCase {
             int index,
             int existingValIndex,
             int[] assignment,
-            RealParameter2[] expectedPointer,
-            RealParameter2[] expectedList) throws Exception{
+            RealParameter[] expectedPointer,
+            RealParameter[] expectedList) throws Exception{
 
         for(int i = 0; i < pointers.getDimension();i++){
             expectedPointer[i] = paramList.getParameter(assignment[i]);
@@ -330,7 +330,7 @@ public class DPPointerTest extends TestCase {
             DPPointer pointer,
             ParameterList paramList,
             int index,
-            RealParameter2 newVal) throws Exception{
+            RealParameter newVal) throws Exception{
       
         pointer.point(index,newVal);
         paramList.addParameter(newVal);
@@ -349,7 +349,7 @@ public class DPPointerTest extends TestCase {
             ParameterList paramList,
             int index,
             int existingValIndex,
-            RealParameter2[] expectedPointer) throws Exception{
+            RealParameter[] expectedPointer) throws Exception{
 
         int listIndex = paramList.indexOf(expectedPointer[existingValIndex]);
 
@@ -367,7 +367,7 @@ public class DPPointerTest extends TestCase {
             DPPointer pointers,
             ParameterList paramList,
             int index,
-            RealParameter2 newVal) throws Exception{
+            RealParameter newVal) throws Exception{
 
 
 
@@ -398,7 +398,7 @@ public class DPPointerTest extends TestCase {
             ParameterList paramList,
             int index,
             int existingValIndex,
-            RealParameter2[] expectedPointer) throws Exception{
+            RealParameter[] expectedPointer) throws Exception{
 
 
         int listIndex = paramList.indexOf(expectedPointer[existingValIndex]);

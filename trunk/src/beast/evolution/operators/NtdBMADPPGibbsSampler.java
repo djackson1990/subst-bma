@@ -1,33 +1,53 @@
 package beast.evolution.operators;
 
-import beast.core.Operator;
+import beast.core.parameter.*;
 import beast.core.Input;
 import beast.core.Distribution;
-import beast.core.Description;
-import beast.core.parameter.*;
+import beast.core.Operator;
 import beast.math.distributions.DirichletProcess;
 import beast.math.distributions.ParametricDistribution;
+import beast.math.distributions.NtdDP;
 import beast.util.Randomizer;
-import beast.evolution.likelihood.DPTreeLikelihood;
-
 
 /**
  * @author Chieh-Hsi Wu
  */
-@Description("Gibbs sampler with a Dirichlet process prior.")
-public class DirichletProcessPriorGibbsSampler extends Operator {
-    public Input<DPPointer> pointersInput = new Input<DPPointer>(
+public class NtdBMADPPGibbsSampler extends Operator {
+    public Input<DPPointer> parameterPointersInput = new Input<DPPointer>(
             "pointers",
             "array which points a set of unique parameter values",
             Input.Validate.REQUIRED
     );
-    public Input<ParameterList> xListInput = new Input<ParameterList>(
+    public Input<ParameterList> parameterListInput = new Input<ParameterList>(
             "xList",
             "points at which the density is calculated",
             Input.Validate.REQUIRED
     );
 
-    public Input<DirichletProcess> dpInput = new Input<DirichletProcess>(
+    public Input<DPPointer> modelPointersInput = new Input<DPPointer>(
+            "pointers",
+            "array which points a set of unique parameter values",
+            Input.Validate.REQUIRED
+    );
+    public Input<ParameterList> modelListInput = new Input<ParameterList>(
+            "xList",
+            "points at which the density is calculated",
+            Input.Validate.REQUIRED
+    );
+
+    public Input<DPPointer> freqPointersInput = new Input<DPPointer>(
+            "pointers",
+            "array which points a set of unique parameter values",
+            Input.Validate.REQUIRED
+    );
+    public Input<ParameterList> freqListInput = new Input<ParameterList>(
+            "xList",
+            "points at which the density is calculated",
+            Input.Validate.REQUIRED
+    );    
+
+
+    public Input<NtdDP> dpInput = new Input<NtdDP>(
             "dirichletProcess",
             "An object of Dirichlet Process",
             Input.Validate.REQUIRED
@@ -51,33 +71,49 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
             Input.Validate.REQUIRED
     );
 
-    private DirichletProcess dp;
+    private NtdDP dp;
     private int sampleSize;
-    private ParametricDistribution baseDistr;
+    private ParametricDistribution paramBaseDistr;
+    private ParametricDistribution modelBaseDistr;
+    private ParametricDistribution freqBaseDistr;
     private DPValuable dpVal;
     public void initAndValidate(){
         dp = dpInput.get();
+
         sampleSize = sampleSizeInput.get();
-        baseDistr = dp.getBaseDistribution();
+        paramBaseDistr = dp.getParamBaseDistr();
+        modelBaseDistr = dp.getModelBaseDistr();
+        freqBaseDistr = dp.getFreqBaseDistr();
+
         dpVal = dpValuableInput.get();
 
     }
-    private int counter = 0;
+
 
     public double proposal(){
-        this.counter++;
-
+     
 
         //Get the pointer and the list of unique values
-        DPPointer pointers = pointersInput.get(this);
-        ParameterList paramList = xListInput.get();
+        DPPointer paramPointers = parameterPointersInput.get(this);
+        DPPointer freqPointers = freqPointersInput.get(this);
+        DPPointer modelPointers = modelPointersInput.get(this);
+
+        ParameterList paramList = parameterListInput.get();
+        ParameterList freqList = freqListInput.get();
+        ParameterList modelList = modelListInput.get();
+
 
         //Randomly pick an index to update, gets it's current value and its position in the parameter list
-        int dimPointer = pointers.getDimension();
+        int dimPointer = paramPointers.getDimension();
+
+
         int index = Randomizer.nextInt(dimPointer);
         //System.err.println("index: "+index+" "+pointers.getParameterValue(0)+" "+pointers.getParameterValue(1));
-        RealParameter currVal = paramList.getParameter(pointers.indexInList(index,paramList));
-        int listIndex = paramList.indexOf(currVal);
+        RealParameter currParamVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
+        RealParameter currModelVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
+        RealParameter currFreqVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
+
+        int listIndex = paramList.indexOf(currParamVal);
 
 
         Distribution lik = likelihoodInput.get();
@@ -89,30 +125,37 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         int[] clusterCounts = dpVal.getClusterCounts();
         clusterCounts[listIndex] =  clusterCounts[listIndex]-1;
 
-        RealParameter[] existingVals = new RealParameter2[clusterCounts.length];
+        RealParameter[] existingParamVals = new RealParameter[clusterCounts.length];
+        RealParameter[] existingModelVals = new RealParameter[clusterCounts.length];
+        RealParameter[] existingFreqVals = new RealParameter[clusterCounts.length];
         int counter = 0;
         int zeroCount = -1;
         for(int i = 0; i < clusterCounts.length;i++){
             if(clusterCounts[i]>0){
                 clusterCounts[counter] = clusterCounts[i];
-                existingVals[counter++] = paramList.getParameter(i);
+                existingParamVals[counter] = paramList.getParameter(i);
+                existingModelVals[counter] = modelList.getParameter(i);
+                existingFreqVals[counter] = freqList.getParameter(i);
+                counter++;
                 //System.err.println(i+", cluster.counts: "+clusterCounts[i]);
-
-
             }else{
                 zeroCount = i;
-
             }
         }
         //System.err.println("paramList size1: "+paramList.getDimension());
         try{
 
             //Generate a sample of proposals
-            RealParameter[] preliminaryProposals = sampleFromBaseDistribution(dimValue,paramList);
+            RealParameter[] paramPreProposals = paramBaseDistr.sample(sampleSize);
+            RealParameter[] modelPreProposals = modelBaseDistr.sample(sampleSize);
+            RealParameter[] freqPreProposals = freqBaseDistr.sample(sampleSize);
+
             //System.err.println("zero count: "+zeroCount);
             //If the a singleton has been picked
             if(zeroCount > -1){
-                preliminaryProposals[0] = paramList.getParameter(zeroCount);
+                paramPreProposals[0] = paramList.getParameter(zeroCount);
+                modelPreProposals[0] = modelList.getParameter(zeroCount);
+                freqPreProposals[0] = freqList.getParameter(zeroCount);
 
             }
             //int dimList = paramList.getDimension();
@@ -126,10 +169,12 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
             for(i = 0; i < counter; i++){
                 //n_{-index,i}/(n - 1 + alpha)
                 logFullCond[i] = Math.log(clusterCounts[i]/(dimPointer - 1 + concVal));
-                pointers.point(index, existingVals[i]);
+                paramPointers.point(index, existingParamVals[i]);
+                modelPointers.point(index, existingModelVals[i]);
+                freqPointers.point(index, existingFreqVals[i]);
                 //System.err.println("clusterCounts[i]: "+clusterCounts[i]);
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
-                logFullCond[i] = logFullCond[i]+(lik).calculateLogP();
+                logFullCond[i] = logFullCond[i]+lik.calculateLogP();
                 //System.err.println(logFullCond[i]);
                 //System.err.println("fullConditional[i]: "+fullConditional[i]+", val: "+paramList.getParameter(i));
                 //System.err.println("logFullCond[i]: "+logFullCond[i]+", val: "+existingVals[i]);
@@ -138,7 +183,9 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 //alpha/m/(n - 1 + alpha)
                 logFullCond[i] = Math.log(concVal/sampleSize/(dimPointer - 1 + concVal));
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
-                pointers.point(index, preliminaryProposals[i-counter]);
+                paramPointers.point(index, paramPreProposals[i-counter]);
+                paramPointers.point(index, modelPreProposals[i-counter]);
+                paramPointers.point(index, freqPreProposals[i-counter]);
                 logFullCond[i] = logFullCond[i]+(lik).calculateLogP();
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
                 //System.err.println("logFullCond[i]: "+logFullCond[i]+", val: "+preliminaryProposals[i-counter]);
@@ -171,16 +218,22 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
             //System.err.println("proposedIndex: "+proposedIndex);
             if(proposedIndex < counter){
                 //take up an existing value
-                pointers.point(index, existingVals[proposedIndex]);
+                paramPointers.point(index, existingParamVals[proposedIndex]);
+                modelPointers.point(index, existingModelVals[proposedIndex]);
+                freqPointers.point(index, existingFreqVals[proposedIndex]);
                 //if(this.counter>6000)
                 //    System.err.println("proposedIndex: "+proposedIndex+"; existingVal: "+existingVals[proposedIndex]);
             }else{
-                RealParameter proposal = preliminaryProposals[proposedIndex-counter];
+                RealParameter paramProposal = paramPreProposals[proposedIndex-counter];
+                RealParameter modelProposal = modelPreProposals[proposedIndex-counter];
+                RealParameter freqProposal = freqPreProposals[proposedIndex-counter];
                 if(zeroCount > -1){
-                    int paramListIndex = pointers.indexInList(index,paramList);
+                    int paramListIndex = paramPointers.indexInList(index,paramList);
 
                     for(i = 0; i < dimValue;i++){
-                        paramList.setValue(paramListIndex,i,proposal.getValue(i));
+                        paramList.setValue(paramListIndex,i,paramProposal.getValue(i));
+                        modelList.setValue(paramListIndex,i,modelProposal.getValue(i));
+                        freqList.setValue(paramListIndex,i,freqProposal.getValue(i));
 
 
                     }
@@ -188,9 +241,16 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
 
                 }else{
                 //take up a new value
-                    pointers.point(index, preliminaryProposals[proposedIndex-counter]);
-                    paramList = xListInput.get(this);
-                    paramList.addParameter(preliminaryProposals[proposedIndex-counter]);
+                    paramPointers.point(index, paramPreProposals[proposedIndex-counter]);
+                    modelPointers.point(index, modelPreProposals[proposedIndex-counter]);
+                    freqPointers.point(index, freqPreProposals[proposedIndex-counter]);
+
+                    paramList = parameterListInput.get(this);
+                    modelList = modelListInput.get(this);
+                    freqList = freqListInput.get(this);
+                    paramList.addParameter(paramPreProposals[proposedIndex-counter]);
+                    modelList.addParameter(modelPreProposals[proposedIndex-counter]);
+                    freqList.addParameter(freqPreProposals[proposedIndex-counter]);
                 }
                 //System.err.println("paramList size2: "+paramList.getDimension());
                 //if(this.counter>6000)
@@ -203,10 +263,10 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
 
             //If any cluster has no member then it is removed.
             if(zeroCount > -1){
-                paramList = xListInput.get(this);
+                paramList = parameterListInput.get(this);
                 paramList.removeParameter(zeroCount);
-                //if(this.counter>3240)
-                //    System.err.println("Removing cluster");
+                modelList.removeParameter(zeroCount);
+                freqList.removeParameter(zeroCount);
 
             }
 
@@ -216,31 +276,5 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 throw new RuntimeException(e);
             }
         return Double.POSITIVE_INFINITY;
-    }
-
-    public RealParameter2[] sampleFromBaseDistribution(int dimValue, ParameterList paramList) throws Exception{
-        RealParameter2[] preliminaryProposals = new RealParameter2[sampleSize];
-
-        for(int i = 0; i < sampleSize; i++){
-
-            Double[] sample = new Double[dimValue];
-            for(int j = 0;j < dimValue;j++){
-
-                sample[j] = baseDistr.inverseCumulativeProbability(Randomizer.nextDouble());
-                /*double s= Randomizer.nextDouble();
-                if(s<0.4){
-                    sample[j] = Randomizer.nextDouble()*0.5;
-                }else{
-                    sample[j] = Randomizer.nextDouble()*0.5+0.5;
-
-                }*/
-                //System.err.print(sample[j]+" ");
-            }
-            preliminaryProposals[i] = new RealParameter2(sample,paramList.getParameterLower(),paramList.getParameterUpper());
-
-        }
-        //System.err.println();
-        return preliminaryProposals;
-
     }
 }

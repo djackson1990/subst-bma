@@ -70,7 +70,7 @@ public class DirichletProcessPriorSampler extends Operator {
         //Randomly pick an index to update, gets it's current value and its position in the parameter list
         int dimPointer = pointers.getDimension();
         int index = Randomizer.nextInt(dimPointer);
-        RealParameter2 currVal = paramList.getParameter(pointers.indexInList(index,paramList));
+        RealParameter currVal = paramList.getParameter(pointers.indexInList(index,paramList));
         int listIndex = paramList.indexOf(currVal);
 
 

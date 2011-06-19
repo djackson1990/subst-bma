@@ -87,8 +87,8 @@ public class CompoundParameter extends RealParameter2{
         m_nLastDirty = parameterIndex[dim][0];
     }
 
-
-    public void setValueQuietly(int dim, double value) {
+    @Override
+    public void setValueQuietly(int dim, Double value) {
         parameters.get(parameterIndex[dim][0]).setValueQuietly(parameterIndex[dim][1], value);
         m_bIsDirty[parameterIndex[dim][0]] = true;
         m_nLastDirty = parameterIndex[dim][0];

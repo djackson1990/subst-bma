@@ -19,7 +19,7 @@
         <parameter idref="cp2"/>
     </input>
 
-    <run spec="MCMC" id="mcmc" chainLength="100"> <!--autoOptimize="true"-->
+    <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
             <input name='stateNode' idref='parameterList'/>
         </state>
@@ -27,19 +27,16 @@
 	    <distribution spec="CompoundDistribution" id="posterior"/>
 
         <operator id="errwo" spec="PLExtendedRealRandomWalkOperator" windowSizes="0.2 0.1 0.3" weight="1">
-            <input name="parameter" idref="parameterList"/>
+            <input name="parameters" idref="parameterList"/>
         </operator>
 
         <distribution spec="CompoundDistribution" id="Prior">
             <distribution id="log.kappa.prior" spec="beast.math.distributions.Prior">
                 <distribution id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="3"/>
                 <x idref="cp"/>
+                <x idref="cp2"/>
             </distribution>
         </distribution>
-
-        <logger logEvery="10">
-            <log idref="Prior"/>
-        </logger>
 
         <logger logEvery="10" fileName="testParameterList_1.log">
             <log idref="cp"/>

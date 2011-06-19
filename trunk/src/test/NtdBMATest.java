@@ -1,6 +1,5 @@
 package test;
 
-import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.NtdBMA;
 import beast.evolution.substitutionmodel.Frequencies;
@@ -24,7 +23,7 @@ public class NtdBMATest extends TestCase {
         double getLogAT();
         double getLogGC();
         double getLogGT();
-        IntegerParameter getModelChoose() throws Exception;
+        RealParameter getModelChoose() throws Exception;
 
         double getDistance();
 
@@ -61,9 +60,12 @@ public class NtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public IntegerParameter getModelChoose() throws Exception{
-            IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 5, "3",1);
+        public RealParameter getModelChoose() throws Exception{
+            RealParameter modelChoose = new RealParameter();
+            modelChoose.initByName(
+                    "value", "3",
+                    "lower", "0",
+                    "upper", "5");
             return modelChoose;
         }
 
@@ -110,9 +112,12 @@ public class NtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public IntegerParameter getModelChoose() throws Exception{
-            IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 5, "4",1);
+        public RealParameter getModelChoose() throws Exception{
+            RealParameter modelChoose = new RealParameter();
+            modelChoose.initByName(
+                    "value", "4",
+                    "upper", "0",
+                    "lower", "5");
             return modelChoose;
         }
 
@@ -161,9 +166,12 @@ public class NtdBMATest extends TestCase {
             return Math.log(0.8);
         }
 
-        public IntegerParameter getModelChoose() throws Exception{
-            IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 5, "5", 1);
+        public RealParameter getModelChoose() throws Exception{
+            RealParameter modelChoose = new RealParameter();
+            modelChoose.initByName(
+                    "value", "5",
+                    "lower", "0",
+                    "upper", "5");
             return modelChoose;
         }
 
@@ -211,9 +219,12 @@ public class NtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public IntegerParameter getModelChoose() throws Exception{
-            IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 5, "3", 1);
+        public RealParameter getModelChoose() throws Exception{
+            RealParameter modelChoose = new RealParameter();
+            modelChoose.initByName(
+                    "value", "3",
+                    "lower", "0",
+                    "upper", "5");
             return modelChoose;
         }
 
@@ -262,9 +273,12 @@ public class NtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public IntegerParameter getModelChoose() throws Exception{
-            IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 5, "4", 1);
+        public RealParameter getModelChoose() throws Exception{
+            RealParameter modelChoose = new RealParameter();
+            modelChoose.initByName(
+                    "value", "4",
+                    "lower", "0",
+                    "upper", "5");
             return modelChoose;
         }
 
@@ -314,9 +328,12 @@ public class NtdBMATest extends TestCase {
             return Math.log(0.8);
         }
 
-        public IntegerParameter getModelChoose() throws Exception{
-            IntegerParameter modelChoose = new IntegerParameter();
-            modelChoose.init(0, 5, "5", 1);
+        public RealParameter getModelChoose() throws Exception{
+            RealParameter modelChoose = new RealParameter();
+            modelChoose.initByName(
+                    "value", "5",
+                    "upper", "0",
+                    "lower", "5");
             return modelChoose;
         }
        
@@ -353,7 +370,7 @@ public class NtdBMATest extends TestCase {
             logAT.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogAT(),1);
             logGC.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogGC(),1);
             logGT.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogGT(),1);
-            IntegerParameter modelChoose = test.getModelChoose();
+            RealParameter modelChoose = test.getModelChoose();
            
             Frequencies f = new Frequencies();
             f.init(null, true,test.getPi());

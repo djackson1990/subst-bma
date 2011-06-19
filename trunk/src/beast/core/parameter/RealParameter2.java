@@ -37,12 +37,7 @@ public class RealParameter2 extends RealParameter {
         super.initAndValidate();
     }
 
-    public void setValueQuietly(int dim, double value){
-        values[dim] = value;
-        m_bIsDirty[dim] = true;
-        m_nLastDirty = dim;
-    }
-
+  
 }
 
 

@@ -1,7 +1,6 @@
 package beast.evolution.substitutionmodel;
 
 import beast.core.parameter.RealParameter;
-import beast.core.parameter.IntegerParameter;
 import beast.core.Input;
 import beast.core.Description;
 import beast.evolution.tree.Node;
@@ -26,13 +25,23 @@ import java.util.Arrays;
  */
 @Description("Model averaging of nucleotide substitution model including HKY85, TN93 and GTR.")
 public class NtdBMA extends SubstitutionModel.Base{
-    public Input<RealParameter> logKappa = new Input<RealParameter>("logKappa", "parameter representing log of HKY kappa parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logTN = new Input<RealParameter>("logTN", "parameter representing log of TN parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logAC = new Input<RealParameter>("logAC", "parameter representing log of AC parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logAT = new Input<RealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logGC = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logGT = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
-    public Input<IntegerParameter> modelChoose = new Input<IntegerParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
+    public Input<RealParameter> logKappaInput = new Input<RealParameter>("logKappa", "parameter representing log of HKY kappa parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logTNInput = new Input<RealParameter>("logTN", "parameter representing log of TN parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logACInput = new Input<RealParameter>("logAC", "parameter representing log of AC parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logATInput = new Input<RealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logGCInput = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logGTInput = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> modelChooseInput = new Input<RealParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
+
+    public RealParameter logKappa;
+    public RealParameter logTN;
+    public RealParameter logAC;
+    public RealParameter logAT;
+    public RealParameter logGC;
+    public RealParameter logGT;
+    public RealParameter modelChoose;
+    public Frequencies frequencies;
+
 
     public static final int STATE_COUNT = 4;
     public static final int RATE_COUNT = 6;
@@ -71,9 +80,53 @@ public class NtdBMA extends SubstitutionModel.Base{
     protected double[] relativeRates;
     protected double[] storedRelativeRates;
 
+    public NtdBMA(){}
+
+    public NtdBMA(
+            RealParameter logKappa,
+            RealParameter logTN,
+            RealParameter logAC,
+            RealParameter logAT,
+            RealParameter logGT,
+            RealParameter logGC,
+            RealParameter modelChoose,
+            Frequencies frequencies){
+
+        this.logKappa = logKappa;
+        this.logTN = logTN;
+        this.logAC = logAC;
+        this.logAT = logAT;
+        this.logGC = logGC;
+        this.logGT = logGT;
+        this.frequencies = frequencies;
+        this.modelChoose = modelChoose;
+
+        initialize();
+
+        
+
+    }
+
     @Override
     public void initAndValidate() throws Exception {
-        if(modelChoose.get().getUpper() > GTR || modelChoose.get().getUpper() < JC){
+        this.logKappa = logKappaInput.get();
+        this.logTN = logTNInput.get();
+        this.logAC = logACInput.get();
+        this.logAT = logATInput.get();
+        this.logGC = logGCInput.get();
+        this.logGT = logGTInput.get();
+        this.modelChoose = modelChooseInput.get();
+        this.frequencies = frequenciesInput.get();
+
+
+        initialize();
+
+
+        //q = new double[m_nStates][m_nStates];
+    } // initAndValidate
+
+    private void initialize(){
+        if(modelChoose.getUpper() > GTR || modelChoose.getUpper() < JC){
             System.err.println("The value of model choose needs to be between " + JC + " and " + GTR + "inclusive, " +
                     "where "+ JC + " and " + GTR +" represents JC and GTR repectively");
         }
@@ -85,8 +138,7 @@ public class NtdBMA extends SubstitutionModel.Base{
         storedRelativeRates = new double[RATE_COUNT];
         initialiseEigen();
 
-        //q = new double[m_nStates][m_nStates];
-    } // initAndValidate
+    }
 
     
 
@@ -99,25 +151,25 @@ public class NtdBMA extends SubstitutionModel.Base{
 
 
         //rate CT value
-        relativeRates[4] = Math.exp(INDICATORS[getCurrModel()][TN_INDEX]*logTN.get().getValue());
+        relativeRates[4] = Math.exp(INDICATORS[getCurrModel()][TN_INDEX]*logTN.getValue());
 
         //rate AC value
         relativeRates[0] = Math.exp(
-                0.0-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue()+
-                INDICATORS[getCurrModel()][GTR_INDEX]*logAC.get().getValue());
+                0.0-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue()+
+                INDICATORS[getCurrModel()][GTR_INDEX]*logAC.getValue());
         
         //rate AT value
         relativeRates[2] = Math.exp(
-                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue()+
-                        INDICATORS[getCurrModel()][GTR_INDEX]*logAT.get().getValue());
+                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue()+
+                        INDICATORS[getCurrModel()][GTR_INDEX]*logAT.getValue());
 
         //rate GC value
         relativeRates[3] = Math.exp(
-                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue()+
-                        INDICATORS[getCurrModel()][GTR_INDEX]*logGC.get().getValue());
+                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue()+
+                        INDICATORS[getCurrModel()][GTR_INDEX]*logGC.getValue());
 
         //rate GT value
-        relativeRates[5] = Math.exp(-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.get().getValue());
+        relativeRates[5] = Math.exp(-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue());
 
 
         /*System.err.println("AC: "+relativeRates[0]);
@@ -140,7 +192,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     	double [] fFreqs;
 
         if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
-            fFreqs = frequencies.get().getFreqs();
+            fFreqs = frequencies.getFreqs();
         }else{
             fFreqs = UNIF_DIST;
         }
@@ -276,39 +328,39 @@ public class NtdBMA extends SubstitutionModel.Base{
         boolean recalculate = false;
 
 
-        if(modelChoose.get().somethingIsDirty()){
+        if(modelChoose.somethingIsDirty()){
             recalculate = true;
-        }else if(frequencies.get().isDirtyCalculation() &&
+        }else if(frequencies.isDirtyCalculation() &&
                 INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
 
             recalculate = true;
 
-        }else if(logKappa.get().somethingIsDirty() &&
+        }else if(logKappa.somethingIsDirty() &&
                 INDICATORS[getCurrModel()][K80_INDEX] == PRESENT){
 
             recalculate = true;
 
-        }else if(logTN.get().somethingIsDirty() &&
+        }else if(logTN.somethingIsDirty() &&
                 INDICATORS[getCurrModel()][TN_INDEX] == PRESENT){
 
             recalculate = true;
 
-        }else if(logAC.get().somethingIsDirty() &&
+        }else if(logAC.somethingIsDirty() &&
                INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
 
             recalculate = true;
 
-        }else if(logAT.get().somethingIsDirty() &&
+        }else if(logAT.somethingIsDirty() &&
                 INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
 
             recalculate = true;
 
-        }else if(logGC.get().somethingIsDirty() &&
+        }else if(logGC.somethingIsDirty() &&
                 INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
 
             recalculate = true;
 
-        }else if(logGT.get().somethingIsDirty() &&
+        }else if(logGT.somethingIsDirty() &&
                 INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
 
             recalculate = true;
@@ -322,7 +374,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     }
 
     private int getCurrModel(){        
-        return modelChoose.get().getValue(0);
+        return (int)((double)modelChoose.getValue());
 
     }
 
@@ -330,7 +382,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     public double[] getFrequencies() {
         if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
             //System.out.println("estimate freqs");
-            return frequencies.get().getFreqs();
+            return frequencies.getFreqs();
         }else{
 
             return UNIF_DIST;

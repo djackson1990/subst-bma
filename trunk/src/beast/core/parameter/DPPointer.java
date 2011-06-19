@@ -28,8 +28,8 @@ public class DPPointer extends StateNode {
             Input.Validate.REQUIRED
     );
 
-    private RealParameter2[] parameters;
-    private RealParameter2[] storedParameters;
+    private RealParameter[] parameters;
+    private RealParameter[] storedParameters;
     private int lastDirty = -1;
     private int storedLastDirty = -1;
 
@@ -52,14 +52,14 @@ public class DPPointer extends StateNode {
         }
     }
 
-    public void point(int dim, RealParameter2 parameter){
+    public void point(int dim, RealParameter parameter){
         startEditing(null);
         lastDirty = dim;
         parameters[dim] = parameter;
 
     }
 
-    protected void pointQuitely(int dim, RealParameter2 parameter){
+    protected void pointQuitely(int dim, RealParameter parameter){
         parameters[dim] = parameter;
 
     }
@@ -93,7 +93,7 @@ public class DPPointer extends StateNode {
     @Override
 	public void restore() {
         lastDirty = storedLastDirty;
-        RealParameter2[] temp = parameters;
+        RealParameter[] temp = parameters;
         parameters = storedParameters;
         storedParameters = temp;
 	}
@@ -146,7 +146,7 @@ public class DPPointer extends StateNode {
         //todo
     }
 
-    private RealParameter2 getParameter(int dim){
+    private RealParameter getParameter(int dim){
         return parameters[dim];
 
     }
@@ -160,7 +160,7 @@ public class DPPointer extends StateNode {
         return paramList.indexOf(parameters[dim]);
     }
 
-    public boolean sameParameter(int dim, RealParameter2 parameter){
+    public boolean sameParameter(int dim, RealParameter parameter){
         return parameters[dim].getValue() == parameter.getValue();
     }
 
