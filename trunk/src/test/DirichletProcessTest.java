@@ -35,9 +35,9 @@ public class DirichletProcessTest extends TestCase {
                         "sigma", "3"
                 );
 
-                RealParameter2 param1 = new RealParameter2(new Double[]{-0.3});
-                RealParameter2 param2 = new RealParameter2(new Double[]{-0.1});
-                RealParameter2 param3 = new RealParameter2(new Double[]{0.5});
+                RealParameter param1 = new RealParameter(new Double[]{-0.3});
+                RealParameter param2 = new RealParameter(new Double[]{-0.1});
+                RealParameter param3 = new RealParameter(new Double[]{0.5});
                 paramList.initByName(
                         "parameter", param1,
                         "parameter", param2,
@@ -107,9 +107,9 @@ public class DirichletProcessTest extends TestCase {
                         "sigma", "3"
                 );
 
-                RealParameter2 param1 = new RealParameter2(new Double[]{-0.3,0.2,-0.1});
-                RealParameter2 param2 = new RealParameter2(new Double[]{-0.1,0.03,0.15});
-                RealParameter2 param3 = new RealParameter2(new Double[]{0.5,0.4,-0.01});
+                RealParameter param1 = new RealParameter(new Double[]{-0.3,0.2,-0.1});
+                RealParameter param2 = new RealParameter(new Double[]{-0.1,0.03,0.15});
+                RealParameter param3 = new RealParameter(new Double[]{0.5,0.4,-0.01});
 
                 paramList.initByName(
                         "parameter", param1,
@@ -190,9 +190,9 @@ public class DirichletProcessTest extends TestCase {
                         "precision", precisionMatrix
                 );
 
-                RealParameter2 param1 = new RealParameter2(new Double[]{-0.3,0.2,-0.1});
-                RealParameter2 param2 = new RealParameter2(new Double[]{-0.1,0.03,0.15});
-                RealParameter2 param3 = new RealParameter2(new Double[]{0.5,0.4,-0.01});
+                RealParameter param1 = new RealParameter(new Double[]{-0.3,0.2,-0.1});
+                RealParameter param2 = new RealParameter(new Double[]{-0.1,0.03,0.15});
+                RealParameter param3 = new RealParameter(new Double[]{0.5,0.4,-0.01});
                 paramList.initByName(
                         "parameter", param1,
                         "parameter", param2,

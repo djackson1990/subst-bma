@@ -30,9 +30,9 @@ public class OldDPSiteModelTest extends TestCase {
         public void setup(){
             try{
 
-                RealParameter2 parameter1 = new RealParameter2(new Double[]{0.0});
-                RealParameter2 parameter2 = new RealParameter2(new Double[]{1.0});
-                RealParameter2 parameter3 = new RealParameter2(new Double[]{2.0});
+                RealParameter parameter1 = new RealParameter(new Double[]{0.0});
+                RealParameter parameter2 = new RealParameter(new Double[]{1.0});
+                RealParameter parameter3 = new RealParameter(new Double[]{2.0});
                 paramList = new ParameterList();
                 paramList.initByName(
                         "parameter", parameter1,
@@ -70,7 +70,7 @@ public class OldDPSiteModelTest extends TestCase {
         }
 
         public void operation1() throws Exception{
-            paramList.addParameter(new RealParameter2(new Double[]{3.0}));
+            paramList.addParameter(new RealParameter(new Double[]{3.0}));
             pointer.point(3,paramList.getParameter(3));
             
         }

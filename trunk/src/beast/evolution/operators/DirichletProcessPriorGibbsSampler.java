@@ -8,7 +8,6 @@ import beast.core.parameter.*;
 import beast.math.distributions.DirichletProcess;
 import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
-import beast.evolution.likelihood.DPTreeLikelihood;
 
 
 /**
@@ -62,11 +61,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         dpVal = dpValuableInput.get();
 
     }
-    private int counter = 0;
-
     public double proposal(){
-        this.counter++;
-
 
         //Get the pointer and the list of unique values
         DPPointer pointers = pointersInput.get(this);
@@ -89,7 +84,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         int[] clusterCounts = dpVal.getClusterCounts();
         clusterCounts[listIndex] =  clusterCounts[listIndex]-1;
 
-        RealParameter[] existingVals = new RealParameter2[clusterCounts.length];
+        RealParameter[] existingVals = new RealParameter[clusterCounts.length];
         int counter = 0;
         int zeroCount = -1;
         for(int i = 0; i < clusterCounts.length;i++){
@@ -218,8 +213,8 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         return Double.POSITIVE_INFINITY;
     }
 
-    public RealParameter2[] sampleFromBaseDistribution(int dimValue, ParameterList paramList) throws Exception{
-        RealParameter2[] preliminaryProposals = new RealParameter2[sampleSize];
+    public RealParameter[] sampleFromBaseDistribution(int dimValue, ParameterList paramList) throws Exception{
+        RealParameter[] preliminaryProposals = new RealParameter[sampleSize];
 
         for(int i = 0; i < sampleSize; i++){
 
@@ -236,7 +231,9 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
                 }*/
                 //System.err.print(sample[j]+" ");
             }
-            preliminaryProposals[i] = new RealParameter2(sample,paramList.getParameterLower(),paramList.getParameterUpper());
+            preliminaryProposals[i] = new RealParameter(sample);
+            preliminaryProposals[i].setUpper(paramList.getParameterUpper());
+            preliminaryProposals[i].setLower(paramList.getParameterLower());
 
         }
         //System.err.println();

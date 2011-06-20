@@ -15,10 +15,10 @@ import org.w3c.dom.Node;
  */
 @Description("Array that points to some set of parameters")
 public class DPPointer extends StateNode {
-    public Input<List<RealParameter2>> uniqueParametersInput = new Input<List<RealParameter2>>(
+    public Input<List<RealParameter>> uniqueParametersInput = new Input<List<RealParameter>>(
             "uniqueParameter",
             "refrence to a parameter",
-            new ArrayList<RealParameter2>(),
+            new ArrayList<RealParameter>(),
             Input.Validate.REQUIRED
     );
 
@@ -37,16 +37,16 @@ public class DPPointer extends StateNode {
         
     }
     public DPPointer(int dim){
-        parameters = new RealParameter2[dim];
-        storedParameters = new RealParameter2[dim];
+        parameters = new RealParameter[dim];
+        storedParameters = new RealParameter[dim];
 
     }
 
     public void initAndValidate(){
         IntegerParameter initialAssignment = assignmentInput.get();
-        List<RealParameter2> uniqueParameters = uniqueParametersInput.get();
-        parameters = new RealParameter2[initialAssignment.getDimension()];
-        storedParameters = new RealParameter2[initialAssignment.getDimension()];
+        List<RealParameter> uniqueParameters = uniqueParametersInput.get();
+        parameters = new RealParameter[initialAssignment.getDimension()];
+        storedParameters = new RealParameter[initialAssignment.getDimension()];
         for(int i = 0; i < parameters.length;i++){
             parameters[i] = uniqueParameters.get(initialAssignment.getValue(i));
         }

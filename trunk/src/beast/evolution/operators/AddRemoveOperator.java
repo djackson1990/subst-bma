@@ -4,7 +4,7 @@ import beast.core.Operator;
 import beast.core.Input;
 import beast.core.Description;
 import beast.core.parameter.ParameterList;
-import beast.core.parameter.RealParameter2;
+import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
 import beast.math.distributions.ParametricDistribution;
 import beast.math.distributions.MultivariateDistribution;
@@ -56,7 +56,7 @@ public class AddRemoveOperator extends Operator {
                     }
 
                 }
-                RealParameter2 param = new RealParameter2(vals);
+                RealParameter param = new RealParameter(vals);
                 paramList.addParameter(param);
             }catch(Exception e){
                 throw new RuntimeException(e);

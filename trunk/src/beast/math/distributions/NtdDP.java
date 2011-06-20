@@ -1,7 +1,6 @@
 package beast.math.distributions;
 
 import beast.core.Input;
-import beast.core.Valuable;
 import beast.core.parameter.ParameterList;
 
 /**
@@ -9,7 +8,7 @@ import beast.core.parameter.ParameterList;
  */
 public class NtdDP extends DirichletProcess{
     public Input<ParametricDistribution> paramBaseDistrInput = new Input<ParametricDistribution>(
-            "parmaBaseDistr",
+            "paramBaseDistr",
             "The base distribution of the dirichlet process",
             Input.Validate.REQUIRED
     );
@@ -43,24 +42,29 @@ public class NtdDP extends DirichletProcess{
 
     }
 
-    public double calcLogP(Valuable[] xList) throws Exception {
+    public double calcLogP(
+            ParameterList paramList,
+            ParameterList modelList,
+            ParameterList freqList) throws Exception {
         if(requiresRecalculation()){
             refresh();
         }
-        int dimParam = xList[0].getDimension();
+        int dimParam = paramList.getDimension();
         double logP = 0.0;
         for(int i = 0; i < dimParam; i ++){
-            logP += paramBaseDistr.calcLogP(((ParameterList)xList[0]).getParameter(i));
-        }
-        int dimModel = xList[1].getDimension();
-        for(int i = 0; i < dimModel; i ++){
-            logP += modelBaseDistr.calcLogP(((ParameterList)xList[1]).getParameter(i));
-        }
-        int dimFreq = xList[2].getDimension();
-        for(int i = 0; i < dimFreq; i ++){
-            logP += freqBaseDistr.calcLogP(((ParameterList)xList[2]).getParameter(i));
+            logP += paramBaseDistr.calcLogP(paramList.getParameter(i));
         }
         //System.err.println("flag1: "+logP);
+        int dimModel = modelList.getDimension();
+        for(int i = 0; i < dimModel; i ++){
+            logP += modelBaseDistr.calcLogP(modelList.getParameter(i));
+        }
+        //System.err.println("flag2: "+logP);
+        int dimFreq = freqList.getDimension();
+        for(int i = 0; i < dimFreq; i ++){
+            logP += freqBaseDistr.calcLogP(freqList.getParameter(i));
+        }
+        //System.err.println("flag3: "+logP);
 
         int[] counts = dpValuable.getClusterCounts();
 

@@ -22,9 +22,9 @@ public class DPPointerTest extends TestCase {
         public void setup(){
             try{
 
-                RealParameter2 parameter1 = new RealParameter2(new Double[]{0.0});
-                RealParameter2 parameter2 = new RealParameter2(new Double[]{1.0});
-                RealParameter2 parameter3 = new RealParameter2(new Double[]{2.0});
+                RealParameter parameter1 = new RealParameter(new Double[]{0.0});
+                RealParameter parameter2 = new RealParameter(new Double[]{1.0});
+                RealParameter parameter3 = new RealParameter(new Double[]{2.0});
                 paramList = new ParameterList();
                 paramList.initByName(
                         "parameter", parameter1,
@@ -89,11 +89,11 @@ public class DPPointerTest extends TestCase {
     public void operationEx1(DPPointer pointer,ParameterList paramList){
         try{
 
-            RealParameter2 newVal = new RealParameter2(new Double[]{3.0});
+            RealParameter newVal = new RealParameter(new Double[]{3.0});
             int index = 3;
             int[] assignment = new int[]{0,2,1,1,2};
-            RealParameter2[] expectedPointer= new RealParameter2[assignment.length];
-            RealParameter2[] expectedList = new RealParameter2[assignment.length];
+            RealParameter[] expectedPointer= new RealParameter[assignment.length];
+            RealParameter[] expectedList = new RealParameter[assignment.length];
             operation1(pointer, paramList, index, newVal,assignment,expectedPointer,expectedList);
 
             for(int i = 0; i < expectedPointer.length; i++)
@@ -115,7 +115,7 @@ public class DPPointerTest extends TestCase {
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
 
             index = 0;
-            newVal = new RealParameter2(new Double[]{4.0});
+            newVal = new RealParameter(new Double[]{4.0});
             assignment = new int[]{0,1,1,3,2};
             operation3(pointer, paramList, index, newVal,assignment,expectedPointer,expectedList);
 
@@ -138,7 +138,7 @@ public class DPPointerTest extends TestCase {
             for(int i = 0; i < paramList.getDimension(); i++)
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
 
-            newVal = new RealParameter2(new Double[]{5.0});
+            newVal = new RealParameter(new Double[]{5.0});
             index = 4;
             //assignment = new int[]{3,0,0,1,1};
             operation5(pointer, paramList, index, newVal);
@@ -163,7 +163,7 @@ public class DPPointerTest extends TestCase {
             for(int i = 0; i < paramList.getDimension(); i++)
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
 
-            newVal = new RealParameter2(new Double[]{6.0});
+            newVal = new RealParameter(new Double[]{6.0});
             index = 0;
             //assignment = new int[]{3,0,0,1,1};
             operation7(pointer, paramList, index, newVal);
@@ -200,7 +200,7 @@ public class DPPointerTest extends TestCase {
             DPPointer pointer,
             ParameterList paramList,
             int index,
-            RealParameter2 newVal,
+            RealParameter newVal,
             int[] assignment,
             RealParameter[] expectedPointer,
             RealParameter[] expectedList) throws Exception{

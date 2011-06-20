@@ -26,7 +26,7 @@ public class ParameterListPrior extends Prior{
         m_x.setRule(Input.Validate.OPTIONAL);
     }
 
-    private boolean applyToList;
+    boolean applyToList;
     public void initAndValidate(){
         super.initAndValidate();
         applyToList = applyToListInput.get();
@@ -53,4 +53,5 @@ public class ParameterListPrior extends Prior{
 	}
 
 
+ 
 }

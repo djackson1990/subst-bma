@@ -2,8 +2,8 @@
        namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter:beast.math.distributions'>
 
     <input spec="ParameterList" id="parameterList">
-        <parameter spec="RealParameter2" id="parameter1" value="0.2" upper="1.0" lower="0.0"/>
-        <parameter spec="RealParameter2" id="parameter2" value="0.1" upper="1.0" lower="0.0"/>
+        <parameter spec="RealParameter" id="parameter1" value="0.2" upper="1.0" lower="0.0"/>
+        <parameter spec="RealParameter" id="parameter2" value="0.1" upper="1.0" lower="0.0"/>
     </input>
 
     <input spec="DPPointer" id="pointer">

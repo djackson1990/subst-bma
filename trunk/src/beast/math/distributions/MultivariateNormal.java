@@ -54,10 +54,7 @@ public class MultivariateNormal extends ParametricDistribution implements Multiv
         for(int i = 0;i < xVals.length;i++){
             xVals[i] = x.getArrayValue(i);
         }
-        double logP = logPdf(xVals);
-        //System.err.println("logP: "+logP);
-
-		return logP;
+		return logPdf(xVals);
     }
 
 	@Override
@@ -100,6 +97,25 @@ public class MultivariateNormal extends ParametricDistribution implements Multiv
 
     public double[] getMean() {
         return mean;
+    }
+
+    public RealParameter[] sample(int size){
+        RealParameter[] samples = new RealParameter[size];
+        try{
+            for(int i =0; i < samples.length;i++){
+                double[] sample = sample();
+                Double[] sampleVals = new Double[sample.length];
+                for(int j = 0; j < sampleVals.length;j++){
+                    sampleVals[j] = sample[j];
+                }
+                samples[i] = new RealParameter(sampleVals);
+            }
+        }catch(Exception e){
+            throw new RuntimeException(e);
+
+        }
+        return samples;
+
     }
 
     public double[] sample(){

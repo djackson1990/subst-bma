@@ -11,28 +11,28 @@ import java.util.List;
  * @author Chieh-Hsi Wu
  */
 @Description("This class stores a list of RealParameters objects, this is like a stateNode version of the CompoundValuable.")
-public class CompoundParameter extends RealParameter2{
-    public Input<List<RealParameter2>> parametersInput =
-                new Input<List<RealParameter2>>("parameter", "refrence to a parameter", new ArrayList<RealParameter2>(), Input.Validate.REQUIRED);
+public class CompoundParameter extends RealParameter{
+    public Input<List<RealParameter>> parametersInput =
+                new Input<List<RealParameter>>("parameter", "refrence to a parameter", new ArrayList<RealParameter>(), Input.Validate.REQUIRED);
 
 
     private int[][] parameterIndex;
-    private ArrayList<RealParameter2> parameters;
+    private ArrayList<RealParameter> parameters;
     private int parameterCount;
     private int dimension;
 
     public CompoundParameter(){
         m_pValues.setRule(Input.Validate.OPTIONAL);
     }
-    public CompoundParameter(RealParameter2[] parameters){
+    public CompoundParameter(RealParameter[] parameters){
         m_pValues.setRule(Input.Validate.OPTIONAL);
         initAndValidate(parameters);
     }
 
     
     public void initAndValidate(){
-        List<RealParameter2> parameters = parametersInput.get();
-        RealParameter2[] parameterArray = new RealParameter2[parameters.size()];
+        List<RealParameter> parameters = parametersInput.get();
+        RealParameter[] parameterArray = new RealParameter[parameters.size()];
         for(int i = 0; i < parameters.size();i++){
             parameterArray[i] =  parameters.get(i);
         }
@@ -41,12 +41,12 @@ public class CompoundParameter extends RealParameter2{
     }
 
 
-    public void initAndValidate(RealParameter2[] parameters){
+    public void initAndValidate(RealParameter[] parameters){
         // determine dimension
         dimension = 0;
         parameterCount  = parameters.length;
-        this.parameters = new ArrayList<RealParameter2>();
-		for (RealParameter2 parameter : parameters) {
+        this.parameters = new ArrayList<RealParameter>();
+		for (RealParameter parameter : parameters) {
 			dimension += parameter.getDimension();
             this.parameters.add(parameter);
 		}
@@ -68,7 +68,7 @@ public class CompoundParameter extends RealParameter2{
     public void checkSharedBounds(){
         double lower0 = parameters.get(0).getLower();
         double upper0 = parameters.get(0).getUpper();
-        for(RealParameter2 parameter: parameters){
+        for(RealParameter parameter: parameters){
             System.err.println(parameter.getLower()+" "+parameter.getUpper());
             if(parameter.getLower() != lower0 || parameter.getUpper() != upper0)
                 throw new RuntimeException("All parameters must share the same upper and lower bound");
@@ -95,13 +95,13 @@ public class CompoundParameter extends RealParameter2{
     }
 
     public void store() {
-        for (RealParameter2 parameter : parameters) {
+        for (RealParameter parameter : parameters) {
             parameter.store();
         }
     }
 
     public void restore() {
-        for (RealParameter2 parameter : parameters) {
+        for (RealParameter parameter : parameters) {
             parameter.restore();
         }
     }
@@ -111,12 +111,11 @@ public class CompoundParameter extends RealParameter2{
     	try {
 	        @SuppressWarnings("unchecked")
 			
-            RealParameter2[] copiedParameters = new RealParameter2[parameterCount];
+            RealParameter[] copiedParameters = new RealParameter[parameterCount];
 	        for(int i = 0; i <  parameterCount;i++){
-                copiedParameters[i]=(RealParameter2)(parameters.get(i)).copy();
+                copiedParameters[i]=(RealParameter)(parameters.get(i)).copy();
             }
-            CompoundParameter copy = new CompoundParameter(copiedParameters);
-	        return copy;
+            return new CompoundParameter(copiedParameters);
     	} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -126,7 +125,7 @@ public class CompoundParameter extends RealParameter2{
     @Override
     public void setEverythingDirty(final boolean isDirty) {
     	setSomethingIsDirty(isDirty);
-    	for(RealParameter2 parameter: parameters){
+    	for(RealParameter parameter: parameters){
             parameter.setEverythingDirty(isDirty);
         }
 
@@ -154,7 +153,7 @@ public class CompoundParameter extends RealParameter2{
     public Double[] getValues() {
         int k = 0;
         Double[] values = new Double[dimension];
-        for(RealParameter2 parameter: parameters){
+        for(RealParameter parameter: parameters){
             int dim = parameter.getDimension();
             for(int i = 0; i < dim;i++){
                 values[k++] = parameter.getValue(i);
@@ -188,7 +187,7 @@ public class CompoundParameter extends RealParameter2{
         final StringBuffer buf = new StringBuffer();
         buf.append(m_sID).append("[").append(getDimension()).append("] ");
         buf.append("(").append(m_fLower).append(",").append(m_fUpper).append("): ");
-        for(RealParameter2 parameter: parameters){
+        for(RealParameter parameter: parameters){
             int dim = parameter.getDimension();
             for(int i = 0; i < dim; i++) {
                 buf.append(parameter.getValue(i)).append(" ");

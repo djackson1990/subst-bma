@@ -86,7 +86,7 @@ public class DirichletProcessPriorSampler extends Operator {
         try{
 
             //Generate a sample of proposals
-            RealParameter2[] preliminaryProposals = sampleFromBaseDistribution(dimValue);
+            RealParameter[] preliminaryProposals = sampleFromBaseDistribution(dimValue);
             int dimList = paramList.getDimension();
             int i;
             double concVal =dp.getConcParameter();
@@ -135,8 +135,8 @@ public class DirichletProcessPriorSampler extends Operator {
         return Double.POSITIVE_INFINITY;
     }
 
-    public RealParameter2[] sampleFromBaseDistribution(int dimValue) throws Exception{
-        RealParameter2[] preliminaryProposals = new RealParameter2[sampleSize];
+    public RealParameter[] sampleFromBaseDistribution(int dimValue) throws Exception{
+        RealParameter[] preliminaryProposals = new RealParameter[sampleSize];
 
         for(int i = 0; i < sampleSize; i++){
 
@@ -146,7 +146,7 @@ public class DirichletProcessPriorSampler extends Operator {
                 sample[j] = baseDistr.inverseCumulativeProbability(Randomizer.nextDouble());
                 //System.err.print(sample[j]+" ");
             }
-            preliminaryProposals[i] = new RealParameter2(sample);
+            preliminaryProposals[i] = new RealParameter(sample);
 
         }
         //System.err.println();
