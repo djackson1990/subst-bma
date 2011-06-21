@@ -4,7 +4,7 @@ import beast.core.parameter.*;
 import beast.core.Input;
 import beast.core.Distribution;
 import beast.core.Operator;
-import beast.math.distributions.DirichletProcess;
+import beast.core.Description;
 import beast.math.distributions.ParametricDistribution;
 import beast.math.distributions.NtdDP;
 import beast.util.Randomizer;
@@ -12,36 +12,37 @@ import beast.util.Randomizer;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Gibbs sampler with DPP for NtdBMA.")
 public class NtdBMADPPGibbsSampler extends Operator {
     public Input<DPPointer> parameterPointersInput = new Input<DPPointer>(
-            "pointers",
+            "parameterPointers",
             "array which points a set of unique parameter values",
             Input.Validate.REQUIRED
     );
     public Input<ParameterList> parameterListInput = new Input<ParameterList>(
-            "xList",
+            "parameterList",
             "points at which the density is calculated",
             Input.Validate.REQUIRED
     );
 
     public Input<DPPointer> modelPointersInput = new Input<DPPointer>(
-            "pointers",
+            "modelPointers",
             "array which points a set of unique parameter values",
             Input.Validate.REQUIRED
     );
     public Input<ParameterList> modelListInput = new Input<ParameterList>(
-            "xList",
+            "modelList",
             "points at which the density is calculated",
             Input.Validate.REQUIRED
     );
 
     public Input<DPPointer> freqPointersInput = new Input<DPPointer>(
-            "pointers",
+            "freqPointers",
             "array which points a set of unique parameter values",
             Input.Validate.REQUIRED
     );
     public Input<ParameterList> freqListInput = new Input<ParameterList>(
-            "xList",
+            "freqList",
             "points at which the density is calculated",
             Input.Validate.REQUIRED
     );    
@@ -110,8 +111,8 @@ public class NtdBMADPPGibbsSampler extends Operator {
         int index = Randomizer.nextInt(dimPointer);
         //System.err.println("index: "+index+" "+pointers.getParameterValue(0)+" "+pointers.getParameterValue(1));
         RealParameter currParamVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
-        RealParameter currModelVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
-        RealParameter currFreqVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
+        //RealParameter currModelVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
+        //RealParameter currFreqVal = paramList.getParameter(paramPointers.indexInList(index,paramList));
 
         int listIndex = paramList.indexOf(currParamVal);
 
@@ -119,7 +120,9 @@ public class NtdBMADPPGibbsSampler extends Operator {
         Distribution lik = likelihoodInput.get();
 
         //Get the dimension of the parameter
-        int dimValue = paramList.getParameterDimension();
+        int paramDimValue = paramList.getParameterDimension();
+        //int modelDimValue = modelList.getParameterDimension();
+        int freqDimValue = freqList.getParameterDimension();
 
         //Count the number of items in each cluster but excluding the one about to be updated
         int[] clusterCounts = dpVal.getClusterCounts();
@@ -184,8 +187,8 @@ public class NtdBMADPPGibbsSampler extends Operator {
                 logFullCond[i] = Math.log(concVal/sampleSize/(dimPointer - 1 + concVal));
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
                 paramPointers.point(index, paramPreProposals[i-counter]);
-                paramPointers.point(index, modelPreProposals[i-counter]);
-                paramPointers.point(index, freqPreProposals[i-counter]);
+                modelPointers.point(index, modelPreProposals[i-counter]);
+                freqPointers.point(index, freqPreProposals[i-counter]);
                 logFullCond[i] = logFullCond[i]+(lik).calculateLogP();
                 //System.err.println("lgc and lik: "+logFullCond[i]+" "+lik.calculateLogP());
                 //System.err.println("logFullCond[i]: "+logFullCond[i]+", val: "+preliminaryProposals[i-counter]);
@@ -217,30 +220,38 @@ public class NtdBMADPPGibbsSampler extends Operator {
             int proposedIndex = Randomizer.randomChoicePDF(fullConditional);
             //System.err.println("proposedIndex: "+proposedIndex);
             if(proposedIndex < counter){
+                //System.err.println("proposed existingVal, "+paramList.getDimension());
+
                 //take up an existing value
                 paramPointers.point(index, existingParamVals[proposedIndex]);
                 modelPointers.point(index, existingModelVals[proposedIndex]);
                 freqPointers.point(index, existingFreqVals[proposedIndex]);
                 //if(this.counter>6000)
-                //    System.err.println("proposedIndex: "+proposedIndex+"; existingVal: "+existingVals[proposedIndex]);
+
             }else{
                 RealParameter paramProposal = paramPreProposals[proposedIndex-counter];
                 RealParameter modelProposal = modelPreProposals[proposedIndex-counter];
                 RealParameter freqProposal = freqPreProposals[proposedIndex-counter];
                 if(zeroCount > -1){
                     int paramListIndex = paramPointers.indexInList(index,paramList);
-
-                    for(i = 0; i < dimValue;i++){
+                    //System.err.println("paramListIndex: "+paramListIndex);
+                    for(i = 0; i < paramDimValue;i++){
                         paramList.setValue(paramListIndex,i,paramProposal.getValue(i));
-                        modelList.setValue(paramListIndex,i,modelProposal.getValue(i));
-                        freqList.setValue(paramListIndex,i,freqProposal.getValue(i));
-
-
                     }
+
+                    modelList.setValue(paramListIndex,0,modelProposal.getValue(0));
+
+                    for(i = 0; i < freqDimValue; i++){
+                        freqList.setValue(paramListIndex,i,freqProposal.getValue(i));
+                    }
+
+
+
                     zeroCount = -1;
 
                 }else{
                 //take up a new value
+                    //System.err.println("propose newVal");
                     paramPointers.point(index, paramPreProposals[proposedIndex-counter]);
                     modelPointers.point(index, modelPreProposals[proposedIndex-counter]);
                     freqPointers.point(index, freqPreProposals[proposedIndex-counter]);
@@ -254,7 +265,7 @@ public class NtdBMADPPGibbsSampler extends Operator {
                 }
                 //System.err.println("paramList size2: "+paramList.getDimension());
                 //if(this.counter>6000)
-                //    System.err.println("proposedIndex: "+proposedIndex+"; newVal: "+preliminaryProposals[proposedIndex-counter]);
+                    //System.err.println("propose newVal");
             }
 
             /*for(i = 0; i < clusterCounts.length;i++){
@@ -264,6 +275,8 @@ public class NtdBMADPPGibbsSampler extends Operator {
             //If any cluster has no member then it is removed.
             if(zeroCount > -1){
                 paramList = parameterListInput.get(this);
+                modelList = modelListInput.get(this);
+                freqList = freqListInput.get(this);
                 paramList.removeParameter(zeroCount);
                 modelList.removeParameter(zeroCount);
                 freqList.removeParameter(zeroCount);

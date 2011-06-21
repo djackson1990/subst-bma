@@ -157,6 +157,11 @@ public class DPPointer extends StateNode {
     }
 
     public int indexInList(int dim, ParameterList paramList){
+        /*System.err.println("parameter: "+parameters[dim]);
+        System.err.println("parameterList: "+paramList.getDimension());
+        for(int i = 0; i < paramList.getDimension();i++){
+            System.err.println(paramList.getParameter(i));
+        }*/
         return paramList.indexOf(parameters[dim]);
     }
 

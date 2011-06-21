@@ -60,8 +60,8 @@ public class PLExtendedRealRandomWalkOperator extends ExtendedRealRandomWalkOper
         }*/
         /*System.err.println("old: "+value+", new: "+newValue+", step: "+step);
         System.err.println("iParam: "+iParam+
-                ", lower: "+parameterList.getParameterLower(iParam)+
-                ", upper: "+parameterList.getParameterUpper(iParam));*/
+                ", lower: "+parameterList.getLower(iParam)+
+                ", upper: "+parameterList.getUpper(iParam));*/
         if (newValue < parameterList.getParameterLower(iParam) || newValue > parameterList.getParameterUpper(iParam)) {
             //System.err.println("flag1");
         	return Double.NEGATIVE_INFINITY;

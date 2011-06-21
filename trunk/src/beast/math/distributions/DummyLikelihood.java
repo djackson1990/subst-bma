@@ -1,9 +1,6 @@
-package beast.evolution.likelihood;
+package beast.math.distributions;
 
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.CalculationNode;
-import beast.core.State;
+import beast.core.*;
 
 
 import java.util.Random;
@@ -15,7 +12,7 @@ import java.util.ArrayList;
  */
 
 public class DummyLikelihood extends Distribution {
-    public Input<List<CalculationNode>> calcNodes = new  Input<List<CalculationNode>>("calcNode","Some sort of input", new ArrayList<CalculationNode>());
+    public Input<List<Plugin>> calcNodes = new  Input<List<Plugin>>("plugin","Some sort of input", new ArrayList<Plugin>());
 
 	@Override
 	public void initAndValidate() {}

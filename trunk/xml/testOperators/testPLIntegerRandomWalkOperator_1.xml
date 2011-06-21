@@ -1,0 +1,38 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter'>
+
+    <!--parameter spec='RealParameter' name='indicators' id='indicators' dimension="5" value="false"/-->
+    <input spec="CompoundParameter" id="cp1">
+        <parameter spec="RealParameter" id="parameter1" value="0.0" upper="3.0" lower="-2.0"/>
+        <parameter spec="RealParameter" id="parameter2" value="0.0" upper="3.0" lower="-2.0"/>
+        <parameter spec="RealParameter" id="parameter3" value="0.0" upper="3.0" lower="-2.0"/>
+    </input>
+
+    <input spec="CompoundParameter" id="cp2">
+        <parameter spec="RealParameter" id="parameter4" value="0.0" upper="3" lower="-2"/>
+        <parameter spec="RealParameter" id="parameter5" value="0.0" upper="3" lower="-2"/>
+        <parameter spec="RealParameter" id="parameter6" value="0.0" upper="3" lower="-2"/>
+    </input>
+
+    <input spec="ParameterList" id="parameterList">
+        <parameter idref="cp1"/>
+        <parameter idref="cp2"/>
+    </input>
+
+
+    <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
+        <state>
+            <input name='stateNode' idref='parameterList'/>
+        </state>
+
+	    <distribution spec="CompoundDistribution" id="posterior"/>
+
+        <operator id="plirwop" spec="PLIntegerRandomWalkOperator" windowSize="3" weight="1">
+            <input name="parameters" idref="parameterList"/>
+        </operator>
+        <logger logEvery="100" fileName="testPLIRWO_1.log">
+            <log idref="parameterList"/>
+        </logger>
+    </run>
+
+</beast>

@@ -2,15 +2,14 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.CalculationNode;
 import beast.core.Input;
+import beast.core.PluginList;
 import beast.core.parameter.*;
-import beast.evolution.sitemodel.SiteModel;
-
 import java.util.ArrayList;
 
 /**
  * @author Chieh-Hsi Wu
  */
-public class DPNtdBMA extends CalculationNode {
+public class DPNtdBMA extends CalculationNode implements PluginList {
     ArrayList<NtdBMA> ntdBMAs = new ArrayList<NtdBMA>();
     ArrayList<NtdBMA> storedNtdBMAs = new ArrayList<NtdBMA>();
 
@@ -22,7 +21,7 @@ public class DPNtdBMA extends CalculationNode {
     );
 
     public Input<ParameterList> freqListInput = new Input<ParameterList>(
-            "paramList",
+            "freqList",
             "A list of unique parameter values",
             Input.Validate.REQUIRED
     );
@@ -35,20 +34,20 @@ public class DPNtdBMA extends CalculationNode {
 
 
     //assignment
-    public Input<DPPointer> pointersInput = new Input<DPPointer>(
-            "pointers",
+    public Input<DPPointer> paramPointersInput = new Input<DPPointer>(
+            "paramPointers",
             "array which points a set of unique parameter values",
             Input.Validate.REQUIRED
     );
 
     public Input<DPPointer> modelPointersInput = new Input<DPPointer>(
-            "pointers",
+            "modelPointers",
             "array which points a set of unique model",
             Input.Validate.REQUIRED
     );
 
     public Input<DPPointer> freqPointersInput = new Input<DPPointer>(
-            "pointers",
+            "freqPointers",
             "array which points a set of unique model",
             Input.Validate.REQUIRED
     );
@@ -58,8 +57,8 @@ public class DPNtdBMA extends CalculationNode {
     private ParameterList modelList;
     private ParameterList freqList;
     private DPPointer pointers;
-    private DPPointer modelPointers;
-    private DPPointer freqPointers;
+    //private DPPointer modelPointers;
+    //private DPPointer freqPointers;
 
     private int[] pointerIndices;
 
@@ -68,7 +67,7 @@ public class DPNtdBMA extends CalculationNode {
         paramList = paramListInput.get();
         modelList = modelListInput.get();
         freqList = freqListInput.get();
-        pointers = pointersInput.get();
+        pointers = freqPointersInput.get();
 
         int dimParamList = paramList.getDimension();
         for(int i = 0; i < dimParamList;i++){
@@ -81,8 +80,13 @@ public class DPNtdBMA extends CalculationNode {
             );
             
         }
+        System.err.println("model counts: "+ntdBMAs.size());
         pointerIndices = new int[pointers.getDimension()];
         
+    }
+
+    public int getDimension(){
+        return ntdBMAs.size();
     }
 
     public NtdBMA getSiteModel(int index){
@@ -95,15 +99,15 @@ public class DPNtdBMA extends CalculationNode {
 
     private void addSiteModel(){
 
-        NtdBMA ntdBMA = new NtdBMA();
+
         RealParameter parameter = paramList.getParameter(paramList.getDimension()-1);
         RealParameter model = modelList.getParameter(modelList.getDimension()-1);
         RealParameter freqs = freqList.getParameter(freqList.getDimension()-1);
         Frequencies frequencies = new Frequencies();
         try{
             frequencies.initByName("frequencies",freqs);
-        }catch(Exception e ){
-            new RuntimeException(e);
+        }catch(Exception e){
+            throw new RuntimeException(e);
         }
 
         ntdBMAs.add(createNtdBMA(parameter,model,freqs));
@@ -138,7 +142,7 @@ public class DPNtdBMA extends CalculationNode {
             frequencies.initByName("frequencies",freqs);
 
         }catch(Exception e ){
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
 
         NtdBMA  ntdBMA = new NtdBMA(
@@ -164,20 +168,25 @@ public class DPNtdBMA extends CalculationNode {
         //System.err.println("dirty0");
         if(paramList.somethingIsDirty()){
             ChangeType changeType = paramList.getChangeType();
+            //System.err.println("dirty0: "+changeType);
             if(changeType == ChangeType.ADDED){
+                //System.err.println(getID()+"model added");
                 addSiteModel();
-                setupPointerIndices();
-                changeType = ChangeType.ADDED;
+                //setupPointerIndices();
+                this.changeType = ChangeType.ADDED;
 
             }else if(changeType == ChangeType.REMOVED){
+                ///System.err.println(getID()+"model removed");
                 removeSiteModel(paramList.getRemovedIndex());
-                setupPointerIndices();
-                changeType = ChangeType.REMOVED;
+                //setupPointerIndices();
+                this.changeType = ChangeType.REMOVED;
+
             }else if(changeType == ChangeType.VALUE_CHANGED){
-                changeType = ChangeType.VALUE_CHANGED;
+                //System.err.println(getID()+": model changed");
+                this.changeType = ChangeType.VALUE_CHANGED;
 
             }else{
-                changeType = ChangeType.ALL;
+                this.changeType = ChangeType.ALL;
             }
             recalculate = true;
             //System.err.println("dirty1");

@@ -184,7 +184,189 @@ public class NtdDirichletProcessTest extends TestCase {
 
     };
 
-    Instance[] all = new Instance[]{test0};
+    Instance test1 = new Instance(){
+
+
+
+        public String getMean(){
+
+            return "7 9 5 10 2 9";
+        }
+
+        public MatrixParameter getPrecision()throws Exception{
+            MatrixParameter precision = new MatrixParameter();
+
+            RealParameter row1  =new RealParameter();
+            row1.initByName(
+                    "value","8 6 4 1 6 3",
+                    "lower",Double.NEGATIVE_INFINITY,
+                    "upper",Double.POSITIVE_INFINITY
+            );
+
+            RealParameter row2  =new RealParameter();
+            row2.initByName(
+                    "value","6 12 6 1 6 3",
+                    "lower",Double.NEGATIVE_INFINITY,
+                    "upper",Double.POSITIVE_INFINITY
+            );
+
+            RealParameter row3  =new RealParameter();
+            row3.initByName(
+                    "value","4 6 10 6 7 7",
+                    "lower",Double.NEGATIVE_INFINITY,
+                    "upper",Double.POSITIVE_INFINITY
+            );
+
+            RealParameter row4  =new RealParameter();
+            row4.initByName(
+                    "value","1 1 6 21 9 10",
+                    "lower",Double.NEGATIVE_INFINITY,
+                    "upper",Double.POSITIVE_INFINITY
+            );
+
+            RealParameter row5  =new RealParameter();
+            row5.initByName(
+                    "value","6 6 7 9 22 3",
+                    "lower",Double.NEGATIVE_INFINITY,
+                    "upper",Double.POSITIVE_INFINITY
+            );
+
+            RealParameter row6  =new RealParameter();
+            row6.initByName(
+                    "value","3 3 7 10 3 12",
+                    "lower",Double.NEGATIVE_INFINITY,
+                    "upper",Double.POSITIVE_INFINITY
+            );
+
+            precision.initByName(
+                    "parameter",row1,
+                    "parameter",row2,
+                    "parameter",row3,
+                    "parameter",row4,
+                    "parameter",row5,
+                    "parameter",row6
+            );
+            //System.out.println(precision==null);
+            return precision;
+        }
+
+
+        public ParametricDistribution getParamBaseDistr() throws Exception{
+
+            RealParameter mean = new RealParameter();
+
+            mean.initByName(
+                    "value",getMean(),
+                    "lower",Double.NEGATIVE_INFINITY,
+                    "upper",Double.POSITIVE_INFINITY);
+
+            MatrixParameter precision = getPrecision();
+
+            MultivariateNormal multiNorm = new MultivariateNormal();
+            multiNorm.initByName(
+                    "mean",mean,
+                    "precision", precision);
+            return multiNorm;
+        }
+
+        public ParametricDistribution getModelBaseDistr() throws Exception{
+            IntegerUniformDistribution intergerUniform = new IntegerUniformDistribution();
+            intergerUniform.initByName(
+                    "lower",0.0,
+                    "upper", 5.0);
+            return intergerUniform;
+        }
+
+        public ParametricDistribution getFreqBaseDistr() throws Exception{
+
+            DirichletDistribution dirichlet = new DirichletDistribution();
+            RealParameter alpha = new RealParameter(new Double[]{1.0,1.0,1.0,1.0});
+            dirichlet.initByName("alpha",alpha);
+            return dirichlet;
+        }
+
+
+        public ParameterList getParamList() throws Exception {
+            RealParameter param1 = new RealParameter(new Double[]{7.841304,8.933441,5.031969,10.48876,1.645417,8.288646});
+            RealParameter param2 = new RealParameter(new Double[]{6.22691,8.99749,5.23868,9.79864,2.35423,8.77663});
+            RealParameter param3 = new RealParameter(new Double[]{7.47852,8.62351,4.60867,9.6396,2.33618,9.53719});
+            ParameterList paramList = new ParameterList();
+            paramList.initByName(
+                    "parameter", param1,
+                    "parameter", param2,
+                    "parameter", param3
+            );
+            return paramList;
+        }
+
+        public ParameterList getModelList() throws Exception{
+            ParameterList modelList = new ParameterList();
+            RealParameter param1 = new RealParameter(new Double[]{3.0});
+            RealParameter param2 = new RealParameter(new Double[]{4.0});
+            RealParameter param3 = new RealParameter(new Double[]{5.0});
+            modelList.initByName(
+                    "parameter", param1,
+                    "parameter", param2,
+                    "parameter", param3
+            );
+            return modelList;
+
+        }
+
+        public ParameterList getFreqList() throws Exception{
+
+            RealParameter param1 = new RealParameter(new Double[]{0.0927, 0.0529, 0.2344, 0.6200});
+            RealParameter param2 = new RealParameter(new Double[]{0.0294, 0.6254, 0.2657, 0.0795});
+            RealParameter param3 = new RealParameter(new Double[]{0.2578, 0.4553, 0.0605, 0.2264});
+            ParameterList freqList = new ParameterList();
+            freqList.initByName(
+                    "parameter", param1,
+                    "parameter", param2,
+                    "parameter", param3
+            );
+            return freqList;
+
+        }
+
+        public RealParameter getAlpha () throws Exception{
+
+            return new RealParameter(new Double[]{0.5});
+        }
+
+        public DPValuable getDPValuable() throws Exception{
+            IntegerParameter assignment = new IntegerParameter();
+            assignment.initByName("value","0 1 0 2 0 0 1 0");
+
+            ParameterList paramList = getParamList();
+
+            DPPointer dpPointer = new DPPointer();
+            //System.err.println(paramList.getParameter(0));
+            dpPointer.initByName(
+                    "uniqueParameter",paramList.getParameter(0),
+                    "uniqueParameter",paramList.getParameter(1),
+                    "uniqueParameter",paramList.getParameter(2),
+                    "initialAssignment",assignment
+                );
+
+            DPValuable dpValuable = new DPValuable();
+            dpValuable.initByName(
+                    "paramList",paramList,
+                    "pointers", dpPointer
+            );
+            return dpValuable;
+
+        }
+
+        public double getExpectedLogP(){
+            return -12.2123338001;
+        }
+
+
+    };
+
+
+
+    Instance[] all = new Instance[]{test0,test1};
     public void testNtdDirichletProcess(){
         try{
             for(Instance test: all){

@@ -3,6 +3,7 @@ package beast.core.parameter;
 import beast.core.Description;
 import beast.core.StateNode;
 import beast.core.Input;
+import beast.core.PluginList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import org.w3c.dom.Node;
  * @author Chieh-Hsi Wu
  */
 @Description("This class stores a list of parameters and the size of the list can change.")
-public class ParameterList extends StateNode {
+public class ParameterList extends StateNode implements PluginList {
     public Input<List<RealParameter>> parametersInput =
                 new Input<List<RealParameter>>("parameter", "refrence to a parameter", new ArrayList<RealParameter>(), Input.Validate.REQUIRED);
 
@@ -45,12 +46,14 @@ public class ParameterList extends StateNode {
         //System.err.println("add parameter");
         startEditing(null);
         parameterList.add(parameter);
+        changeType = ChangeType.ADDED;
         //throw new RuntimeException("stopping fucking with my code!");
     }
 
     public void addParameterQuietly(RealParameter parameter){
         parameterList.add(parameter);
         changeType = ChangeType.ADDED;
+        //System.err.println(getID()+":added");
 
     }
     public void removeParameter(int pIndex){
@@ -59,6 +62,7 @@ public class ParameterList extends StateNode {
         parameterList.remove(pIndex);
         changeType = ChangeType.REMOVED;
         removedIndex = pIndex;
+        //System.err.println(getID()+": removed");
         //throw new RuntimeException("stopping fucking with my code!");
     }
     public void setValue(int pIndex, int dim, double value) {
@@ -68,6 +72,7 @@ public class ParameterList extends StateNode {
         parameterList.get(pIndex).setEverythingDirty(true);
         changedIndex = pIndex;
         changeType = ChangeType.VALUE_CHANGED;
+        //System.err.println(getID()+": changed");
         //throw new RuntimeException("stopping fucking with my code!");
     }
 
@@ -84,11 +89,11 @@ public class ParameterList extends StateNode {
 
     }
 
-    public double getParameterUpper(){
+    public double getUpper(){
         return getParameter(0).getUpper();
     }
 
-    public double getParameterLower(){
+    public double getLower(){
         return getParameter(0).getLower();
     }
 
@@ -154,6 +159,7 @@ public class ParameterList extends StateNode {
         for(Parameter parameter:parameterList){
             parameter.setEverythingDirty(isDirty);
         }
+        changeType = ChangeType.ALL;
 
     }
 
@@ -249,5 +255,5 @@ public class ParameterList extends StateNode {
         throw new RuntimeException("Not appropriate for a list!");
     }
 
-    
+
 }

@@ -17,7 +17,7 @@ public class NetworkIntRandomWalkOperator extends Operator {
 
 
     public Input<ArrayList<Vertex>> vertices = new Input<ArrayList<Vertex>>("vertex", "Unique id number of the vertex.", new ArrayList<Vertex>());
-    public Input<IntegerParameter> parameter = new Input<IntegerParameter>("parameter", "Vertex indicator which indicates the current vertex in the network.",Input.Validate.REQUIRED);
+    public Input<IntegerParameter> parameterInput = new Input<IntegerParameter>("parameter", "Vertex indicator which indicates the current vertex in the network.",Input.Validate.REQUIRED);
     double[][] logHastingsRatios;
     boolean[][] permittedRoutes;
     int[][] neighbours;
@@ -27,9 +27,9 @@ public class NetworkIntRandomWalkOperator extends Operator {
     public void initAndValidate() throws Exception {
         ArrayList<Vertex> vertices = this.vertices.get();
         vertexCount = vertices.size();
-        for(int i = 0; i < vertices.size(); i++){
-                    System.err.println(vertices.get(i));
-                }
+        for(Vertex vertex:vertices){
+            System.err.println(vertex);
+        }
         
         hasSingleComponent(vertices);
         neighbours = new int[vertices.size()][];
@@ -79,7 +79,7 @@ public class NetworkIntRandomWalkOperator extends Operator {
 
     public double proposal(){
 
-        IntegerParameter parameter = this.parameter.get(this);
+        IntegerParameter parameter = parameterInput.get(this);
         int currVertex = parameter.getValue(0);
         int nextVertex = neighbours[currVertex][Randomizer.nextInt(neighbours[currVertex].length)];
         //System.out.println("currVertex: "+currVertex+ ", nextVertex: "+nextVertex);

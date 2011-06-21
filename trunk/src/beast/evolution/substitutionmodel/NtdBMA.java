@@ -126,7 +126,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     } // initAndValidate
 
     private void initialize(){
-        if(modelChoose.getUpper() > GTR || modelChoose.getUpper() < JC){
+        if(modelChoose.getUpper() > GTR || modelChoose.getLower() < JC){
             System.err.println("The value of model choose needs to be between " + JC + " and " + GTR + "inclusive, " +
                     "where "+ JC + " and " + GTR +" represents JC and GTR repectively");
         }
