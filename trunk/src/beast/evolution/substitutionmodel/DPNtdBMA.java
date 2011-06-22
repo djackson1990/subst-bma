@@ -63,6 +63,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
     //private DPPointer freqPointers;
 
     private int[] pointerIndices;
+    private int removedIndex = -1;
 
     private ChangeType changeType;
     public void initAndValidate(){
@@ -91,7 +92,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         return ntdBMAs.size();
     }
 
-    public NtdBMA getSiteModel(int index){
+    public NtdBMA getModel(int index){
         return ntdBMAs.get(index);
     }
 
@@ -119,6 +120,12 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
 
     private void removeSiteModel(int index){
         ntdBMAs.remove(index);
+        removedIndex = index;
+        //System.err.println("removeNtdModel: "+index);
+    }
+
+    public int getRemovedIndex(){
+        return removedIndex;
     }
 
     public ChangeType getChangeType(){
@@ -130,6 +137,8 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
             pointerIndices[i] = pointers.indexInList(i,paramList);
         }
     }
+
+
 
 
     public NtdBMA createNtdBMA(RealParameter modelParameters, RealParameter modelCode, RealParameter freqs){
@@ -178,7 +187,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
                 this.changeType = ChangeType.ADDED;
 
             }else if(changeType == ChangeType.REMOVED){
-                ///System.err.println(getID()+"model removed");
+                //System.err.println(getID()+"model removed, "+paramList.getRemovedIndex());
                 removeSiteModel(paramList.getRemovedIndex());
                 //setupPointerIndices();
                 this.changeType = ChangeType.REMOVED;
@@ -186,6 +195,9 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
             }else if(changeType == ChangeType.VALUE_CHANGED){
                 //System.err.println(getID()+": model changed");
                 this.changeType = ChangeType.VALUE_CHANGED;
+
+            }else if(changeType == ChangeType.POINTER_CHANGED){
+                this.changeType = ChangeType.POINTER_CHANGED;
 
             }else{
                 this.changeType = ChangeType.ALL;
@@ -195,6 +207,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
 
         }else if (pointers.somethingIsDirty()){
             recalculate = true;
+            this.changeType = ChangeType.POINTER_CHANGED;
         }
 
         return recalculate;

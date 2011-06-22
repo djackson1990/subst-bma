@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 @Description("This class facilitates partition selection by DPP on site rates.")
 
-public class DPSiteModel {
+public class DPRateSiteModel {
 
     private ArrayList<SiteModel> siteModels;
     private ArrayList<SiteModel> storedSiteModels;
@@ -115,7 +115,7 @@ public class DPSiteModel {
             //System.err.println("dirty1: "+i);
             pointerIndices[i] = pointers.indexInList(i,paramList);
         }
-        
+
     }
 
 
@@ -136,8 +136,8 @@ public class DPSiteModel {
                 changeType = ChangeType.REMOVED;
             }else if(changeType == ChangeType.VALUE_CHANGED){
                 changeType = ChangeType.VALUE_CHANGED;
-                
-            }else{
+
+            }else {
                 changeType = ChangeType.ALL;
             }
             recalculate = true;
@@ -180,7 +180,7 @@ public class DPSiteModel {
         storedPointerIndices = temp;
 
 
-        
+
         //System.out.println("restoring");
 
     }
