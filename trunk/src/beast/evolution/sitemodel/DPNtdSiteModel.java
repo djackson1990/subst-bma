@@ -37,7 +37,7 @@ public class DPNtdSiteModel extends CalculationNode implements PluginList {
 
     public Input<RealParameter> muParameterInput = new Input<RealParameter>(
             "mu",
-            "subsitution rate",
+            "subsitution rate for all partitions in an alignment",
             Input.Validate.REQUIRED
     );
 
