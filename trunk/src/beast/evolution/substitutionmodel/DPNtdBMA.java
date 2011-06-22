@@ -100,6 +100,10 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         return ntdBMAs.size();
     }
 
+    public int[] getPointerIndices(){
+        return pointerIndices;
+    }
+
     private void addSiteModel(){
 
 
@@ -132,7 +136,18 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         return changeType;
     }
 
-    public void setupPointerIndices(){
+    public void setupPointerIndices(){        
+        if(changeType == ChangeType.ADDED || changeType == ChangeType.POINTER_CHANGED){
+            int changedIndex = pointers.getLastDirty();
+            pointerIndices[changedIndex] = pointers.indexInList(changedIndex,paramList);
+        }else if (changeType == ChangeType.REMOVED){
+            resetAllPointerIndices();
+        }else if (changeType == ChangeType.ALL){
+            resetAllPointerIndices();
+        }
+    }
+
+    public void resetAllPointerIndices(){
         for(int i = 0; i < pointerIndices.length;i++){
             pointerIndices[i] = pointers.indexInList(i,paramList);
         }
@@ -183,13 +198,13 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
             if(changeType == ChangeType.ADDED){
                 //System.err.println(getID()+"model added");
                 addSiteModel();
-                //setupPointerIndices();
+                setupPointerIndices();
                 this.changeType = ChangeType.ADDED;
 
             }else if(changeType == ChangeType.REMOVED){
                 //System.err.println(getID()+"model removed, "+paramList.getRemovedIndex());
                 removeSiteModel(paramList.getRemovedIndex());
-                //setupPointerIndices();
+                setupPointerIndices();
                 this.changeType = ChangeType.REMOVED;
 
             }else if(changeType == ChangeType.VALUE_CHANGED){
@@ -198,6 +213,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
 
             }else if(changeType == ChangeType.POINTER_CHANGED){
                 this.changeType = ChangeType.POINTER_CHANGED;
+                setupPointerIndices();
 
             }else{
                 this.changeType = ChangeType.ALL;
