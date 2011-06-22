@@ -2,10 +2,12 @@ package beast.math.distributions;
 
 import beast.core.parameter.ParameterList;
 import beast.core.Input;
+import beast.core.Description;
+
 /**
  * @author Chieh-Hsi Wu
  */
-
+@Description("A prior that can take a list of ntd model parameters.")
 public class NtdParameterListPrior extends ParameterListPrior{
     public Input<NtdDP> ntdDPInput =
             new Input<NtdDP>("ntdDP","Dirichlet process for nucleotide model parameters", Input.Validate.REQUIRED);

@@ -1,11 +1,13 @@
 package beast.math.distributions;
 
 import beast.core.parameter.RealParameter;
+import beast.core.Description;
 import beast.util.Randomizer;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Extends Dirichlet class to add the sample method.")
 public class DirichletDistribution extends Dirichlet{
 
     @Override
@@ -29,7 +31,7 @@ public class DirichletDistribution extends Dirichlet{
 
             }
         }catch(Exception e){
-            new RuntimeException(e);
+            throw new RuntimeException(e);
 
         }
         return samples;

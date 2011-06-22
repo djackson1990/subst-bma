@@ -1,11 +1,13 @@
 package beast.math.distributions;
 
 import beast.core.Input;
+import beast.core.Description;
 import beast.core.parameter.ParameterList;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Dirichlet process for model parameters of nucletoide subsitution model.")
 public class NtdDP extends DirichletProcess{
     public Input<ParametricDistribution> paramBaseDistrInput = new Input<ParametricDistribution>(
             "paramBaseDistr",

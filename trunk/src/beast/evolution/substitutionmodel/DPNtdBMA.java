@@ -3,12 +3,14 @@ package beast.evolution.substitutionmodel;
 import beast.core.CalculationNode;
 import beast.core.Input;
 import beast.core.PluginList;
+import beast.core.Description;
 import beast.core.parameter.*;
 import java.util.ArrayList;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("A list of NtdBMA classes for DPP.")
 public class DPNtdBMA extends CalculationNode implements PluginList {
     ArrayList<NtdBMA> ntdBMAs = new ArrayList<NtdBMA>();
     ArrayList<NtdBMA> storedNtdBMAs = new ArrayList<NtdBMA>();

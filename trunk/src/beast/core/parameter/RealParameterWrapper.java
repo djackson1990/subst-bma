@@ -1,8 +1,11 @@
 package beast.core.parameter;
 
+import beast.core.Description;
+
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Wrap around a parameter but only look at one value.")
 public class RealParameterWrapper extends RealParameter{
     private RealParameter parameter;
     private int index;

@@ -92,7 +92,7 @@ public class DPSiteModelOld extends CalculationNode {
 
 
 
-
+    @Description("Wraps around the pointer to create a parameter.")
     class RealParameterWrapper extends RealParameter{
         private int index;
         private DPPointer pointers;

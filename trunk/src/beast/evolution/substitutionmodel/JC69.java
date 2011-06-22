@@ -3,10 +3,12 @@ package beast.evolution.substitutionmodel;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.tree.Node;
+import beast.core.Description;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Implementation of the JC69 model.")
 public class JC69 extends SubstitutionModel.Base{
 
     int STATE_COUNT = 4;

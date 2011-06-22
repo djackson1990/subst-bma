@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
-
+@Description("A class that is well uselful for testing things.")
 public class DummyLikelihood extends Distribution {
     public Input<List<Plugin>> calcNodes = new  Input<List<Plugin>>("plugin","Some sort of input", new ArrayList<Plugin>());
 

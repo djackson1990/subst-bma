@@ -4,12 +4,14 @@ import beast.core.parameter.DPPointer;
 import beast.core.parameter.ParameterList;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.Description;
 import beast.util.Randomizer;
 
 /**
  * @author Chieh-Hsi Wu
  * 
  */
+@Description("Swaps two members in different clusters.")
 public class ClusterSwitchingOperator extends Operator {
     public Input<DPPointer> pointersInput = new Input<DPPointer>(
             "pointers",
