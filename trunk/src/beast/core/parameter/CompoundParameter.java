@@ -11,28 +11,28 @@ import java.util.List;
  * @author Chieh-Hsi Wu
  */
 @Description("This class stores a list of RealParameters objects, this is like a stateNode version of the CompoundValuable.")
-public class CompoundParameter extends RealParameter{
-    public Input<List<RealParameter>> parametersInput =
-                new Input<List<RealParameter>>("parameter", "refrence to a parameter", new ArrayList<RealParameter>(), Input.Validate.REQUIRED);
+public class CompoundParameter extends QuietRealParameter{
+    public Input<List<QuietRealParameter>> parametersInput =
+                new Input<List<QuietRealParameter>>("parameter", "refrence to a parameter", new ArrayList<QuietRealParameter>(), Input.Validate.REQUIRED);
 
 
     private int[][] parameterIndex;
-    private ArrayList<RealParameter> parameters;
+    private ArrayList<QuietRealParameter> parameters;
     private int parameterCount;
     private int dimension;
 
     public CompoundParameter(){
         m_pValues.setRule(Input.Validate.OPTIONAL);
     }
-    public CompoundParameter(RealParameter[] parameters){
+    public CompoundParameter(QuietRealParameter[] parameters){
         m_pValues.setRule(Input.Validate.OPTIONAL);
         initAndValidate(parameters);
     }
 
     
     public void initAndValidate(){
-        List<RealParameter> parameters = parametersInput.get();
-        RealParameter[] parameterArray = new RealParameter[parameters.size()];
+        List<QuietRealParameter> parameters = parametersInput.get();
+        QuietRealParameter[] parameterArray = new QuietRealParameter[parameters.size()];
         for(int i = 0; i < parameters.size();i++){
             parameterArray[i] =  parameters.get(i);
         }
@@ -41,12 +41,12 @@ public class CompoundParameter extends RealParameter{
     }
 
 
-    public void initAndValidate(RealParameter[] parameters){
+    public void initAndValidate(QuietRealParameter[] parameters){
         // determine dimension
         dimension = 0;
         parameterCount  = parameters.length;
-        this.parameters = new ArrayList<RealParameter>();
-		for (RealParameter parameter : parameters) {
+        this.parameters = new ArrayList<QuietRealParameter>();
+		for (QuietRealParameter parameter : parameters) {
 			dimension += parameter.getDimension();
             this.parameters.add(parameter);
 		}
@@ -111,9 +111,9 @@ public class CompoundParameter extends RealParameter{
     	try {
 	        @SuppressWarnings("unchecked")
 			
-            RealParameter[] copiedParameters = new RealParameter[parameterCount];
+            QuietRealParameter[] copiedParameters = new QuietRealParameter[parameterCount];
 	        for(int i = 0; i <  parameterCount;i++){
-                copiedParameters[i]=(RealParameter)(parameters.get(i)).copy();
+                copiedParameters[i]=(QuietRealParameter)(parameters.get(i)).copy();
             }
             return new CompoundParameter(copiedParameters);
     	} catch (Exception e) {

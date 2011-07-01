@@ -1,205 +1,270 @@
 package beast.evolution.likelihood;
 
 import beast.core.*;
-import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.AlignmentSubset;
-import beast.evolution.tree.Tree;
+import beast.core.parameter.ChangeType;
+import beast.evolution.sitemodel.DPNtdSiteModel;
 import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.sitemodel.DPSiteModelOld;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.tree.Tree;
 import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.branchratemodel.StrictClockModel;
-import beast.evolution.substitutionmodel.HKY;
-import beast.evolution.substitutionmodel.Frequencies;
-import test.beast.BEASTTestCase;
 
-import java.util.Random;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author Chieh-Hsi Wu
  */
-@Description("This class tree likelihood computation with data partitioning.")
-public class DPTreeLikelihood extends Distribution {
+public class DPTreeLikelihood extends Distribution implements PluginList {
 
-    public Input<Alignment> alignmentInput = new Input<Alignment>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);
-    public Input<Tree> treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Input.Validate.REQUIRED);
-    //public Input<SiteModel.Base> siteModelInput = new Input<SiteModel.Base>("siteModel", "site model for leafs in the beast.tree", Input.Validate.REQUIRED);
-    public Input<DPSiteModelOld> dpSiteModelInput = new Input<DPSiteModelOld>("dpSiteModelOld", "site model for leafs in the beast.tree", Input.Validate.REQUIRED);
-    public Input<BranchRateModel.Base> branchRateModelInput = new Input<BranchRateModel.Base>("branchRateModel",
-            "A model describing the rates on the branches of the beast.tree.");
+    private DPNtdSiteModel dpNtdSiteModel = new DPNtdSiteModel();
+    private ArrayList<WVTreeLikelihood> treeLiks = new ArrayList<WVTreeLikelihood>();
+    private ChangeType changeType = ChangeType.ALL;
 
-    public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
-    ArrayList<TreeLikelihood> compoundLik;
-    public DPSiteModelOld dpSiteModelOld;
-    boolean[] dirtyLikelihoods;
-    private boolean[] allSitesDirty;
+    public Input<DPNtdSiteModel> dpNtdSiteModelInput = new Input<DPNtdSiteModel>(
+            "siteModelList",
+            "array which points a set of unique parameter values",
+            Input.Validate.REQUIRED
+    );
+
+    public Input<Alignment> alignmentInput = new Input<Alignment>(
+            "data",
+            "sequence data for the beast.tree",
+            Input.Validate.REQUIRED
+    );
+
+    public Input<Tree> treeInput = new Input<Tree>(
+            "tree",
+            "phylogenetic beast.tree with sequence data in the leafs",
+            Input.Validate.REQUIRED
+    );
+
+    public Input<BranchRateModel.Base> branchRateModelInput = new Input<BranchRateModel.Base>(
+            "branchRateModel",
+            "A model describing the rates on the branches of the beast.tree."
+    );
+    public Input<Boolean> useAmbiguitiesInput = new Input<Boolean>(
+            "useAmbiguities",
+            "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)",
+            false
+    );
+
+    /** calculation engine **/
+
+    //private ArrayList<int[]> clusterWeights;
+
+    private Alignment alignment;
 
     public void initAndValidate() throws Exception{
-        dpSiteModelOld = dpSiteModelInput.get();
 
-        Alignment alignment = alignmentInput.get();
+        dpNtdSiteModel = dpNtdSiteModelInput.get();
+
+
+        alignment = alignmentInput.get();
+        int patternCount = alignment.getPatternCount();
+
+
+
+        int[][] clusterWeights = new int[dpNtdSiteModel.getDimension()][patternCount];
+
+        int siteModelCount = dpNtdSiteModel.getSiteModelCount();
+
         int siteCount = alignment.getSiteCount();
-        dirtyLikelihoods = new boolean[siteCount];
-        compoundLik = new ArrayList<TreeLikelihood>();
-        
         for(int i = 0; i < siteCount; i++){
-            AlignmentSubset site = new AlignmentSubset(alignment,i);
-            TreeLikelihood treeLikelihood = new TreeLikelihood();
-                treeLikelihood.initByName(
-                    "data", site,
-                    "tree", treeInput.get(),
-                    "siteModel", dpSiteModelOld.getSiteModel(i),
-                    "branchRateModel", branchRateModelInput.get()
-            );
-            compoundLik.add(treeLikelihood);
+            //System.err.println("substModelIndices[i]: "+dpNtdSiteModel.getSubstCurrCluster(i));
+            clusterWeights[dpNtdSiteModel.getSubstCurrCluster(i)][alignment.getPatternIndex(i)]++;
         }
-        allSitesDirty = new boolean[siteCount]; 
-        Arrays.fill(allSitesDirty,true);
-        //System.err.println("Number of likelihoods: "+compoundLik.size());
+
+        for(int i = 0; i < siteModelCount;i++){
+            WVTreeLikelihood treeLik = new WVTreeLikelihood(clusterWeights[i]);
+            treeLik.initByName(
+                    "data", alignment,
+                    "tree", treeInput.get(),
+                    "siteModel", dpNtdSiteModel.getSiteModel(i),
+                    "branchRateModel", branchRateModelInput.get(),
+                    "useAmbiguities",useAmbiguitiesInput.get()
+            );
+            treeLiks.add(treeLik);
+
+            
+        }
+
+    }
+
+    public int getDimension(){
+        return treeLiks.size();
     }
 
     @Override
-    /*public double calculateLogP() throws Exception {
-        logP = calcLogP();
-        return logP;
-
-    }*/
-
-
-
     public double calculateLogP() throws Exception{
-        if(isDirtyCalculation()){
-            logP = calcLogP();
-        }
-        //System.err.println("logP: "+logP);
-        return logP;
-
-    }
-
-
-    public double calcLogP() throws Exception {
-
-        double logP = 0;
-        int counter = 0;
-
-        for(int i = 0; i < compoundLik.size();i++) {
-        	if (dirtyLikelihoods[i]) {
-                counter++;
-                //System.err.println(i+" "+dirtyLikelihoods[i]);
-        		logP += compoundLik.get(i).calculateLogP();
+        logP = 0.0;
+        //System.out.println("hello: "+treeLiks.size());
+        for(WVTreeLikelihood treeLik : treeLiks) {
+            //System.err.println("hello?"+treeLik.isDirtyCalculation());
+        	if (treeLik.isDirtyCalculation()) {
+                //System.err.println("hello?");
+        		logP += treeLik.calculateLogP();
+                //System.out.println("calcLogP: "+treeLik.calculateLogP());
         	} else {
-        		logP += compoundLik.get(i).getCurrentLogP();
+        		logP += treeLik.getCurrentLogP();
+                //System.out.println("currLogP: "+treeLik.calculateLogP());
         	}
             if (Double.isInfinite(logP) || Double.isNaN(logP)) {
             	return logP;
             }
         }
-        //System.err.println("logP: "+logP);
-        //System.err.println("counter: "+counter);
-
+        //System.out.println("logP: "+logP);
         return logP;
     }
 
+    public double getSiteLogLikelihood(int iCluster, int iSite){
+        return treeLiks.get(iCluster).getPatternLogLikelihood(alignment.getPatternIndex(iSite));
+    }
+
+
     public void store(){
-        for(TreeLikelihood treeLik : compoundLik) {
+        for(TreeLikelihood treeLik : treeLiks) {
             treeLik.store();
         }
+
         super.store();
-        //System.err.println("storedLogL: "+storedLogP);
+        //System.out.println("storedLogP: "+logP);
     }
 
     public void restore(){
-        for(TreeLikelihood treeLik : compoundLik) {
+        for(TreeLikelihood treeLik : treeLiks) {
             treeLik.restore();
         }
         super.restore();
+        //System.out.println("restoredLogP: "+logP);
 
-    }
-
-
-    @Override
-    public void sample(State state, Random random) {
-        for(Distribution distribution : compoundLik) {
-            distribution.sample(state, random);
-        }
-    }
-
-
-    @Override
-    public List<String> getArguments() {
-        List<String> arguments = new ArrayList<String>();
-        for(Distribution distribution : compoundLik) {
-            arguments.addAll(distribution.getArguments());
-        }
-        return arguments;
     }
 
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<String>();
-        for(Distribution distribution : compoundLik) {
-            conditions.addAll(distribution.getConditions());
+        for(TreeLikelihood treeLik : treeLiks) {
+            conditions.addAll(treeLik.getConditions());
         }
         return conditions;
     }
 
-    @Override
-    protected boolean requiresRecalculation() {
-        boolean recalculate = false;
-        if(treeInput.get().somethingIsDirty() || branchRateModelInput.get().isDirtyCalculation()){
-            recalculate=true;
-            //System.err.println("recalculated all");
-            dirtyLikelihoods = allSitesDirty;
-        }else if(dpSiteModelOld.isDirtyCalculation()){
-            dirtyLikelihoods = dpSiteModelOld.getSiteDirtiness();
-            recalculate = true;
-            //System.err.println("recalculated sites");
+    public void addTreeLikelihood(){
+        SiteModel siteModel = dpNtdSiteModel.getLastAdded();
 
-        }
+        int[] patternWeights = new int[alignment.getPatternCount()];
+        patternWeights[alignment.getPatternIndex(dpNtdSiteModel.getSubstLastDirtySite())] +=1;
 
-      return recalculate;
-    }
-
-    public List<TreeLikelihood> getDistributions(){
-        return compoundLik;
-    }
-
-    public static void main(String[] args){
+        //WVAlignment wvalign = new WVAlignment(alignment, patternWeights);
+        WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
         try{
-            Alignment data = BEASTTestCase.getAlignment();
-		    Tree tree = BEASTTestCase.getTree(data);
-
-            Frequencies freqs = new Frequencies();
-		    freqs.initByName("data", data);
-
-            HKY hky = new HKY();
-		    hky.initByName("kappa", "29.739445", "frequencies", freqs);
-
-		    SiteModel siteModel = new SiteModel();
-		    siteModel.initByName("mutationRate", "0.0", "gammaCategoryCount", 1, "substModel", hky);
-
-            RealParameter mu = new RealParameter();
-            mu.initByName(
-                    "value", "1.0",
-                    "lower", 0.0
+            treeLik.initByName(
+                    "data", alignment,
+                    "tree", treeInput.get(),
+                    "siteModel", siteModel,
+                    "branchRateModel", branchRateModelInput.get(),
+                    "useAmbiguities",useAmbiguitiesInput.get()
             );
-            StrictClockModel clockModel = new StrictClockModel();
-            clockModel.initByName(
-                    "clock.rate", mu
-            );
-            DPTreeLikelihood likelihood = new DPTreeLikelihood();
-		    likelihood.initByName(
-                    "data",data,
-                    "tree",tree,
-                    "siteModel", siteModel);
-            System.err.println(likelihood.getDistributions().size());
-            System.err.println(likelihood.calculateLogP());
+            treeLik.calculateLogP();
+            treeLik.store();
+            treeLiks.add(treeLik);
         }catch(Exception e){
             throw new RuntimeException(e);
         }
+
     }
+
+    public void removeTreeLikelihood(int removedIndex){
+        treeLiks.remove(removedIndex);
+    }
+
+    private void updateWeights(){
+        int dirtySite = dpNtdSiteModel.getSubstLastDirtySite();
+        //System.err.println("changeType: "+changeType);
+        if(changeType == ChangeType.ADDED){
+            int prevCluster = dpNtdSiteModel.getSubstPrevCluster(dirtySite);
+            treeLiks.get(prevCluster).lessWeight(alignment.getPatternIndex(dirtySite),1);
+        }else if(changeType==ChangeType.POINTER_CHANGED){
+            int prevCluster = dpNtdSiteModel.getSubstPrevCluster(dirtySite);
+            treeLiks.get(prevCluster).lessWeight(alignment.getPatternIndex(dirtySite),1);
+
+            int currCluster = dpNtdSiteModel.getSubstCurrCluster(dirtySite);
+            treeLiks.get(currCluster).addWeight(alignment.getPatternIndex(dirtySite),1);
+            //System.out.println(prevCluster+" "+currCluster);
+        }else if(changeType == ChangeType.REMOVED){
+            int currCluster = dpNtdSiteModel.getSubstCurrCluster(dirtySite);
+            treeLiks.get(currCluster).addWeight(alignment.getPatternIndex(dirtySite),1);
+        }
+       
+
+    }
+
+
+    @Override
+    protected boolean requiresRecalculation() {
+        //System.err.println("hello?");
+        boolean recalculate = false;
+        if(dpNtdSiteModel.isDirtyCalculation()){
+
+            ChangeType changeType = dpNtdSiteModel.getChangeType();
+            //System.out.println("treeLik requires recal!!"+changeType);
+            if(changeType == ChangeType.ADDED){
+                //System.out.println("added!!");
+                addTreeLikelihood();
+                this.changeType = ChangeType.ADDED;
+                updateWeights();
+
+            }else if(changeType == ChangeType.REMOVED){
+                //System.out.println("removed!!");
+                removeTreeLikelihood(dpNtdSiteModel.getRemovedIndex());
+                this.changeType = ChangeType.REMOVED;
+                updateWeights();
+            }else if (changeType == ChangeType.POINTER_CHANGED){
+                this.changeType = ChangeType.POINTER_CHANGED;
+                updateWeights();
+            }else if(changeType == ChangeType.VALUE_CHANGED){
+                this.changeType = ChangeType.VALUE_CHANGED;
+
+            }else{
+                this.changeType = ChangeType.ALL;
+            }
+
+
+            
+            recalculate = true;
+        }else if(treeInput.get().somethingIsDirty()){
+            recalculate = true;
+
+        }
+        if(recalculate){
+            for(TreeLikelihood treeLik:treeLiks){
+                treeLik.checkDirtiness();
+            }
+        }
+        return recalculate;
+    }
+
+    @Override
+    public void sample(State state, Random random) {
+        throw new UnsupportedOperationException("Can't sample a fixed alignment!");
+    }
+
+    @Override
+    public List<String> getArguments() {
+        List<String> arguments = new ArrayList<String>();
+        for(TreeLikelihood treeLik : treeLiks) {
+            arguments.addAll(treeLik.getArguments());
+        }
+        return arguments;
+    }
+
+    public int[][] getClusterWeights(){
+        int[][] clusterWeights = new int[treeLiks.size()][];
+        for(int i = 0; i < clusterWeights.length;i++){
+            clusterWeights[i] = treeLiks.get(i).getPatternWeights();
+        }
+        return clusterWeights;
+    }
+
 
 }

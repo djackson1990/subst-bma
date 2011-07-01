@@ -70,7 +70,7 @@ public class NtdDP extends DirichletProcess{
 
         int[] counts = dpValuable.getClusterCounts();
 
-        logP+=Math.log(alphaPowers[counts.length]);
+        logP+=counts.length*Math.log(alpha.getValue());
         //System.err.println("flag2: "+logP);
 
         for(int count: counts){

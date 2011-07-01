@@ -103,7 +103,7 @@
             <input name="dpVal" idref="dpValuable"/>
         </operator>
 
-        <logger logEvery="10">
+        <logger logEvery="1">
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="dpValuable"/>

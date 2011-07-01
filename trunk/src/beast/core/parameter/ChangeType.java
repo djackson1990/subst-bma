@@ -11,6 +11,7 @@ public enum ChangeType {
     VALUE_CHANGED,
     REMOVED,
     ADDED,
-    ALL
+    ALL,
+    NONE
 
 }

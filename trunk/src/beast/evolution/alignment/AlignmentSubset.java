@@ -22,6 +22,7 @@ public class AlignmentSubset extends Alignment{
     public AlignmentSubset(Alignment alignment, int siteIndex){
         this.alignment = alignment;
         this.siteIndex = siteIndex;
+        //System.err.println("siteIndex: "+siteIndex);
 
     }
 
@@ -47,6 +48,7 @@ public class AlignmentSubset extends Alignment{
     }
 
     public int getPattern(int iTaxon, int id) {
+        //System.err.println("siteIndex: "+siteIndex);
         int[] patterns = alignment.getPattern(alignment.getPatternIndex(siteIndex));  //todo assuming a subset only has a single column
         return patterns[iTaxon];
     }

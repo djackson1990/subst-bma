@@ -104,7 +104,7 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         try{
 
             //Generate a sample of proposals
-            RealParameter[] preliminaryProposals = sampleFromBaseDistribution(paramList);
+            QuietRealParameter[] preliminaryProposals = sampleFromBaseDistribution(paramList);
             //System.err.println("zero count: "+zeroCount);
             //If the a singleton has been picked
             if(zeroCount > -1){
@@ -214,9 +214,9 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         return Double.POSITIVE_INFINITY;
     }
 
-    public RealParameter[] sampleFromBaseDistribution(ParameterList paramList) throws Exception{
-        RealParameter[] preliminaryProposals = baseDistr.sample(sampleSize);
-        for(RealParameter parameter: preliminaryProposals){
+    public QuietRealParameter[] sampleFromBaseDistribution(ParameterList paramList) throws Exception{
+        QuietRealParameter[] preliminaryProposals = getSamples(baseDistr);
+        for(QuietRealParameter parameter: preliminaryProposals){
             parameter.setUpper(paramList.getUpper());
             parameter.setLower(paramList.getLower());
         }
@@ -246,4 +246,14 @@ public class DirichletProcessPriorGibbsSampler extends Operator {
         return preliminaryProposals;
 
     }
+
+    public QuietRealParameter[] getSamples(ParametricDistribution distr) throws Exception{
+        QuietRealParameter[] samples = new QuietRealParameter[sampleSize];
+        Double[][] sampleVals = distr.sample(sampleSize);
+        for(int i = 0; i < samples.length;i++){
+            samples[i] = new QuietRealParameter(sampleVals[i]);
+        }
+        return samples;
+    }
+
 }

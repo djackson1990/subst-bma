@@ -22,8 +22,8 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
             Input.Validate.REQUIRED
     );
 
-    public Input<ParameterList> freqListInput = new Input<ParameterList>(
-            "freqList",
+    public Input<ParameterList> freqsListInput = new Input<ParameterList>(
+            "freqsList",
             "A list of unique parameter values",
             Input.Validate.REQUIRED
     );
@@ -57,7 +57,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
 
     private ParameterList paramList;
     private ParameterList modelList;
-    private ParameterList freqList;
+    private ParameterList freqsList;
     private DPPointer pointers;
     //private DPPointer modelPointers;
     //private DPPointer freqPointers;
@@ -69,7 +69,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
     public void initAndValidate(){
         paramList = paramListInput.get();
         modelList = modelListInput.get();
-        freqList = freqListInput.get();
+        freqsList = freqsListInput.get();
         pointers = freqPointersInput.get();
 
         int dimParamList = paramList.getDimension();
@@ -78,14 +78,14 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
                     createNtdBMA(
                             paramList.getParameter(i),
                             modelList.getParameter(i),
-                            freqList.getParameter(i)
+                            freqsList.getParameter(i)
                     )
             );
-            
+
         }
-        System.err.println("model counts: "+ntdBMAs.size());
+        //System.err.println("model counts: "+ntdBMAs.size());
         pointerIndices = new int[pointers.getDimension()];
-        
+
     }
 
     public int getDimension(){
@@ -104,12 +104,12 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         return pointerIndices;
     }
 
-    private void addSiteModel(){
+    private void addModel(){
 
 
         RealParameter parameter = paramList.getParameter(paramList.getDimension()-1);
         RealParameter model = modelList.getParameter(modelList.getDimension()-1);
-        RealParameter freqs = freqList.getParameter(freqList.getDimension()-1);
+        RealParameter freqs = freqsList.getParameter(freqsList.getDimension()-1);
         Frequencies frequencies = new Frequencies();
         try{
             frequencies.initByName("frequencies",freqs);
@@ -122,10 +122,14 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
 
     }
 
-    private void removeSiteModel(int index){
+    private void removeModel(int index){
         ntdBMAs.remove(index);
         removedIndex = index;
         //System.err.println("removeNtdModel: "+index);
+    }
+
+    public int getLastDirtySite(){
+        return pointers.getLastDirty();
     }
 
     public int getRemovedIndex(){
@@ -136,10 +140,13 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         return changeType;
     }
 
-    public void setupPointerIndices(){        
+    int prevCluster = -1;
+    public void setupPointerIndices(){
+        //System.out.println("changeType: "+changeType);
         if(changeType == ChangeType.ADDED || changeType == ChangeType.POINTER_CHANGED){
             int changedIndex = pointers.getLastDirty();
-            pointerIndices[changedIndex] = pointers.indexInList(changedIndex,paramList);
+            prevCluster = pointerIndices[changedIndex];
+            pointerIndices[changedIndex] = pointers.indexInList(changedIndex,freqsList);
         }else if (changeType == ChangeType.REMOVED){
             resetAllPointerIndices();
         }else if (changeType == ChangeType.ALL){
@@ -147,30 +154,40 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         }
     }
 
+    public int getPrevCluster(int index){
+        return pointers.storedIndexInList(index,freqsList);
+    }
+
+    public int getCurrCluster(int index){
+        return pointers.indexInList(index,freqsList);
+    }
+
+ 
+
     public void resetAllPointerIndices(){
         for(int i = 0; i < pointerIndices.length;i++){
-            pointerIndices[i] = pointers.indexInList(i,paramList);
+            pointerIndices[i] = pointers.indexInList(i,freqsList);
         }
     }
 
 
 
 
-    public NtdBMA createNtdBMA(RealParameter modelParameters, RealParameter modelCode, RealParameter freqs){
+
+
+
+    public static NtdBMA createNtdBMA(
+            RealParameter modelParameters,
+            RealParameter modelCode,
+            RealParameter frequencies){
         RealParameter logKappa = new RealParameterWrapper(modelParameters, 0);
         RealParameter logTN = new RealParameterWrapper(modelParameters,1);
         RealParameter logAC = new RealParameterWrapper(modelParameters,2);
         RealParameter logAT = new RealParameterWrapper(modelParameters,3);
         RealParameter logGC = new RealParameterWrapper(modelParameters,4);
         RealParameter logGT = new RealParameterWrapper(modelParameters,5);
-        Frequencies frequencies = new Frequencies();
-        try{
-            frequencies.initByName("frequencies",freqs);
-
-        }catch(Exception e ){
-            throw new RuntimeException(e);
-        }
-
+       
+        //System.err.println();
         NtdBMA  ntdBMA = new NtdBMA(
                 logKappa,
                 logTN,
@@ -183,51 +200,89 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         );
         return ntdBMA;
 
-        
+
+    }
+
+    public void store(){
+        for(NtdBMA ntdBMA:ntdBMAs){
+            ntdBMA.store();
+        }
+        prevCluster = -1;
+        super.store();
+    }
+
+    public void restore(){
+        for(NtdBMA ntdBMA:ntdBMAs){
+            ntdBMA.restore();
+        }
+        prevCluster = -1;
+        super.restore();
+        //System.out.println("ntd restoring");
     }
 
 
 
-        public boolean requiresRecalculation(){
+    public boolean requiresRecalculation(){
 
         boolean recalculate = false;
         //System.err.println("dirty0");
-        if(paramList.somethingIsDirty()){
-            ChangeType changeType = paramList.getChangeType();
+        if(paramList.somethingIsDirty()||modelList.somethingIsDirty()||freqsList.somethingIsDirty()){
+            //System.out.println("dirty0: "+freqsList.getChangeType());
+            ChangeType changeType;
+            if(paramList.somethingIsDirty()){
+                changeType = paramList.getChangeType();
+
+            }else if(modelList.somethingIsDirty()){
+                changeType = modelList.getChangeType();
+
+            }else{
+                changeType = freqsList.getChangeType();
+
+            }
+
             //System.err.println("dirty0: "+changeType);
             if(changeType == ChangeType.ADDED){
                 //System.err.println(getID()+"model added");
-                addSiteModel();
-                setupPointerIndices();
+                addModel();
+
                 this.changeType = ChangeType.ADDED;
+                setupPointerIndices();
 
             }else if(changeType == ChangeType.REMOVED){
-                //System.err.println(getID()+"model removed, "+paramList.getRemovedIndex());
-                removeSiteModel(paramList.getRemovedIndex());
-                setupPointerIndices();
+                //System.out.println(getID()+"model removed, "+paramList.getRemovedIndex());
+                removeModel(freqsList.getRemovedIndex());
+
                 this.changeType = ChangeType.REMOVED;
+                setupPointerIndices();
 
             }else if(changeType == ChangeType.VALUE_CHANGED){
                 //System.err.println(getID()+": model changed");
                 this.changeType = ChangeType.VALUE_CHANGED;
-
-            }else if(changeType == ChangeType.POINTER_CHANGED){
-                this.changeType = ChangeType.POINTER_CHANGED;
-                setupPointerIndices();
+                for(NtdBMA ntdBMA:ntdBMAs){
+                    ntdBMA.checkDirtiness();
+                }
 
             }else{
                 this.changeType = ChangeType.ALL;
+                setupPointerIndices();
+                for(NtdBMA ntdBMA:ntdBMAs){
+                    ntdBMA.checkDirtiness();
+                }
             }
             recalculate = true;
             //System.err.println("dirty1");
 
         }else if (pointers.somethingIsDirty()){
             recalculate = true;
+
             this.changeType = ChangeType.POINTER_CHANGED;
+            setupPointerIndices();
         }
+
+        //System.out.println("recalculate: "+recalculate);
 
         return recalculate;
     }
 
-    
+
 }

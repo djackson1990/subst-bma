@@ -11,10 +11,10 @@ import beast.util.Randomizer;
 public class DirichletDistribution extends Dirichlet{
 
     @Override
-    public RealParameter[] sample(int size){
+    public Double[][] sample(int size){
         RealParameter alpha = m_alpha.get();
         int dim = alpha.getDimension();
-        RealParameter[] samples = new RealParameter[size];
+        Double[][] samples = new Double[size][];
         try{
 
             for(int i =0; i < size;i++){
@@ -27,7 +27,7 @@ public class DirichletDistribution extends Dirichlet{
                 for(int j = 0; j < dim;j++){
                     dirichletSample[j] = dirichletSample[j]/sum;
                 }
-                samples[i] = new RealParameter(dirichletSample);
+                samples[i] = dirichletSample;
 
             }
         }catch(Exception e){
@@ -46,10 +46,11 @@ public class DirichletDistribution extends Dirichlet{
                     "alpha", alpha
             );
 
-             RealParameter[] samples = dirichlet.sample(1000);
+             Double[][] samples = dirichlet.sample(1000);
 
             for(int i = 0; i < 1000; i++){
-                samples[i].log(0,System.out);
+                RealParameter sample = new RealParameter(samples[i]);
+                sample.log(0,System.out);
                 System.out.println();
 
             }

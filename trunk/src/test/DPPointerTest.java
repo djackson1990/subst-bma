@@ -89,11 +89,11 @@ public class DPPointerTest extends TestCase {
     public void operationEx1(DPPointer pointer,ParameterList paramList){
         try{
 
-            RealParameter newVal = new RealParameter(new Double[]{3.0});
+            QuietRealParameter newVal = new QuietRealParameter(new Double[]{3.0});
             int index = 3;
             int[] assignment = new int[]{0,2,1,1,2};
-            RealParameter[] expectedPointer= new RealParameter[assignment.length];
-            RealParameter[] expectedList = new RealParameter[assignment.length];
+            QuietRealParameter[] expectedPointer= new QuietRealParameter[assignment.length];
+            QuietRealParameter[] expectedList = new QuietRealParameter[assignment.length];
             operation1(pointer, paramList, index, newVal,assignment,expectedPointer,expectedList);
 
             for(int i = 0; i < expectedPointer.length; i++)
@@ -115,7 +115,7 @@ public class DPPointerTest extends TestCase {
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
 
             index = 0;
-            newVal = new RealParameter(new Double[]{4.0});
+            newVal = new QuietRealParameter(new Double[]{4.0});
             assignment = new int[]{0,1,1,3,2};
             operation3(pointer, paramList, index, newVal,assignment,expectedPointer,expectedList);
 
@@ -138,7 +138,7 @@ public class DPPointerTest extends TestCase {
             for(int i = 0; i < paramList.getDimension(); i++)
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
 
-            newVal = new RealParameter(new Double[]{5.0});
+            newVal = new QuietRealParameter(new Double[]{5.0});
             index = 4;
             //assignment = new int[]{3,0,0,1,1};
             operation5(pointer, paramList, index, newVal);
@@ -163,7 +163,7 @@ public class DPPointerTest extends TestCase {
             for(int i = 0; i < paramList.getDimension(); i++)
                 assertTrue(paramList.getParameter(i)==expectedList[i]);
 
-            newVal = new RealParameter(new Double[]{6.0});
+            newVal = new QuietRealParameter(new Double[]{6.0});
             index = 0;
             //assignment = new int[]{3,0,0,1,1};
             operation7(pointer, paramList, index, newVal);
@@ -200,10 +200,10 @@ public class DPPointerTest extends TestCase {
             DPPointer pointer,
             ParameterList paramList,
             int index,
-            RealParameter newVal,
+            QuietRealParameter newVal,
             int[] assignment,
-            RealParameter[] expectedPointer,
-            RealParameter[] expectedList) throws Exception{
+            QuietRealParameter[] expectedPointer,
+            QuietRealParameter[] expectedList) throws Exception{
 
 
         for(int i = 0; i < expectedPointer.length; i++)
@@ -249,7 +249,7 @@ public class DPPointerTest extends TestCase {
             DPPointer pointers,
             ParameterList paramList,
             int index,
-            RealParameter newVal,
+            QuietRealParameter newVal,
             int[] assignment,
             RealParameter[] expectedPointer,
             RealParameter[] expectedList) throws Exception{
@@ -330,7 +330,7 @@ public class DPPointerTest extends TestCase {
             DPPointer pointer,
             ParameterList paramList,
             int index,
-            RealParameter newVal) throws Exception{
+            QuietRealParameter newVal) throws Exception{
       
         pointer.point(index,newVal);
         paramList.addParameter(newVal);
@@ -367,7 +367,7 @@ public class DPPointerTest extends TestCase {
             DPPointer pointers,
             ParameterList paramList,
             int index,
-            RealParameter newVal) throws Exception{
+            QuietRealParameter newVal) throws Exception{
 
 
 

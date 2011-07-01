@@ -53,16 +53,19 @@ public class DPPointer extends StateNode {
     }
 
     public void point(int dim, RealParameter parameter){
+        //System.out.println("pointer: "+dim);
         startEditing(null);
         lastDirty = dim;
         parameters[dim] = parameter;
 
     }
 
-    protected void pointQuitely(int dim, RealParameter parameter){
+    public void pointQuitely(int dim, RealParameter parameter){
         parameters[dim] = parameter;
 
     }
+
+
 
     public int getDimension(){
         return parameters.length;
@@ -78,6 +81,7 @@ public class DPPointer extends StateNode {
 
     public void setEverythingDirty(boolean isDirty){
         setSomethingIsDirty(isDirty);
+        //System.err.println("isDirty: "+isDirty);
     }
 
     public boolean isParameterDirty(int index){
@@ -98,12 +102,18 @@ public class DPPointer extends StateNode {
         storedParameters = temp;
 	}
 
+    public int storedIndexInList(int index, ParameterList paramList){
+        return paramList.indexOf(storedParameters[index]);
+
+    }
+
     public int scale(double fScale){
         throw new RuntimeException("Scaling simply does not make sense in this case");
 
     }
 
     public int getLastDirty(){
+        //System.out.println("getLastDirty: "+lastDirty);
         return lastDirty;
     }
 
@@ -146,7 +156,7 @@ public class DPPointer extends StateNode {
         //todo
     }
 
-    private RealParameter getParameter(int dim){
+    public RealParameter getParameter(int dim){
         return parameters[dim];
 
     }
@@ -198,6 +208,10 @@ public class DPPointer extends StateNode {
 
     public boolean pointEqual(int index1, int index2){
         return parameters[index1] == parameters[index2];
+    }
+
+    public boolean pointEqual(int index1, RealParameter param){
+        return parameters[index1] == param;
     }
 
     public String toString(){

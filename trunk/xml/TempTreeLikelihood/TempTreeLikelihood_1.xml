@@ -28,41 +28,29 @@
 
     <input spec="ParameterList" id="parameterList">
         <parameter spec="RealParameter" id="parameter1" value="0.0 0.0 0.0 0.0 0.0 0.0" upper="Infinity" lower="-Infinity"/>
-        <parameter spec="RealParameter" id="parameter2" value="0.1 0.1 0.1 0.1 0.1 0.1" upper="Infinity" lower="-Infinity"/>
-        <parameter spec="RealParameter" id="parameter3" value="0.2 0.2 0.2 0.2 0.2 0.2" upper="Infinity" lower="-Infinity"/>
     </input>
 
     <input spec="DPPointer" id="param.pointers">
         <input name="uniqueParameter" idref="parameter1"/>
-        <input name="uniqueParameter" idref="parameter2"/>
-        <input name="uniqueParameter" idref="parameter3"/>
-        <input name="initialAssignment" spec="IntegerParameter" value="0 1 2" lower="0"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0 0 0" lower="0"/>
     </input>
 
     <input spec="ParameterList" id="modelList">
-        <parameter spec="RealParameter" id="model1" value="2.0" upper="5.0" lower="0.0"/>
-        <parameter spec="RealParameter" id="model2" value="4.0" upper="5.0" lower="0.0"/>
-        <parameter spec="RealParameter" id="model3" value="5.0" upper="5.0" lower="0.0"/>
+        <parameter spec="RealParameter" id="parameter2" value="2.0" upper="5.0" lower="0.0"/>
     </input>
 
     <input spec="DPPointer" id="model.pointers">
-        <input name="uniqueParameter" idref="model1"/>
-        <input name="uniqueParameter" idref="model2"/>
-        <input name="uniqueParameter" idref="model3"/>
-        <input name="initialAssignment" spec="IntegerParameter" value="0 1 2" lower="0"/>
+        <input name="uniqueParameter" idref="parameter2"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0 0 0" lower="0"/>
     </input>
 
     <input spec="ParameterList" id="freqList">
-        <parameter spec="RealParameter" id="freq1" value="0.25 0.25 0.25 0.25" upper="1.0" lower="0.0"/>
-        <parameter spec="RealParameter" id="freq2" value="0.20 0.20 0.30 0.30" upper="1.0" lower="0.0"/>
-        <parameter spec="RealParameter" id="freq3" value="0.30 0.30 0.20 0.20" upper="1.0" lower="0.0"/>
+        <parameter spec="RealParameter" id="parameter3" value="0.25 0.25 0.25 0.25" upper="1.0" lower="0.0"/>
     </input>
 
     <input spec="DPPointer" id="freq.pointers">
-        <input name="uniqueParameter" idref="freq1"/>
-        <input name="uniqueParameter" idref="freq2"/>
-        <input name="uniqueParameter" idref="freq3"/>
-        <input name="initialAssignment" spec="IntegerParameter" value="0 1 2" lower="0"/>
+        <input name="uniqueParameter" idref="parameter3"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0 0 0" lower="0"/>
     </input>
 
 
@@ -96,6 +84,26 @@
     </input>
 
 
+    <!-- The HKY substitution model (Hasegawa, Kishino & Yano, 1985)             -->
+    <input spec='HKY' id='hky'>
+        <input name="kappa" spec="RealParameter" id='hky.kappa' value="1.0" lower="0.0" upper="Infinity"/>
+        <frequencies id='freqs' spec='Frequencies'>
+            <!--data idref='alignment'/-->
+            <input spec="RealParameter" name="frequencies" value="0.25 0.25 0.25 0.25" lower="0" upper="1"/>
+        </frequencies>
+    </input>
+
+    <!-- site model                                                              -->
+    <input spec='SiteModel' id="dummySiteModel">
+        <substModel idref='hky'/>
+    </input>
+
+    <input spec='TempTreeLikelihood' id="tempTreeLikelihood">
+        <data idref="alignment"/>
+        <tree idref="tree"/>
+        <siteModel idref="dummySiteModel"/>
+        <branchRateModel idref="strict.clock"/>
+    </input>
     <!--input spec="DummyLikelihood" id="likelihood">
         <input name="plugin" idref="dpNtdSiteModel"/>
     </input-->
@@ -147,7 +155,6 @@
     <!--run spec="MCMC" id="mcmc" chainLength="100"--> <!--autoOptimize="true"-->
     <run spec="MCMC" id="mcmc" chainLength="1000000">
         <state>
-            <input name="stateNode" idref='tree'/>
             <input name='stateNode' idref='parameterList'/>
             <input name='stateNode' idref='modelList'/>
             <input name='stateNode' idref='freqList'/>
@@ -163,12 +170,9 @@
                 <xList idref="parameterList"/>
             </distribution-->
         </distribution>
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
-        <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
-        <operator spec='WilsonBalding' weight="1" tree="@tree"/>
 
-        <!--operator id="dpps" spec="NtdBMADPPGibbsSampler" weight="1" sampleSize="1">
-            <input name="likelihood" idref="treeLikelihood"/>
+        <operator id="dpps" spec="NtdBMADPPGibbsSampler" weight="1" sampleSize="1">
+            <input name="tempLikelihood" idref="tempTreeLikelihood"/>
             <input name="parameterList" idref="parameterList"/>
             <input name="parameterPointers" idref="param.pointers"/>
             <input name="modelList" idref="modelList"/>
@@ -177,7 +181,9 @@
             <input name="freqPointers" idref="freq.pointers"/>
             <input name="dirichletProcess" idref="ntddp"/>
             <input name="dpVal" idref="dpValuable"/>
-        </operator-->
+        </operator>
+
+        
 
         <!--logger logEvery="1"-->
         <logger logEvery="100000">
@@ -194,7 +200,7 @@
         </logger>
 
 
-        <logger logEvery="10" fileName="testDPTreeLikelihood_2.log">
+        <logger logEvery="10" fileName="testTempTreeLikelihood_1.log">
             <log idref="dpValuable"/>
             <log idref="model.count"/>
             <log idref="siteModel.count"/>
@@ -205,9 +211,5 @@
             <log idref="freq.pointers"/>
         </logger>
 
-        <logger logEvery="10000" fileName="testDPTreeLikelihood_2.log">
-            <log idref="model.indices"/>
-            <log idref="treeLik.weight"/>
-        </logger>
     </run>
 </beast>

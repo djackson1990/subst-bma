@@ -2,14 +2,12 @@
        namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter:beast.math.distributions'>
 
     <input spec="ParameterList" id="parameterList">
-        <parameter spec="RealParameter2" id="parameter1" value="0.2" upper="Infinity" lower="-Infinity"/>
-        <parameter spec="RealParameter2" id="parameter2" value="0.1" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="RealParameter" id="parameter1" value="0.2" upper="Infinity" lower="-Infinity"/>
     </input>
 
     <input spec="DPPointer" id="pointer">
         <input name="uniqueParameter" idref="parameter1"/>
-        <input name="uniqueParameter" idref="parameter2"/>
-        <input name="initialAssignment" spec="IntegerParameter" value="0 1 1" lower="0" upper="1"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0" lower="0" dimension="786" upper="786"/>
     </input>
 
     <input spec="DPValuable" id="dpValuable">
@@ -20,7 +18,11 @@
     <input spec="DirichletProcess" id="dp">
         <input name="dpVal" idref="dpValuable"/>
         <input name="baseDistr" id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.3"/>
-        <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
+        <input name="alpha" spec="RealParameter" value="0.1" lower="0.0" upper="Infinity"/>
+    </input>
+
+    <input spec="Count" id="model.count">
+        <input name="list" idref="parameterList"/>
     </input>
 
     <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
@@ -39,13 +41,15 @@
         </operator>
 
         <logger logEvery="10000">
-            <log idref="pointer"/>
-            <log idref="dpValuable"/>
+            <log idref="model.count"/>
+            <!--log idref="pointer"/>
+            <log idref="dpValuable"/-->
         </logger>
 
         <logger logEvery="10" fileName="testDirichletProcessPrior_2.log">
-            <log idref="pointer"/>
-            <log idref="dpValuable"/>
+            <log idref="model.count"/>
+            <!--log idref="pointer"/>
+            <log idref="dpValuable"/-->
         </logger>
     </run>
 </beast>

@@ -20,7 +20,11 @@ public class Indices extends CalculationNode implements Loggable {
 
     @Override
 	public void init(PrintStream out) throws Exception {
-        out.print("count("+dpNtdBMA.getID() + ")\t");
+        int[] indices = dpNtdBMA.getPointerIndices();
+        for(int i = 0; i < indices.length;i++){
+            out.print("Indices("+dpNtdBMA.getID() + ")."+i+"\t");
+        }
+
     }
 
     @Override

@@ -70,7 +70,7 @@ public class OldDPSiteModelTest extends TestCase {
         }
 
         public void operation1() throws Exception{
-            paramList.addParameter(new RealParameter(new Double[]{3.0}));
+            paramList.addParameter(new QuietRealParameter(new Double[]{3.0}));
             pointer.point(3,paramList.getParameter(3));
             
         }

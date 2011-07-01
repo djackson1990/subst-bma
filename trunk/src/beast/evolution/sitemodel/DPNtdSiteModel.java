@@ -61,12 +61,29 @@ public class DPNtdSiteModel extends CalculationNode implements PluginList {
         }
     }
 
+    public int[] getSubstModelPointerIndices(){
+        return dpNtdBMA.getPointerIndices();
+    }
+
+    public int getRemovedIndex(){
+        return dpNtdBMA.getRemovedIndex();
+    }
+
     public int getDimension(){
         return siteModels.size(); 
     }
 
     public SiteModel getSiteModel(int index){
         return siteModels.get(index);
+    }
+
+    public int getSubstLastDirtySite(){
+        return dpNtdBMA.getLastDirtySite();
+    }
+
+
+    public SiteModel getLastAdded(){
+        return getSiteModel(siteModels.size()-1);
     }
 
     public int getSiteModelCount(){
@@ -91,6 +108,9 @@ public class DPNtdSiteModel extends CalculationNode implements PluginList {
 
     }
 
+
+
+
     private void removeSiteModel(int index){
         try{
 
@@ -114,6 +134,16 @@ public class DPNtdSiteModel extends CalculationNode implements PluginList {
         }*/
     }
 
+    public int getSubstPrevCluster(int index){
+        return dpNtdBMA.getPrevCluster(index);
+
+    }
+
+    public int getSubstCurrCluster(int index){
+        return dpNtdBMA.getCurrCluster(index);
+
+    }
+
 
     public boolean requiresRecalculation(){
 
@@ -123,16 +153,25 @@ public class DPNtdSiteModel extends CalculationNode implements PluginList {
             //System.err.println("dpNtd: "+changeType);
             if(changeType == ChangeType.ADDED){
                 addSiteModel();
-                changeType = ChangeType.ADDED;
+                this.changeType = ChangeType.ADDED;
 
             }else if(changeType == ChangeType.REMOVED){
                 removeSiteModel(dpNtdBMA.getRemovedIndex());
-                changeType = ChangeType.REMOVED;
+                this.changeType = ChangeType.REMOVED;
             }else if(changeType == ChangeType.VALUE_CHANGED){
-                changeType = ChangeType.VALUE_CHANGED;
+                this.changeType = ChangeType.VALUE_CHANGED;
+                for(SiteModel siteModel:siteModels){
+                    siteModel.checkDirtiness();
+                }
+
+            }else if(changeType == ChangeType.POINTER_CHANGED){
+                this.changeType = ChangeType.POINTER_CHANGED;
 
             }else{
-                changeType = ChangeType.ALL;
+                this.changeType = ChangeType.ALL;
+                for(SiteModel siteModel:siteModels){
+                    siteModel.checkDirtiness();
+                }
             }
             recalculate = true;
 

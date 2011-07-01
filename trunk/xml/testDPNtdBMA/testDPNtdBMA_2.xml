@@ -1,31 +1,6 @@
 <beast version='2.0'
        namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter:beast.math.distributions'>
 
-    <!-- The sequence alignment                                                  -->
-    <!-- ntax=6 nchar=768                                                        -->
-    <!-- npatterns=69                                                            -->
-    <data id="alignment" dataType="nucleotide">
-        <sequence taxon="human">
-            AGG
-        </sequence>
-        <sequence taxon="chimp">
-            AAG
-        </sequence>
-        <sequence taxon="bonobo">
-            AAA
-        </sequence>
-        <sequence taxon="gorilla">
-            AAA
-        </sequence>
-        <sequence taxon="orangutan">
-            AAA
-        </sequence>
-        <sequence taxon="siamang">
-            AAA
-        </sequence>
-    </data>
-
-
     <input spec="ParameterList" id="parameterList">
         <parameter spec="RealParameter" id="parameter1" value="0.0 0.0 0.0 0.0 0.0 0.0" upper="Infinity" lower="-Infinity"/>
     </input>
@@ -63,30 +38,10 @@
         <input name="freqPointers" spec="DPPointer" idref="freq.pointers"/>
     </input>
 
-    <input spec="DPNtdSiteModel" id="dpNtdSiteModel">
-        <input name="ntdBMAList" idref="dpNtdBMA"/>
-        <input name="mu" spec="RealParameter" id="mu" value="1.0" lower="0.0" upper="Infinity"/>
+
+    <input spec="DummyLikelihood" id="likelihood">
+        <input name="plugin" spec="DPNtdBMA" idref="dpNtdBMA"/>
     </input>
-
-    <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
-        <taxa idref='alignment'/>
-    </tree>
-
-    <input spec="StrictClockModel" id="strict.clock">
-        <input name="clock.rate" idref="mu"/>
-    </input>
-
-    <input spec='DPTreeLikelihood' id="treeLikelihood">
-        <data idref="alignment"/>
-        <tree idref="tree"/>
-        <siteModelList idref="dpNtdSiteModel"/>
-        <branchRateModel idref="strict.clock"/>
-    </input>
-
-
-    <!--input spec="DummyLikelihood" id="likelihood">
-        <input name="plugin" idref="dpNtdSiteModel"/>
-    </input-->
 
     <input spec="DPValuable" id="dpValuable">
         <input spec="ParameterList" name="paramList" idref="freqList"/>
@@ -117,23 +72,10 @@
         <input name="list" idref="dpNtdBMA"/>
     </input>
 
-    <input spec="Count" id="siteModel.count">
-        <input name="list" idref="dpNtdSiteModel"/>
-    </input>
-
-    <input spec="Count" id="treeLik.count">
-        <input name="list" idref="treeLikelihood"/>
-    </input>
-
-    <input spec="Weights" id="treeLik.weight">
-        <input name="dpTreeLik" idref="treeLikelihood"/>
-    </input>
-
     <input spec="Indices" id="model.indices">
         <input name="dpNtdBMA" idref="dpNtdBMA"/>
     </input>
-    <!--run spec="MCMC" id="mcmc" chainLength="100"--> <!--autoOptimize="true"-->
-    <run spec="MCMC" id="mcmc" chainLength="1000000">
+    <run spec="MCMC" id="mcmc" chainLength="100"> <!--autoOptimize="true"-->
         <state>
             <input name='stateNode' idref='parameterList'/>
             <input name='stateNode' idref='modelList'/>
@@ -144,15 +86,15 @@
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
-            <distribution idref="treeLikelihood"/>
+            <distribution idref="likelihood"/>
             <!--distribution id="prior" spec="beast.math.distributions.ParameterListPrior" applyToList="true">
-                <input name="distribution" idref="ntddp"/>
+                <input name="distribution" idref="dp"/>
                 <xList idref="parameterList"/>
             </distribution-->
         </distribution>
 
         <operator id="dpps" spec="NtdBMADPPGibbsSampler" weight="1" sampleSize="1">
-            <input name="likelihood" idref="treeLikelihood"/>
+            <input name="likelihood" idref="likelihood"/>
             <input name="parameterList" idref="parameterList"/>
             <input name="parameterPointers" idref="param.pointers"/>
             <input name="modelList" idref="modelList"/>
@@ -163,14 +105,11 @@
             <input name="dpVal" idref="dpValuable"/>
         </operator>
 
-        <!--logger logEvery="1"-->
-        <logger logEvery="100000">
+        <logger logEvery="1">
             <log idref="posterior"/>
-            <log idref="treeLikelihood"/>
+            <log idref="likelihood"/>
             <log idref="dpValuable"/>
             <log idref="model.count"/>
-            <log idref="siteModel.count"/>
-            <log idref="treeLik.count"/>
             <log idref="model.indices"/>
             <!--log idref="param.pointers"/>
             <log idref="model.pointers"/-->
@@ -178,20 +117,12 @@
         </logger>
 
 
-        <logger logEvery="10" fileName="testDPTreeLikelihood_1.log">
+        <logger logEvery="10" fileName="testDPNtdBMA_2.log">
             <log idref="dpValuable"/>
-            <log idref="model.count"/>
-            <log idref="siteModel.count"/>
-            <log idref="treeLik.count"/>
             <log idref="model.indices"/>
             <log idref="param.pointers"/>
             <log idref="model.pointers"/>
             <log idref="freq.pointers"/>
-        </logger>
-
-        <logger logEvery="10000" fileName="testDPTreeLikelihood_1.2.log">
-            <log idref="model.indices"/>
-            <log idref="treeLik.weight"/>
         </logger>
     </run>
 </beast>

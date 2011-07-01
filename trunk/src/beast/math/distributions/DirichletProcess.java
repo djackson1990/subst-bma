@@ -32,7 +32,7 @@ public class DirichletProcess extends ParametricDistribution{
     );
 
     private ParametricDistribution baseDistribution;
-   double[] alphaPowers;
+    //double[] alphaPowers;
     RealParameter alpha;
     DPValuable dpValuable;
     double[] denominators;
@@ -72,10 +72,10 @@ public class DirichletProcess extends ParametricDistribution{
         //So there won't be any clusters of size 0.
         //But for the sake of convenience for later computation I'm going to start from 0.
 
-        alphaPowers = new double[dpValuable.getPointerDimension()+1];
+        /*alphaPowers = new double[dpValuable.getPointerDimension()+1];
         for(int i = 0; i < alphaPowers.length;i++){
             alphaPowers[i] = Math.pow(alpha.getValue(),i);
-        }
+        }*/
 
         denominators = new double[dpValuable.getPointerDimension()+1];
         denominators[0] = 0;
@@ -97,7 +97,7 @@ public class DirichletProcess extends ParametricDistribution{
 
         int[] counts = dpValuable.getClusterCounts();
 
-        logP+=Math.log(alphaPowers[counts.length]);
+        logP+=counts.length*Math.log(alpha.getValue());
         //System.err.println("flag2: "+logP);
 
         for(int count: counts){

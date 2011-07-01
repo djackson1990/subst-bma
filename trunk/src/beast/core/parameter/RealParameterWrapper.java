@@ -21,6 +21,10 @@ public class RealParameterWrapper extends RealParameter{
 
     }
 
+    public boolean somethingIsDirty(){
+        return parameter.isDirty(index);
+    }
+
     @Override
     public void setValue(Double val){
         parameter.setValue(index,val);

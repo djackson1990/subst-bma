@@ -32,6 +32,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     public Input<RealParameter> logGCInput = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logGTInput = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> modelChooseInput = new Input<RealParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
+    public Input<RealParameter> freqInput = new Input<RealParameter>("frequencies", "Stationary frequencies the model", Input.Validate.REQUIRED);
 
     public RealParameter logKappa;
     public RealParameter logTN;
@@ -40,7 +41,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     public RealParameter logGC;
     public RealParameter logGT;
     public RealParameter modelChoose;
-    public Frequencies frequencies;
+    public RealParameter frequencies;
 
 
     public static final int STATE_COUNT = 4;
@@ -56,7 +57,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     public static final int TN_INDEX = 2;
     public static final int GTR_INDEX = 3;
 
-    public static final double[] UNIF_DIST = {1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT};
+    public static final Double[] UNIF_DIST = {1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT};
 
     public static final int JC = 0;
     public static final int K80 = 1;
@@ -75,7 +76,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     };
 
 
-    int m_nStates;
+
     double [][] m_rateMatrix;
     protected double[] relativeRates;
     protected double[] storedRelativeRates;
@@ -90,7 +91,7 @@ public class NtdBMA extends SubstitutionModel.Base{
             RealParameter logGT,
             RealParameter logGC,
             RealParameter modelChoose,
-            Frequencies frequencies){
+            RealParameter frequencies){
 
         this.logKappa = logKappa;
         this.logTN = logTN;
@@ -100,12 +101,15 @@ public class NtdBMA extends SubstitutionModel.Base{
         this.logGT = logGT;
         this.frequencies = frequencies;
         this.modelChoose = modelChoose;
+        frequenciesInput.setRule(Input.Validate.REQUIRED);
 
         initialize();
 
         
 
     }
+
+    
 
     @Override
     public void initAndValidate() throws Exception {
@@ -116,13 +120,13 @@ public class NtdBMA extends SubstitutionModel.Base{
         this.logGC = logGCInput.get();
         this.logGT = logGTInput.get();
         this.modelChoose = modelChooseInput.get();
-        this.frequencies = frequenciesInput.get();
+        this.frequencies = freqInput.get();
 
 
         initialize();
 
 
-        //q = new double[m_nStates][m_nStates];
+        //q = new double[STATE_COUNT][STATE_COUNT];
     } // initAndValidate
 
     private void initialize(){
@@ -131,7 +135,7 @@ public class NtdBMA extends SubstitutionModel.Base{
                     "where "+ JC + " and " + GTR +" represents JC and GTR repectively");
         }
         updateMatrix = true;
-        m_nStates = STATE_COUNT;
+
         //eigenSystem = new DefaultEigenSystem(STATE_COUNT);
         m_rateMatrix = new double[STATE_COUNT][STATE_COUNT];
         relativeRates = new double[RATE_COUNT];
@@ -178,33 +182,35 @@ public class NtdBMA extends SubstitutionModel.Base{
         System.err.println("GC: "+relativeRates[3]);
         System.err.println("CT: "+relativeRates[4]);
         System.err.println("GT: "+relativeRates[5]);
-        System.err.println("indicators: "+INDICATORS[getCurrModel()][K80_INDEX]);
+        System.err.println("indicators: "+INDICATORS[getCurrModel()][GTR_INDEX]);
 
-        System.err.println(logKappa.get().getValue(0));
-        System.err.println(INDICATORS[modelChoose.get().getValue(0)][TN_INDEX]);
-        System.err.println(logTN.get().getValue(0));*/
+        System.err.println(logKappa.getValue());
+        System.err.println(INDICATORS[(int)(double)modelChoose.getValue()][TN_INDEX]);
+        System.err.println(logTN.getValue());*/
 
       
     }
 
     /** sets up rate matrix **/
     protected void setupRateMatrix() {
-    	double [] fFreqs;
+    	Double [] fFreqs;
 
         if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
-            fFreqs = frequencies.getFreqs();
+            fFreqs = frequencies.getValues();
         }else{
             fFreqs = UNIF_DIST;
         }
+        //System.err.println("getCurrModel(): "+getCurrModel());
+        //System.err.println("freq0: "+fFreqs[0]);
 
         
         int i, j, k = 0;
 
         // Set the instantaneous rate matrix
-        for (i = 0; i < m_nStates; i++) {
+        for (i = 0; i < STATE_COUNT; i++) {
             m_rateMatrix[i][i] = 0;
 
-            for (j = i + 1; j < m_nStates; j++) {
+            for (j = i + 1; j < STATE_COUNT; j++) {
                 m_rateMatrix[i][j] = relativeRates[k] * fFreqs[j];
                 m_rateMatrix[j][i] = relativeRates[k] * fFreqs[i];
                 k += 1;
@@ -212,17 +218,17 @@ public class NtdBMA extends SubstitutionModel.Base{
         }
 
        /* System.err.println("Part 1");
-       for(i = 0; i < m_nStates; i++){
-            for(j = 0; j < m_nStates; j++){
+       for(i = 0; i < STATE_COUNT; i++){
+            for(j = 0; j < STATE_COUNT; j++){
                 System.err.print(m_rateMatrix[i][j]+" ");
             }
             System.err.println();
         }                        */
 
         // set up diagonal
-        for (i = 0; i < m_nStates; i++) {
+        for (i = 0; i < STATE_COUNT; i++) {
             double fSum = 0.0;
-            for (j = 0; j < m_nStates; j++) {
+            for (j = 0; j < STATE_COUNT; j++) {
                 if (i != j)
                     fSum += m_rateMatrix[i][j];
             }
@@ -230,25 +236,25 @@ public class NtdBMA extends SubstitutionModel.Base{
         }
         // normalise rate matrix to one expected substitution per unit time
         double fSubst = 0.0;
-        for (i = 0; i < m_nStates; i++)
+        for (i = 0; i < STATE_COUNT; i++)
             fSubst += -m_rateMatrix[i][i] * fFreqs[i];
 
        /*System.err.println("Part 2");
-       for(i = 0; i < m_nStates; i++){
+       for(i = 0; i < STATE_COUNT; i++){
 
                 System.err.print(m_rateMatrix[i][i]+" ");
 
             System.err.println();
         }
         System.err.println("fSubst: "+fSubst);*/
-        for (i = 0; i < m_nStates; i++) {
-            for (j = 0; j < m_nStates; j++) {
+        for (i = 0; i < STATE_COUNT; i++) {
+            for (j = 0; j < STATE_COUNT; j++) {
             	m_rateMatrix[i][j] = m_rateMatrix[i][j] / fSubst;
             }
         }
         /*System.err.println("rate matrix");
-        for(i = 0; i< m_nStates;i++){
-            for(j = 0;j < m_nStates;j++){
+        for(i = 0; i< STATE_COUNT;i++){
+            for(j = 0;j < STATE_COUNT;j++){
                 System.err.print(m_rateMatrix[i][j]);
             }
             System.err.println();
@@ -311,7 +317,7 @@ public class NtdBMA extends SubstitutionModel.Base{
         EvalImag = eigenVImag.toArray();
 
         // Check for valid decomposition
-        for (i = 0; i < m_nStates; i++) {
+        for (i = 0; i < STATE_COUNT; i++) {
             if (Double.isNaN(Eval[i]) || Double.isNaN(EvalImag[i]) ||
                     Double.isInfinite(Eval[i]) || Double.isInfinite(EvalImag[i])) {
                 wellConditioned = false;
@@ -326,13 +332,14 @@ public class NtdBMA extends SubstitutionModel.Base{
 
     public boolean requiresRecalculation(){
         boolean recalculate = false;
-
+        //System.err.println("model "+getCurrModel());
+        //System.err.println("frequencies.somethingIsDirty() "+frequencies.somethingIsDirty());
 
         if(modelChoose.somethingIsDirty()){
             recalculate = true;
-        }else if(frequencies.isDirtyCalculation() &&
+        }else if(frequencies.somethingIsDirty() &&
                 INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
-
+            //System.err.println(frequencies);
             recalculate = true;
 
         }else if(logKappa.somethingIsDirty() &&
@@ -380,18 +387,26 @@ public class NtdBMA extends SubstitutionModel.Base{
 
     @Override
     public double[] getFrequencies() {
+        Double[] temp;
         if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
             //System.out.println("estimate freqs");
-            return frequencies.getFreqs();
+            temp =  frequencies.getValues();
         }else{
 
-            return UNIF_DIST;
+            temp =  UNIF_DIST;
         }
+
+        double[] freqs = new double[temp.length];
+        for(int i = 0; i < freqs.length;i++){
+            freqs[i] = temp[i];
+        }
+        return freqs;
     }
     
         @Override
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
     	//System.err.println("Get probs: "+updateMatrix);
+            //System.out.println("Get probs: "+frequencies);
         double distance = (fStartTime - fEndTime) * fRate;
     	
         int i, j, k;
@@ -405,8 +420,8 @@ public class NtdBMA extends SubstitutionModel.Base{
             	setupRelativeRates();
             	setupRateMatrix();
                 /*System.err.println("rate matrix just before eigen:");
-                for(i = 0; i< m_nStates;i++){
-                    for(j = 0;j < m_nStates;j++){
+                for(i = 0; i< STATE_COUNT;i++){
+                    for(j = 0;j < STATE_COUNT;j++){
                         System.err.print(m_rateMatrix[i][j]);
                     }
                     System.err.println();
@@ -420,14 +435,14 @@ public class NtdBMA extends SubstitutionModel.Base{
             Arrays.fill(matrix, 0.0);
             return;
         }
-        double[][] iexp = new double[m_nStates][m_nStates];//popiexp();
+        double[][] iexp = new double[STATE_COUNT][STATE_COUNT];//popiexp();
 
-        for (i = 0; i < m_nStates; i++) {
+        for (i = 0; i < STATE_COUNT; i++) {
 
             if (EvalImag[i] == 0) {
                 // 1x1 block
                 temp = Math.exp(distance * Eval[i]);
-                for (j = 0; j < m_nStates; j++) {
+                for (j = 0; j < STATE_COUNT; j++) {
                     iexp[i][j] = Ievc[i][j] * temp;
                 }
             } else {
@@ -440,7 +455,7 @@ public class NtdBMA extends SubstitutionModel.Base{
                 double expatcosbt = expat * Math.cos(distance * b);
                 double expatsinbt = expat * Math.sin(distance * b);
 
-                for (j = 0; j < m_nStates; j++) {
+                for (j = 0; j < STATE_COUNT; j++) {
                     iexp[i][j] = expatcosbt * Ievc[i][j] + expatsinbt * Ievc[i2][j];
                     iexp[i2][j] = expatcosbt * Ievc[i2][j] - expatsinbt * Ievc[i][j];
                 }
@@ -449,10 +464,10 @@ public class NtdBMA extends SubstitutionModel.Base{
         }
 
         int u = 0;
-        for (i = 0; i < m_nStates; i++) {
-            for (j = 0; j < m_nStates; j++) {
+        for (i = 0; i < STATE_COUNT; i++) {
+            for (j = 0; j < STATE_COUNT; j++) {
                 temp = 0.0;
-                for (k = 0; k < m_nStates; k++) {
+                for (k = 0; k < STATE_COUNT; k++) {
                     temp += Evec[i][k] * iexp[k][j];
                 }
                 if (temp < 0.0)
@@ -465,8 +480,8 @@ public class NtdBMA extends SubstitutionModel.Base{
         //pushiexp(iexp);
         /*System.err.println("dist: "+distance);
         k=0;
-        for(i = 0 ; i < m_nStates; i++){
-            for(j = 0; j < m_nStates;j++){
+        for(i = 0 ; i < STATE_COUNT; i++){
+            for(j = 0; j < STATE_COUNT;j++){
                 System.err.print(matrix[k++]);
 
             }
@@ -489,14 +504,15 @@ public class NtdBMA extends SubstitutionModel.Base{
      */
     protected void initialiseEigen() {
 
-        Eval = new double[m_nStates];
-        Evec = new double[m_nStates][m_nStates];
-        Ievc = new double[m_nStates][m_nStates];
+        Eval = new double[STATE_COUNT];
+        Evec = new double[STATE_COUNT][STATE_COUNT];
+        Ievc = new double[STATE_COUNT][STATE_COUNT];
+        EvalImag = new double[STATE_COUNT];
 
-        storedEval = new double[m_nStates];
-        storedEvec = new double[m_nStates][m_nStates];
-        storedIevc = new double[m_nStates][m_nStates];
-        storedEvalImag = new double[m_nStates];
+        storedEval = new double[STATE_COUNT];
+        storedEvec = new double[STATE_COUNT][STATE_COUNT];
+        storedIevc = new double[STATE_COUNT][STATE_COUNT];
+        storedEvalImag = new double[STATE_COUNT];
 
 
 
@@ -556,14 +572,14 @@ public class NtdBMA extends SubstitutionModel.Base{
 
         storedWellConditioned = wellConditioned;
 
-        System.arraycopy(EvalImag, 0, storedEvalImag, 0, m_nStates);
+        System.arraycopy(EvalImag, 0, storedEvalImag, 0, STATE_COUNT);
 //        storedNormalization = normalization;
 
         // Inherited
-        System.arraycopy(Eval, 0, storedEval, 0, m_nStates);
-        for (int i = 0; i < m_nStates; i++) {
-            System.arraycopy(Ievc[i], 0, storedIevc[i], 0, m_nStates);
-            System.arraycopy(Evec[i], 0, storedEvec[i], 0, m_nStates);
+        System.arraycopy(Eval, 0, storedEval, 0, STATE_COUNT);
+        for (int i = 0; i < STATE_COUNT; i++) {
+            System.arraycopy(Ievc[i], 0, storedIevc[i], 0, STATE_COUNT);
+            System.arraycopy(Evec[i], 0, storedEvec[i], 0, STATE_COUNT);
         }
 
         super.store();
@@ -584,7 +600,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     @Override
     public EigenDecomposition getEigenDecomposition(Node node) {
 
-        EigenSystem eigenSystem =  new DefaultEigenSystem(m_nStates);
+        EigenSystem eigenSystem =  new DefaultEigenSystem(STATE_COUNT);
         synchronized (this) {
             if (updateMatrix) {
             	setupRelativeRates();
