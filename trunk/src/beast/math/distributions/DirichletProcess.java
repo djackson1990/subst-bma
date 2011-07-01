@@ -6,6 +6,9 @@ import beast.core.Input;
 import beast.core.Description;
 import beast.core.Valuable;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * @author Chieh-Hsi Wu
  */
@@ -18,9 +21,10 @@ public class DirichletProcess extends ParametricDistribution{
             Input.Validate.REQUIRED
     );
 
-    public Input<ParametricDistribution> baseDistrInput = new Input<ParametricDistribution>(
+    public Input<List<ParametricDistribution>> baseDistrInput = new Input<List<ParametricDistribution>>(
             "baseDistr",
             "The base distribution of the dirichlet process",
+            new ArrayList<ParametricDistribution>(),
             Input.Validate.REQUIRED
     );
     
@@ -31,7 +35,7 @@ public class DirichletProcess extends ParametricDistribution{
             Input.Validate.REQUIRED
     );
 
-    private ParametricDistribution baseDistribution;
+    private List<ParametricDistribution> baseDistributions;
     //double[] alphaPowers;
     RealParameter alpha;
     DPValuable dpValuable;
@@ -43,7 +47,7 @@ public class DirichletProcess extends ParametricDistribution{
 
         alpha = alphaInput.get();
         dpValuable = dpValuableInput.get();
-        baseDistribution = baseDistrInput.get();
+        baseDistributions = baseDistrInput.get();
 
         //Yes I know that we are only counting number of memebers is the existing clusters
         //So there won't be any clusters of size 0.
@@ -84,14 +88,19 @@ public class DirichletProcess extends ParametricDistribution{
         }
 
     }
-    public double calcLogP(Valuable xList) throws Exception {
+    public double calcLogP(List<ParameterList> xLists) throws Exception {
         if(requiresRecalculation()){
             refresh();
         }
-        int dimParam = xList.getDimension();
+        int listCount = xLists.size();
+
         double logP = 0.0;
-        for(int i = 0; i < dimParam; i ++){
-            logP += baseDistribution.calcLogP(((ParameterList)xList).getParameter(i));
+
+        for(int i = 0; i < listCount;i++){
+            int dimParam = xLists.get(i).getDimension();
+            for(int j = 0; j < dimParam; j ++){
+                logP += baseDistributions.get(i).calcLogP(((ParameterList)xLists.get(i)).getParameter(j));
+            }
         }
         //System.err.println("flag1: "+logP);
 
@@ -113,15 +122,24 @@ public class DirichletProcess extends ParametricDistribution{
 
     }
     public boolean requiresRecalculation(){
-        return alpha.somethingIsDirty() || baseDistribution.isDirtyCalculation();
+        if(alpha.somethingIsDirty()){
+            return true;
+        }
+        for(ParametricDistribution paramDistr: baseDistributions){
+            if(paramDistr.isDirtyCalculation()){
+                return true;
+            }
+
+        }
+        return false;
     }
 
     public ContinuousDistribution getDistribution(){
         throw new RuntimeException("Dirichlet process is a discrete distribution.");
     }
 
-    public ParametricDistribution getBaseDistribution(){
-        return baseDistribution;
+    public List<ParametricDistribution> getBaseDistribution(){
+        return baseDistributions;
     }
 
     public double getConcParameter(){

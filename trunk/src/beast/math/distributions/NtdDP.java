@@ -4,6 +4,8 @@ import beast.core.Input;
 import beast.core.Description;
 import beast.core.parameter.ParameterList;
 
+import java.util.List;
+
 /**
  * @author Chieh-Hsi Wu
  */
@@ -92,7 +94,7 @@ public class NtdDP extends DirichletProcess{
                 || modelBaseDistr.isDirtyCalculation()
                 || freqBaseDistr.isDirtyCalculation();
     }
-    public ParametricDistribution getBaseDistribution(){
+    public List<ParametricDistribution> getBaseDistribution(){
         return null;
     }
     public ParametricDistribution getParamBaseDistr(){

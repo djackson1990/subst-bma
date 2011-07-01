@@ -100,10 +100,17 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
     public double calculateLogP() throws Exception{
         logP = 0.0;
         //System.out.println("hello: "+treeLiks.size());
+        /*if(treeInput.get().somethingIsDirty()){
+            System.err.println("treeLiks: "+treeLiks.size());
+
+        }   */
+        //int counter = 0;
         for(WVTreeLikelihood treeLik : treeLiks) {
             //System.err.println("hello?"+treeLik.isDirtyCalculation());
         	if (treeLik.isDirtyCalculation()) {
-                //System.err.println("hello?");
+                //System.err.println("hello?: "+treeInput.get().somethingIsDirty());
+                //if(treeInput.get().somethingIsDirty())
+                    //counter++;
         		logP += treeLik.calculateLogP();
                 //System.out.println("calcLogP: "+treeLik.calculateLogP());
         	} else {
@@ -114,6 +121,10 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
             	return logP;
             }
         }
+        /*if(treeInput.get().somethingIsDirty()){
+            System.err.println("treeLiks: "+treeLiks.size()+" "+counter);
+
+        } */
         //System.out.println("logP: "+logP);
         return logP;
     }

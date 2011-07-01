@@ -97,9 +97,12 @@ public class DirichletProcessPrior extends ParameterListPrior {
             }
         }
         Integer[] counts = map.values().toArray(new Integer[map.size()]);
-        if(counts.length != xListInput.get().getDimension()){
-            throw new RuntimeException();
+        for(int iList = 0; iList < xListsInput.get().size(); iList++){
+            if(counts.length != xListsInput.get().get(iList).getDimension()){
+                throw new RuntimeException();
+            }            
         }
+
 
         logP+=Math.log(alphaPowers[counts.length]);
 

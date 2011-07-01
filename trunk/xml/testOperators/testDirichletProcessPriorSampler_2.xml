@@ -2,12 +2,13 @@
        namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter:beast.math.distributions'>
 
     <input spec="ParameterList" id="parameterList">
-        <parameter spec="RealParameter" id="parameter1" value="0.2" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="QuietRealParameter" id="parameter1" value="0.2" upper="Infinity" lower="-Infinity"/>
     </input>
+
 
     <input spec="DPPointer" id="pointer">
         <input name="uniqueParameter" idref="parameter1"/>
-        <input name="initialAssignment" spec="IntegerParameter" value="0" lower="0" dimension="786" upper="786"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0" lower="0" dimension="3" upper="2"/>
     </input>
 
     <input spec="DPValuable" id="dpValuable">
@@ -18,7 +19,7 @@
     <input spec="DirichletProcess" id="dp">
         <input name="dpVal" idref="dpValuable"/>
         <input name="baseDistr" id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.3"/>
-        <input name="alpha" spec="RealParameter" value="0.1" lower="0.0" upper="Infinity"/>
+        <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
     </input>
 
     <input spec="Count" id="model.count">
@@ -42,14 +43,14 @@
 
         <logger logEvery="10000">
             <log idref="model.count"/>
-            <!--log idref="pointer"/>
-            <log idref="dpValuable"/-->
+            <log idref="pointer"/>
+            <!--log idref="dpValuable"/-->
         </logger>
 
         <logger logEvery="10" fileName="testDirichletProcessPrior_2.log">
             <log idref="model.count"/>
-            <!--log idref="pointer"/>
-            <log idref="dpValuable"/-->
+            <log idref="pointer"/>
+            <!--log idref="dpValuable"/-->
         </logger>
     </run>
 </beast>

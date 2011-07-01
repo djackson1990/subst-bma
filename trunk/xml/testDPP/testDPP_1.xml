@@ -1,57 +1,77 @@
 <beast version='2.0'
        namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter:beast.math.distributions'>
 
-    <input spec="ParameterList" id="parameterList">
-        <parameter spec="RealParameter2" id="parameter1" value="0.2" upper="Infinity" lower="-Infinity"/>
-        <parameter spec="RealParameter2" id="parameter2" value="0.1" upper="Infinity" lower="-Infinity"/>
+    <input spec="ParameterList" id="parameterList1">
+        <parameter spec="QuietRealParameter" id="parameter1" value="0.2" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="QuietRealParameter" id="parameter2" value="0.1" upper="Infinity" lower="-Infinity"/>
     </input>
 
-    <input spec="DPPointer" id="pointer">
+    <input spec="ParameterList" id="parameterList2">
+        <parameter spec="QuietRealParameter" id="parameter3" value="0.2" upper="Infinity" lower="-Infinity"/>
+        <parameter spec="QuietRealParameter" id="parameter4" value="0.1" upper="Infinity" lower="-Infinity"/>
+    </input>
+
+    <input spec="DPPointer" id="pointer1">
         <input name="uniqueParameter" idref="parameter1"/>
         <input name="uniqueParameter" idref="parameter2"/>
         <input name="initialAssignment" spec="IntegerParameter" value="0 1 1" lower="0" upper="1"/>
     </input>
 
+
+    <input spec="DPPointer" id="pointer2">
+        <input name="uniqueParameter" idref="parameter3"/>
+        <input name="uniqueParameter" idref="parameter4"/>
+        <input name="initialAssignment" spec="IntegerParameter" value="0 1 1" lower="0" upper="1"/>
+    </input>
+
     <input spec="DPValuable" id="dpValuable">
-        <input spec="ParameterList" name="paramList" idref="parameterList"/>
-        <input spec="DPPointer" name="pointers" idref="pointer"/>
+        <input spec="ParameterList" name="paramList" idref="parameterList1"/>
+        <input spec="DPPointer" name="pointers" idref="pointer1"/>
     </input>
 
     <input spec="DirichletProcess" id="dp">
         <input name="dpVal" idref="dpValuable"/>
         <input name="baseDistr" spec="beast.math.distributions.UniformDistribution" id="unif"/>
+        <input name="baseDistr" id="log.kappa.norm" spec="beast.math.distributions.Normal" mean="0" sigma="0.3"/>
         <input name="alpha" spec="RealParameter" value="1.0" lower="0.0" upper="Infinity"/>
     </input>
 
     <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
-            <input name='stateNode' idref='parameterList'/>
-            <input name='stateNode' idref='pointer'/>
+            <input name='stateNode' idref='parameterList1'/>
+            <input name='stateNode' idref='pointer1'/>
+            <input name='stateNode' idref='parameterList2'/>
+            <input name='stateNode' idref='pointer2'/>
         </state>
 
         <distribution spec="CompoundDistribution" id="Posterior">
             <distribution id="prior" spec="beast.math.distributions.ParameterListPrior" applyToList="true">
                 <input name="distribution" idref="dp"/>
-                <xList idref="parameterList"/>
+                <xList idref="parameterList1"/>
+                <xList idref="parameterList2"/>
             </distribution>
         </distribution>
 
         <operator id="dpps" spec="DirichletProcessPriorSampler" weight="1" sampleSize="5">
-            <input name="xList" idref="parameterList"/>
-            <input name="pointers" idref="pointer"/>
+            <input name="xList" idref="parameterList1"/>
+            <input name="xList" idref="parameterList2"/>
+            <input name="pointers" idref="pointer1"/>
+            <input name="pointers" idref="pointer2"/>
             <input name="dirichletProcess" idref="dp"/>
             <input name="dpVal" idref="dpValuable"/>
         </operator>
 
         <logger logEvery="10000">
             <log idref="prior"/>
-            <log idref="pointer"/>
+            <log idref="pointer1"/>
+            <log idref="pointer2"/>
             <log idref="dpValuable"/>
         </logger>
 
         <logger logEvery="10" fileName="testDPP_1.log">
             <log idref="prior"/>
-            <log idref="pointer"/>
+            <log idref="pointer1"/>
+            <log idref="pointer2"/>
             <log idref="dpValuable"/>
         </logger>
     </run>

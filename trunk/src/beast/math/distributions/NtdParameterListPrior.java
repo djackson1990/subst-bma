@@ -30,7 +30,7 @@ public class NtdParameterListPrior extends ParameterListPrior{
 
     public NtdParameterListPrior(){
         m_distInput.setRule(Input.Validate.OPTIONAL);
-        xListInput.setRule(Input.Validate.OPTIONAL);
+        xListsInput.setRule(Input.Validate.OPTIONAL);
     }
 
     private NtdDP ntdDP;

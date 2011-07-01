@@ -4,15 +4,19 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.ParameterList;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * @author Chieh-Hsi Wu
  */
 @Description("This class is a wrapper that provides prior to parameter list.")
 public class ParameterListPrior extends Prior{
 
-    public Input<ParameterList> xListInput = new Input<ParameterList>(
+    public Input<List<ParameterList>> xListsInput = new Input<List<ParameterList>>(
             "xList",
             "points at which the density is calculated",
+            new ArrayList<ParameterList>(),
             Input.Validate.REQUIRED
     );
 
@@ -21,6 +25,7 @@ public class ParameterListPrior extends Prior{
             "Whether the prior is applied to the entire list",
             Input.Validate.REQUIRED
     );
+
 
     public ParameterListPrior(){
         m_x.setRule(Input.Validate.OPTIONAL);
@@ -35,16 +40,19 @@ public class ParameterListPrior extends Prior{
 
     @Override
 	public double calculateLogP() throws Exception {
-        ParameterList parameterList = xListInput.get();
+        List<ParameterList> parameterLists = xListsInput.get();
         if(applyToList){
             //System.err.println("logP: "+logP);
-            logP = m_dist.calcLogP(parameterList);
+            logP = ((DirichletProcess)m_dist).calcLogP(parameterLists);
         }else{
             logP = 0.0;
 
-            int dimParam = parameterList.getDimension();
-            for(int i = 0; i < dimParam; i ++){
-                logP += m_dist.calcLogP(parameterList.getParameter(i));
+            int listCount = parameterLists.size();
+            for(int i = 0; i < listCount; i++){
+                int dimParam = parameterLists.get(i).getDimension();
+                for(int j = 0; j < dimParam; j ++){
+                    logP += m_dist.calcLogP(parameterLists.get(i).getParameter(j));
+                }
             }
 
         }
