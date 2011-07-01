@@ -15,11 +15,21 @@ import beast.math.distributions.Normal;
  */
 @Description("Adds or removed parameters to a list. It is purely for testing purpose.")
 public class AddRemoveOperator extends Operator {
-    public Input<ParameterList> parameterListInput =
-                    new Input<ParameterList>("parameters", "A list of parameters.", Input.Validate.REQUIRED);
-    public Input<ParametricDistribution> distInput =
-            new Input<ParametricDistribution>("distribution","The distribution from which an added parameter is to be sampled from", Input.Validate.REQUIRED);
-    public Input<Integer> maxInput = new Input<Integer>("max","The maximum number of elements in a list.");
+    public Input<ParameterList> parameterListInput = new Input<ParameterList>(
+            "parameters",
+            "A list of parameters.",
+            Input.Validate.REQUIRED
+    );
+    public Input<ParametricDistribution> distInput = new Input<ParametricDistribution>(
+            "distribution",
+            "The distribution from which an added parameter is to be sampled from",
+            Input.Validate.REQUIRED
+    );
+    public Input<Integer> maxInput = new Input<Integer>(
+            "max",
+            "The maximum number of elements in a list.",
+            Input.Validate.REQUIRED
+    );
     private int maxElement;
     public void initAndValidate() {
         maxElement = maxInput.get();

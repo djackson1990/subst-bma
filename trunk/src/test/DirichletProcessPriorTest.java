@@ -37,9 +37,9 @@ public class DirichletProcessPriorTest extends TestCase {
                         "sigma", "3"
                 );
 
-                RealParameter param1 = new RealParameter(new Double[]{-0.3});
-                RealParameter param2 = new RealParameter(new Double[]{-0.1});
-                RealParameter param3 = new RealParameter(new Double[]{0.5});
+                QuietRealParameter param1 = new QuietRealParameter(new Double[]{-0.3});
+                QuietRealParameter param2 = new QuietRealParameter(new Double[]{-0.1});
+                QuietRealParameter param3 = new QuietRealParameter(new Double[]{0.5});
                 paramList.initByName(
                         "parameter", param1,
                         "parameter", param2,
@@ -92,9 +92,9 @@ public class DirichletProcessPriorTest extends TestCase {
                         "sigma", "3"
                 );
 
-                RealParameter param1 = new RealParameter(new Double[]{-0.3,0.2,-0.1});
-                RealParameter param2 = new RealParameter(new Double[]{-0.1,0.03,0.15});
-                RealParameter param3 = new RealParameter(new Double[]{0.5,0.4,-0.01});
+                QuietRealParameter param1 = new QuietRealParameter(new Double[]{-0.3,0.2,-0.1});
+                QuietRealParameter param2 = new QuietRealParameter(new Double[]{-0.1,0.03,0.15});
+                QuietRealParameter param3 = new QuietRealParameter(new Double[]{0.5,0.4,-0.01});
                 paramList.initByName(
                         "parameter", param1,
                         "parameter", param2,
@@ -160,9 +160,9 @@ public class DirichletProcessPriorTest extends TestCase {
                         "precision", precisionMatrix
                 );
 
-                RealParameter param1 = new RealParameter(new Double[]{-0.3,0.2,-0.1});
-                RealParameter param2 = new RealParameter(new Double[]{-0.1,0.03,0.15});
-                RealParameter param3 = new RealParameter(new Double[]{0.5,0.4,-0.01});
+                QuietRealParameter param1 = new QuietRealParameter(new Double[]{-0.3,0.2,-0.1});
+                QuietRealParameter param2 = new QuietRealParameter(new Double[]{-0.1,0.03,0.15});
+                QuietRealParameter param3 = new QuietRealParameter(new Double[]{0.5,0.4,-0.01});
                 paramList.initByName(
                         "parameter", param1,
                         "parameter", param2,

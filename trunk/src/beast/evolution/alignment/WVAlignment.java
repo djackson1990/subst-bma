@@ -1,12 +1,13 @@
 package beast.evolution.alignment;
 
 import beast.core.Input;
+import beast.core.Description;
 import beast.evolution.tree.Tree;
 
 /**
  * @author Chieh-Hsi Wu
  */
-
+@Description("This class represents an alignment with variable weights.")
 public class WVAlignment extends Alignment{
     public Input<Alignment> alignmentInput = new Input<Alignment>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);
     public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);

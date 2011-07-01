@@ -3,6 +3,7 @@ package beast.core.util;
 import beast.core.Plugin;
 import beast.core.Loggable;
 import beast.core.Input;
+import beast.core.Description;
 import beast.evolution.likelihood.DPTreeLikelihood;
 
 import java.io.PrintStream;
@@ -10,6 +11,7 @@ import java.io.PrintStream;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class reports the pattern weights for each likelihood, which is rather handy for debugging.")
 public class Weights extends Plugin implements Loggable {
     public Input<DPTreeLikelihood> dpTreeLikInput = new Input<DPTreeLikelihood>(
             "dpTreeLik",

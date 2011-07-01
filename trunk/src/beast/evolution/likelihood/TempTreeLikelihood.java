@@ -3,6 +3,7 @@ package beast.evolution.likelihood;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AlignmentSubset;
@@ -18,6 +19,7 @@ import java.util.Random;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class returns the log tree likelihood of a site in an alignment given.")
 public class TempTreeLikelihood extends Distribution {
     public Input<Alignment> dataInput = new Input<Alignment>(
             "data",

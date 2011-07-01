@@ -372,8 +372,8 @@ public class NtdBMATest extends TestCase {
             logGT.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogGT(),1);
             RealParameter modelChoose = test.getModelChoose();
            
-            Frequencies f = new Frequencies();
-            f.init(null, true,test.getPi());
+            RealParameter f = new RealParameter();
+            f.init(0.0,1.0,test.getPi(),4);
             
             NtdBMA ntdBMA = new NtdBMA();
             ntdBMA.init(

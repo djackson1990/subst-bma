@@ -3,10 +3,12 @@ package beast.evolution.likelihood;
 import beast.evolution.tree.Tree;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
+import beast.core.Description;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Calculates tree likelihood of a particular site.")
 public class TempSiteTreeLikelihood extends TreeLikelihood{
 
     @Override

@@ -3,12 +3,14 @@ package beast.evolution.likelihood;
 import beast.evolution.tree.Tree;
 import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.StrictClockModel;
+import beast.core.Description;
 
 import java.util.Arrays;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class accommodates weight variation of patterns for tree likelihood calculation.")
 public class WVTreeLikelihood extends TreeLikelihood{
 
    private int[] patternWeights;

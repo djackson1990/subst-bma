@@ -15,6 +15,7 @@ import java.util.Random;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("A tree likelihood class that can handle data partitiioning.")
 public class DPTreeLikelihood extends Distribution implements PluginList {
 
     private DPNtdSiteModel dpNtdSiteModel = new DPNtdSiteModel();

@@ -22,9 +22,9 @@ public class DPPointerTest extends TestCase {
         public void setup(){
             try{
 
-                RealParameter parameter1 = new RealParameter(new Double[]{0.0});
-                RealParameter parameter2 = new RealParameter(new Double[]{1.0});
-                RealParameter parameter3 = new RealParameter(new Double[]{2.0});
+                QuietRealParameter parameter1 = new QuietRealParameter(new Double[]{0.0});
+                QuietRealParameter parameter2 = new QuietRealParameter(new Double[]{1.0});
+                QuietRealParameter parameter3 = new QuietRealParameter(new Double[]{2.0});
                 paramList = new ParameterList();
                 paramList.initByName(
                         "parameter", parameter1,

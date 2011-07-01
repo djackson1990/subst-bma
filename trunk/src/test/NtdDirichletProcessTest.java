@@ -107,9 +107,9 @@ public class NtdDirichletProcessTest extends TestCase {
 
 
         public ParameterList getParamList() throws Exception {
-            RealParameter param1 = new RealParameter(new Double[]{1.6,2.3,1.6,0.9});
-            RealParameter param2 = new RealParameter(new Double[]{0.16926,4.51521,0.18029,0.90557});
-            RealParameter param3 = new RealParameter(new Double[]{2.88483,1.31626,-0.24917,2.6704});
+            QuietRealParameter param1 = new QuietRealParameter(new Double[]{1.6,2.3,1.6,0.9});
+            QuietRealParameter param2 = new QuietRealParameter(new Double[]{0.16926,4.51521,0.18029,0.90557});
+            QuietRealParameter param3 = new QuietRealParameter(new Double[]{2.88483,1.31626,-0.24917,2.6704});
             ParameterList paramList = new ParameterList();
             paramList.initByName(
                     "parameter", param1,
@@ -121,9 +121,9 @@ public class NtdDirichletProcessTest extends TestCase {
 
         public ParameterList getModelList() throws Exception{
             ParameterList modelList = new ParameterList();
-            RealParameter param1 = new RealParameter(new Double[]{3.0});
-            RealParameter param2 = new RealParameter(new Double[]{4.0});
-            RealParameter param3 = new RealParameter(new Double[]{5.0});
+            QuietRealParameter param1 = new QuietRealParameter(new Double[]{3.0});
+            QuietRealParameter param2 = new QuietRealParameter(new Double[]{4.0});
+            QuietRealParameter param3 = new QuietRealParameter(new Double[]{5.0});
             modelList.initByName(
                     "parameter", param1,
                     "parameter", param2,
@@ -135,9 +135,9 @@ public class NtdDirichletProcessTest extends TestCase {
 
         public ParameterList getFreqList() throws Exception{
 
-            RealParameter param1 = new RealParameter(new Double[]{0.0927, 0.0529, 0.2344, 0.6200});
-            RealParameter param2 = new RealParameter(new Double[]{0.0294, 0.6254, 0.2657, 0.0795});
-            RealParameter param3 = new RealParameter(new Double[]{0.2578, 0.4553, 0.0605, 0.2264});
+            QuietRealParameter param1 = new QuietRealParameter(new Double[]{0.0927, 0.0529, 0.2344, 0.6200});
+            QuietRealParameter param2 = new QuietRealParameter(new Double[]{0.0294, 0.6254, 0.2657, 0.0795});
+            QuietRealParameter param3 = new QuietRealParameter(new Double[]{0.2578, 0.4553, 0.0605, 0.2264});
             ParameterList freqList = new ParameterList();
             freqList.initByName(
                     "parameter", param1,
@@ -287,9 +287,9 @@ public class NtdDirichletProcessTest extends TestCase {
 
 
         public ParameterList getParamList() throws Exception {
-            RealParameter param1 = new RealParameter(new Double[]{7.841304,8.933441,5.031969,10.48876,1.645417,8.288646});
-            RealParameter param2 = new RealParameter(new Double[]{6.22691,8.99749,5.23868,9.79864,2.35423,8.77663});
-            RealParameter param3 = new RealParameter(new Double[]{7.47852,8.62351,4.60867,9.6396,2.33618,9.53719});
+            QuietRealParameter param1 = new QuietRealParameter(new Double[]{7.841304,8.933441,5.031969,10.48876,1.645417,8.288646});
+            QuietRealParameter param2 = new QuietRealParameter(new Double[]{6.22691,8.99749,5.23868,9.79864,2.35423,8.77663});
+            QuietRealParameter param3 = new QuietRealParameter(new Double[]{7.47852,8.62351,4.60867,9.6396,2.33618,9.53719});
             ParameterList paramList = new ParameterList();
             paramList.initByName(
                     "parameter", param1,
@@ -301,9 +301,9 @@ public class NtdDirichletProcessTest extends TestCase {
 
         public ParameterList getModelList() throws Exception{
             ParameterList modelList = new ParameterList();
-            RealParameter param1 = new RealParameter(new Double[]{3.0});
-            RealParameter param2 = new RealParameter(new Double[]{4.0});
-            RealParameter param3 = new RealParameter(new Double[]{5.0});
+            QuietRealParameter param1 = new QuietRealParameter(new Double[]{3.0});
+            QuietRealParameter param2 = new QuietRealParameter(new Double[]{4.0});
+            QuietRealParameter param3 = new QuietRealParameter(new Double[]{5.0});
             modelList.initByName(
                     "parameter", param1,
                     "parameter", param2,
@@ -315,9 +315,9 @@ public class NtdDirichletProcessTest extends TestCase {
 
         public ParameterList getFreqList() throws Exception{
 
-            RealParameter param1 = new RealParameter(new Double[]{0.0927, 0.0529, 0.2344, 0.6200});
-            RealParameter param2 = new RealParameter(new Double[]{0.0294, 0.6254, 0.2657, 0.0795});
-            RealParameter param3 = new RealParameter(new Double[]{0.2578, 0.4553, 0.0605, 0.2264});
+            QuietRealParameter param1 = new QuietRealParameter(new Double[]{0.0927, 0.0529, 0.2344, 0.6200});
+            QuietRealParameter param2 = new QuietRealParameter(new Double[]{0.0294, 0.6254, 0.2657, 0.0795});
+            QuietRealParameter param3 = new QuietRealParameter(new Double[]{0.2578, 0.4553, 0.0605, 0.2264});
             ParameterList freqList = new ParameterList();
             freqList.initByName(
                     "parameter", param1,
