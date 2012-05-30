@@ -22,8 +22,8 @@
 	<property name="report" value="${build_substBMA}/junitreport"/>
 
 	<path id="classpath">
-        <pathelement path="${beast2classpath}"/>
-		<fileset dir="${beast2path}/lib" includes="**/*.jar"/>
+        <!--pathelement path="${beast2classpath}"/>
+		<fileset dir="${beast2path}/lib" includes="**/*.jar"/-->
 		<fileset dir="${lib}" includes="**/*.jar"/>
 	</path>
 
