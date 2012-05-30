@@ -1,10 +1,8 @@
 package beast.evolution.sitemodel;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.CalculationNode;
-import beast.core.PluginList;
+import beast.core.*;
 import beast.core.parameter.*;
+import beast.core.CoreUtils;
 import beast.evolution.substitutionmodel.DPNtdBMA;
 
 import java.util.ArrayList;
@@ -161,7 +159,7 @@ public class DPNtdSiteModel extends CalculationNode implements PluginList {
             }else if(changeType == ChangeType.VALUE_CHANGED){
                 this.changeType = ChangeType.VALUE_CHANGED;
                 for(SiteModel siteModel:siteModels){
-                    siteModel.checkDirtiness();
+                    CoreUtils.checkDirtiness(siteModel);
                 }
 
             }else if(changeType == ChangeType.POINTER_CHANGED){
@@ -170,7 +168,7 @@ public class DPNtdSiteModel extends CalculationNode implements PluginList {
             }else{
                 this.changeType = ChangeType.ALL;
                 for(SiteModel siteModel:siteModels){
-                    siteModel.checkDirtiness();
+                    CoreUtils.checkDirtiness(siteModel);
                 }
             }
             recalculate = true;

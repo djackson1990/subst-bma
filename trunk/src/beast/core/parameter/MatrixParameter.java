@@ -36,7 +36,7 @@ public class MatrixParameter extends RealParameter{
 
 
 
-    public double getMatrixValue(int row, int col) {
+    public Double getMatrixValue(int row, int col) {
         return (Double)parameters[row].getValue(col);
     }
 

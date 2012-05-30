@@ -95,14 +95,15 @@ public class MultivariateNormal extends ParametricDistribution implements Multiv
         return precision;
     }
 
-    public double[] getMean() {
+    public double[] getMultivariateMean() {
         return mean;
     }
 
     public Double[][] sample(int size){
+
         Double[][] samples = new Double[size][];
         try{
-            for(int i =0; i < samples.length;i++){
+            for(int i = 0; i < samples.length;i++){
                 double[] sample = sample();
                 Double[] sampleVals = new Double[sample.length];
                 for(int j = 0; j < sampleVals.length;j++){
@@ -112,7 +113,6 @@ public class MultivariateNormal extends ParametricDistribution implements Multiv
             }
         }catch(Exception e){
             throw new RuntimeException(e);
-
         }
         return samples;
 

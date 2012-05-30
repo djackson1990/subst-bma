@@ -2,6 +2,7 @@ package beast.evolution.likelihood;
 
 import beast.core.*;
 import beast.core.parameter.ChangeType;
+import beast.core.CoreUtils;
 import beast.evolution.sitemodel.DPNtdSiteModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.alignment.Alignment;
@@ -250,7 +251,7 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
         }
         if(recalculate){
             for(TreeLikelihood treeLik:treeLiks){
-                treeLik.checkDirtiness();
+                CoreUtils.checkDirtiness(treeLik);
             }
         }
         return recalculate;

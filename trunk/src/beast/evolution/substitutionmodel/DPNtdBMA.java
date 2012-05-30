@@ -1,10 +1,9 @@
 package beast.evolution.substitutionmodel;
 
-import beast.core.CalculationNode;
-import beast.core.Input;
-import beast.core.PluginList;
-import beast.core.Description;
+import beast.core.*;
 import beast.core.parameter.*;
+import beast.core.CoreUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -188,7 +187,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
         RealParameter logGT = new RealParameterWrapper(modelParameters,5);
        
         //System.err.println();
-        NtdBMA  ntdBMA = new NtdBMA(
+        return new NtdBMA(
                 logKappa,
                 logTN,
                 logAC,
@@ -198,7 +197,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
                 modelCode,
                 frequencies
         );
-        return ntdBMA;
+        //return ntdBMA;
 
 
     }
@@ -259,14 +258,14 @@ public class DPNtdBMA extends CalculationNode implements PluginList {
                 //System.err.println(getID()+": model changed");
                 this.changeType = ChangeType.VALUE_CHANGED;
                 for(NtdBMA ntdBMA:ntdBMAs){
-                    ntdBMA.checkDirtiness();
+                    CoreUtils.checkDirtiness(ntdBMA);
                 }
 
             }else{
                 this.changeType = ChangeType.ALL;
                 setupPointerIndices();
                 for(NtdBMA ntdBMA:ntdBMAs){
-                    ntdBMA.checkDirtiness();
+                    CoreUtils.checkDirtiness(ntdBMA);
                 }
             }
             recalculate = true;
