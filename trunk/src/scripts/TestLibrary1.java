@@ -10,7 +10,6 @@ public class TestLibrary1 {
     public static void main(String[] args){
         DoubleMatrix2D eigenV;
 
-
         double minProb = Property.DEFAULT.tolerance();
 
     }
