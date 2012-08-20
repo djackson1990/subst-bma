@@ -1,3 +1,5 @@
+package scripts;
+
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Property;
 
