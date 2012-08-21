@@ -22,9 +22,21 @@ import java.util.Arrays;
 public class NtdBMA extends SubstitutionModel.Base{
 
 
-    public Input<RealParameter> logKappaInput = new Input<RealParameter>("logKappa", "parameter representing log of HKY kappa parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logTNInput = new Input<RealParameter>("logTN", "parameter representing log of TN parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logACInput = new Input<RealParameter>("logAC", "parameter representing log of AC parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logKappaInput = new Input<RealParameter>(
+            "logKappa",
+            "parameter representing log of HKY kappa parameter",
+            Input.Validate.REQUIRED
+    );
+    public Input<RealParameter> logTNInput = new Input<RealParameter>(
+            "logTN",
+            "parameter representing log of TN parameter",
+            Input.Validate.REQUIRED
+    );
+    public Input<RealParameter> logACInput = new Input<RealParameter>(
+            "logAC",
+            "parameter representing log of AC parameter",
+            Input.Validate.REQUIRED
+    );
     public Input<RealParameter> logATInput = new Input<RealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
     public Input<RealParameter> logGCInput = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
     //public Input<RealParameter> logGTInput = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
