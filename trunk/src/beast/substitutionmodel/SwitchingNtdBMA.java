@@ -1,8 +1,7 @@
-package evolution.substitutionmodel;
+package beast.substitutionmodel;
 
 import beast.evolution.tree.Node;
 import beast.core.parameter.RealParameter;
-import com.sun.org.apache.xml.internal.utils.IntVector;
 
 import java.util.Arrays;
 
