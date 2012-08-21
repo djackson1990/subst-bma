@@ -1,9 +1,19 @@
 package evolution.substitutionmodel;
 
+import beast.core.Input;
+import beast.core.parameter.RealParameter;
+import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.Nucleotide;
+import beast.evolution.substitutionmodel.DefaultEigenSystem;
+import beast.evolution.substitutionmodel.EigenDecomposition;
+import beast.evolution.substitutionmodel.EigenSystem;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.math.MachineAccuracy;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Property;
+
+import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +22,7 @@ import cern.colt.matrix.linalg.Property;
  * Time: 8:17 PM
  * To change this template use File | Settings | File Templates.
  */
-public class NtdBMA {
+public class NtdBMA extends SubstitutionModel.Base{
 
         public static void main(String[] args){
             DoubleMatrix2D eigenV;
@@ -20,6 +30,566 @@ public class NtdBMA {
             double minProb = Property.DEFAULT.tolerance();
 
         }
+
+    public Input<RealParameter> logKappaInput = new Input<RealParameter>("logKappa", "parameter representing log of HKY kappa parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logTNInput = new Input<RealParameter>("logTN", "parameter representing log of TN parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logACInput = new Input<RealParameter>("logAC", "parameter representing log of AC parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logATInput = new Input<RealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> logGCInput = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
+    //public Input<RealParameter> logGTInput = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> modelChooseInput = new Input<RealParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
+    public Input<RealParameter> freqInput = new Input<RealParameter>("frequencies", "Stationary frequencies the model", Input.Validate.REQUIRED);
+
+    RealParameter logKappa;
+    RealParameter logTN;
+    RealParameter logAC;
+    RealParameter logAT;
+    RealParameter logGC;
+    //public RealParameter logGT;
+    RealParameter modelChoose;
+    RealParameter frequencies;
+
+    public static final int NTD_PAIRS = 16;
+
+
+    public static final int STATE_COUNT = 4;
+    public static final int RATE_COUNT = 6;
+    public static final int A = 0;
+    public static final int C = 1;
+    public static final int G = 2;
+    public static final int T = 3;
+
+
+
+    public static final int ABSENT = 0;
+    public static final int PRESENT = 1;
+
+    public static final int K80_INDEX = 0;
+    public static final int F81_INDEX = 1;
+    public static final int TN_INDEX = 2;
+    public static final int GTR_INDEX = 3;
+
+    public static final Double[] UNIF_DIST = {1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT,1.0/STATE_COUNT};
+
+    public static final int JC69 = 0;
+    public static final int K80 = 1;
+    public static final int F81 = 2;
+    public static final int HKY85 = 3;
+    public static final int TN93 = 4;
+    public static final int GTR = 5;
+
+    public static final int[][] INDICATORS = {
+            {ABSENT, ABSENT, ABSENT,ABSENT},
+            {PRESENT, ABSENT, ABSENT,ABSENT},
+            {ABSENT, PRESENT,ABSENT,ABSENT},
+            {PRESENT, PRESENT,ABSENT,ABSENT},
+            {PRESENT, PRESENT, PRESENT,ABSENT},
+            {PRESENT, PRESENT, PRESENT,PRESENT}
+    };
+
+
+    private int IDNumber = -1;
+    public void setIDNumber(int idNum){
+        IDNumber = idNum;
+    }
+
+    public int getIDNumber(){
+        return IDNumber;
+    }
+
+    double [][] m_rateMatrix;
+    protected double[] relativeRates;
+    protected double[] storedRelativeRates;
+
+    private int[] ordr;
+    private double[] evali;
+
+    public NtdBMA(){frequenciesInput.setRule(Input.Validate.OPTIONAL);}
+
+    public NtdBMA(
+            RealParameter logKappa,
+            RealParameter logTN,
+            RealParameter logAC,
+            RealParameter logAT,
+            RealParameter logGC,
+            //RealParameter logGT,
+            RealParameter modelChoose,
+            RealParameter frequencies){
+
+
+        frequenciesInput.setRule(Input.Validate.OPTIONAL);
+
+        initialize(logKappa,logTN,logAC,logAT,logGC, modelChoose, frequencies);
+
+
+    }
+
+
+    @Override
+    public void initAndValidate() throws Exception {
+        initialize(
+                logKappaInput.get(),
+                logTNInput.get(),
+                logACInput.get(),
+                logATInput.get(),
+                logGCInput.get(),
+                modelChooseInput.get(),
+                freqInput.get());
+
+
+        //q = new double[STATE_COUNT][STATE_COUNT];
+    } // initAndValidate
+
+    public void initialize(RealParameter logKappa,
+            RealParameter logTN,
+            RealParameter logAC,
+            RealParameter logAT,
+            RealParameter logGC,
+            //RealParameter logGT,
+            RealParameter modelChoose,
+            RealParameter frequencies){
+        this.logKappa = logKappa;
+        this.logTN = logTN;
+        this.logAC = logAC;
+        this.logAT = logAT;
+        this.logGC = logGC;
+        //this.logGT = logGT;
+        this.frequencies = frequencies;
+        this.modelChoose = modelChoose;
+        if(modelChoose.getUpper() > (double)GTR || modelChoose.getLower() < (double)JC69){
+            //throw new RuntimeException("Provided model choose value is "+modelChoose.getValue()+".\n The value of model choose needs to be between " + JC69 + " and " + GTR + "inclusive, " +
+                    //"where "+ JC69 + " and " + GTR +" represents JC and GTR repectively");
+        }
+        updateMatrix = true;
+
+        //eigenSystem = new DefaultEigenSystem(STATE_COUNT);
+        m_rateMatrix = new double[STATE_COUNT][STATE_COUNT];
+        relativeRates = new double[RATE_COUNT];
+        storedRelativeRates = new double[RATE_COUNT];
+        ordr = new int[STATE_COUNT];
+        evali = new double[STATE_COUNT];
+        initialiseEigen();
+
+    }
+
+
+
+
+
+    protected void setupRelativeRates() {
+
+        //rate AG value
+    	relativeRates[1] = 1.0;
+
+
+        //rate CT value
+        relativeRates[4] = Math.exp(INDICATORS[getCurrModel()][TN_INDEX]*logTN.getValue());
+
+        //rate AC value
+        relativeRates[0] = Math.exp(
+                0.0-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue()+
+                INDICATORS[getCurrModel()][GTR_INDEX]*logAC.getValue());
+
+        //rate AT value
+        relativeRates[2] = Math.exp(
+                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue()+
+                        INDICATORS[getCurrModel()][GTR_INDEX]*logAT.getValue());
+
+        //rate GC value
+        relativeRates[3] = Math.exp(
+                -INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue()+
+                        INDICATORS[getCurrModel()][GTR_INDEX]*logGC.getValue());
+
+        //rate GT value
+        relativeRates[5] = Math.exp(-INDICATORS[getCurrModel()][K80_INDEX]*logKappa.getValue());
+
+
+        /*System.out.println("AC: "+relativeRates[0]);
+        System.out.println("AG: "+relativeRates[1]);
+        System.out.println("AT: "+relativeRates[2]);
+        System.out.println("GC: "+relativeRates[3]);
+        System.out.println("CT: "+relativeRates[4]);
+        System.out.println("GT: "+relativeRates[5]);
+        System.out.println("indicators: "+INDICATORS[getCurrModel()][GTR_INDEX]);
+
+        System.out.println(logKappa.getValue());
+
+        System.out.println(logTN.getValue());
+        System.out.println(logAT.getValue());
+        System.out.println(logAC.getValue());
+        System.out.println(logGC.getValue());
+        System.out.println(frequencies.getValue(0)+" "+
+        frequencies.getValue(1)+" "+
+        frequencies.getValue(2)+" "+
+        frequencies.getValue(3));
+        System.out.println(modelChoose.getValue());*/
+    }
+
+    /** sets up rate matrix **/
+    protected void setupRateMatrix() {
+    	Double [] fFreqs;
+
+        if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
+            fFreqs = frequencies.getValues();
+        }else{
+            fFreqs = UNIF_DIST;
+        }
+        //System.err.println("getCurrModel(): "+getCurrModel());
+        //System.err.println("freq0: "+fFreqs[0]);
+
+
+        int i, j, k = 0;
+
+        // Set the instantaneous rate matrix
+        for (i = 0; i < STATE_COUNT; i++) {
+            m_rateMatrix[i][i] = 0;
+
+            for (j = i + 1; j < STATE_COUNT; j++) {
+                m_rateMatrix[i][j] = relativeRates[k] * fFreqs[j];
+                m_rateMatrix[j][i] = relativeRates[k] * fFreqs[i];
+                k += 1;
+            }
+        }
+
+
+        // set up diagonal
+        for (i = 0; i < STATE_COUNT; i++) {
+            double fSum = 0.0;
+            for (j = 0; j < STATE_COUNT; j++) {
+                if (i != j)
+                    fSum += m_rateMatrix[i][j];
+            }
+            m_rateMatrix[i][i] = -fSum;
+        }
+        // normalise rate matrix to one expected substitution per unit time
+        double fSubst = 0.0;
+        for (i = 0; i < STATE_COUNT; i++)
+            fSubst += -m_rateMatrix[i][i] * fFreqs[i];
+
+
+
+       /*System.err.println("Part 2");
+       for(i = 0; i < STATE_COUNT; i++){
+
+                System.err.print(m_rateMatrix[i][i]+" ");
+
+            System.err.println();
+        }
+        System.err.println("fSubst: "+fSubst);*/
+        for (i = 0; i < STATE_COUNT; i++) {
+            for (j = 0; j < STATE_COUNT; j++) {
+            	m_rateMatrix[i][j] = m_rateMatrix[i][j] / fSubst;
+                //System.err.print(m_rateMatrix[i][j]+" ");
+            }
+            //System.err.println();
+        }
+
+        /*for (i = 0; i < STATE_COUNT; i++) {
+            for (j = 0; j < STATE_COUNT; j++) {
+            	m_rateMatrix[i][j] = UsefulShit.truncate(m_rateMatrix[i][j] / fSubst,10);
+            }
+        }*/
+
+        elmhes(m_rateMatrix, ordr, STATE_COUNT);
+        eltran(m_rateMatrix, Evec, ordr, STATE_COUNT);
+        hqr2(STATE_COUNT, 1, STATE_COUNT, m_rateMatrix, Evec, Eval, evali);
+        luinverse(Evec, Ievc, STATE_COUNT);
+
+
+        // Check for valid decomposition
+        for (i = 0; i < STATE_COUNT; i++) {
+            if (Double.isNaN(Eval[i]) || Double.isInfinite(Eval[i]) ) {
+                wellConditioned = false;
+                return;
+            }
+        }
+
+        updateMatrix = false;
+        wellConditioned = true;
+
+	} // setupRateMatrix
+
+    public boolean requiresRecalculation(){
+        boolean recalculate = false;
+        //System.err.println("model "+getCurrModel());
+        //System.err.println("frequencies.somethingIsDirty() "+frequencies.somethingIsDirty());
+
+        if(modelChoose.somethingIsDirty()){
+            recalculate = true;
+        }else if(frequencies.somethingIsDirty() &&
+                INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
+            //System.err.println(frequencies);
+            recalculate = true;
+
+        }else if(logKappa.somethingIsDirty() &&
+                INDICATORS[getCurrModel()][K80_INDEX] == PRESENT){
+
+            recalculate = true;
+
+        }else if(logTN.somethingIsDirty() &&
+                INDICATORS[getCurrModel()][TN_INDEX] == PRESENT){
+
+            recalculate = true;
+
+        }else if(logAC.somethingIsDirty() &&
+               INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
+            recalculate = true;
+
+        }else if(logAT.somethingIsDirty() &&
+                INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
+            recalculate = true;
+
+        }else if(logGC.somethingIsDirty() &&
+                INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
+            recalculate = true;
+
+        }/*else if(logGT.somethingIsDirty() &&
+                INDICATORS[getCurrModel()][GTR_INDEX] == PRESENT){
+
+            recalculate = true;
+
+        }*/
+        if(recalculate){
+            updateMatrix = true;
+        }
+        return recalculate;
+    }
+
+    public void setUpdateMatrix(boolean update){
+        updateMatrix = update;
+
+    }
+
+    protected int getCurrModel(){
+        return (int)((double)modelChoose.getValue());
+
+    }
+
+    @Override
+    public double[] getFrequencies() {
+        Double[] temp;
+        if(INDICATORS[getCurrModel()][F81_INDEX] == PRESENT){
+            //System.out.println("estimate freqs");
+            temp =  frequencies.getValues();
+        }else{
+
+            temp =  UNIF_DIST;
+        }
+
+        double[] freqs = new double[temp.length];
+        for(int i = 0; i < freqs.length;i++){
+            freqs[i] = temp[i];
+        }
+        return freqs;
+    }
+
+        @Override
+    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
+    	//System.err.println("Get probs: "+updateMatrix);
+            //System.out.println("Get probs: "+frequencies);
+        double distance = (fStartTime - fEndTime) * fRate;
+
+        int i, j, k;
+        double temp;
+
+        // this must be synchronized to avoid being called simultaneously by
+        // two different likelihood threads - AJD
+        synchronized (this) {
+            if (updateMatrix) {
+                //System.out.println("UPDATE MATRIX");
+            	setupRelativeRates();
+            	setupRateMatrix();
+
+            	updateMatrix = false;
+            }
+        }
+
+        if (!wellConditioned) {
+            System.err.println("THIS IS BOTHERSOME");
+            System.err.println("distance: "+distance);
+                    System.out.println(logKappa.getValue());
+                    System.out.println(logTN.getValue());
+                    System.out.println(logAT.getValue());
+                    System.out.println(logAC.getValue());
+                    System.out.println(logGC.getValue());
+                    System.out.println(frequencies.getValue(0)+" "+
+                        frequencies.getValue(1)+" "+
+                        frequencies.getValue(2)+" "+
+                        frequencies.getValue(3));
+                    System.out.println(modelChoose.getValue());
+            Arrays.fill(matrix, 0.0);
+            return;
+        }
+        double[][] iexp = new double[STATE_COUNT][STATE_COUNT];//popiexp();
+
+
+
+
+        for (i = 0; i < STATE_COUNT; i++) {
+            temp = Math.exp(distance * Eval[i]);
+            for (j = 0; j < STATE_COUNT; j++) {
+                iexp[i][j] = Ievc[i][j] * temp;
+            }
+        }
+
+
+        int u = 0;
+        for (i = 0; i < STATE_COUNT; i++) {
+            for (j = 0; j < STATE_COUNT; j++) {
+                temp = 0.0;
+                for (k = 0; k < STATE_COUNT; k++) {
+                    temp += Evec[i][k] * iexp[k][j];
+                }
+                if (temp < 0.0)
+                    matrix[u] = minProb;
+                else
+                    matrix[u] = temp;
+                u++;
+            }
+        }
+
+    } // getTransitionProbabilities
+
+    public RealParameter getLogKappa(){
+        return logKappa;
+    }
+
+    public RealParameter getLogTN(){
+        return logTN;
+    }
+
+    public RealParameter getLogAC(){
+        return logAC;
+    }
+
+    public RealParameter getLogAT(){
+        return logAT;
+    }
+
+    public RealParameter getLogGC(){
+        return logGC;
+    }
+
+    public RealParameter getModelChoose(){
+        return modelChoose;
+    }
+
+    public RealParameter getFreqs(){
+        return frequencies;
+    }
+
+    protected double[] Eval;
+    protected double[] storedEval;
+    protected double[][] Evec;
+    protected double[][] storedEvec;
+    protected double[][] Ievc;
+    protected double[][] storedIevc;
+
+    /**
+     * allocate memory for the Eigen routines
+     */
+    protected void initialiseEigen() {
+
+        Eval = new double[STATE_COUNT];
+        Evec = new double[STATE_COUNT][STATE_COUNT];
+        Ievc = new double[STATE_COUNT][STATE_COUNT];
+
+        storedEval = new double[STATE_COUNT];
+        storedEvec = new double[STATE_COUNT][STATE_COUNT];
+        storedIevc = new double[STATE_COUNT][STATE_COUNT];
+
+
+
+        updateMatrix = true;
+    }
+
+
+
+    /**
+     * Restore the additional stored state
+     */
+    @Override
+
+    public void restore() {
+
+        updateMatrix = storedUpdateMatrix;
+        wellConditioned = storedWellConditioned;
+
+        double[] tmp1 = storedEval;
+        storedEval = Eval;
+        Eval = tmp1;
+
+        double[][] tmp2 = storedIevc;
+        storedIevc = Ievc;
+        Ievc = tmp2;
+
+        tmp2 = storedEvec;
+        storedEvec = Evec;
+        Evec = tmp2;
+
+        // To restore all this stuff just swap the pointers...
+        double[] tmp4 = storedRelativeRates;
+        storedRelativeRates = relativeRates;
+        relativeRates = tmp4;
+
+        super.restore();
+
+    }
+
+    public void store() {
+
+        storedUpdateMatrix = updateMatrix;
+
+//        if(updateMatrix)
+//            System.err.println("Storing updatable state!");
+
+        storedWellConditioned = wellConditioned;
+
+
+
+        // Inherited
+
+        System.arraycopy(Eval, 0, storedEval, 0, STATE_COUNT);
+        for(int i = 0; i < Ievc.length;i++){
+            System.arraycopy(Ievc[i], 0, storedIevc[i], 0, STATE_COUNT);
+        }
+        for(int i = 0;i < Evec.length; i++){
+            System.arraycopy(Evec[i], 0, storedEvec[i], 0, STATE_COUNT);
+        }
+
+        super.store();
+    }
+
+	@Override
+	public boolean canHandleDataType(DataType dataType) throws Exception {
+		if (dataType instanceof Nucleotide) {
+			return true;
+		}
+		throw new Exception("Can only handle nucleotide data");
+	}
+    /**
+     * This function returns the Eigen vectors.
+     *
+     * @return the array
+     */
+    @Override
+    public EigenDecomposition getEigenDecomposition(Node node) {
+
+        EigenSystem eigenSystem =  new DefaultEigenSystem(STATE_COUNT);
+        synchronized (this) {
+            if (updateMatrix) {
+            	setupRelativeRates();
+                setupRateMatrix();
+
+                updateMatrix = false;
+            }
+        }
+        //EigenDecomposition eigenDecomposition = eigenSystem.decomposeMatrix(m_rateMatrix);
+        return eigenSystem.decomposeMatrix(m_rateMatrix);
+    }
 
     protected boolean updateMatrix = true;
     protected boolean storedUpdateMatrix = true;
