@@ -1184,4 +1184,7 @@ public class NtdBMA extends SubstitutionModel.Base{
         omtrx = null;
     }
 
+    protected void makeAccept() {
+    	super.accept();
+    }
 }
