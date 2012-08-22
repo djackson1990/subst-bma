@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.PrintStream;
 
-import dr.inference.model.Variable;
 import org.w3c.dom.Node;
 
 /**
