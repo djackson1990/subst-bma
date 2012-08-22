@@ -9,6 +9,7 @@
 
 	<!-- set global properties for this build -->
 	<property name="src_substBMA" location="src" />
+	<property name="lib_substBMA" location="lib" />
 	<property name="build_substBMA" location="build" />
 	<property name="dist_substBMA" location="${build_substBMA}/dist" />
 	<property name="beast2path" location="../beast2" />
@@ -24,7 +25,7 @@
 	<path id="classpath">
         <pathelement path="${beast2classpath}"/>
 		<fileset dir="${beast2path}/lib" includes="**/*.jar"/>
-		<fileset dir="${lib}" includes="**/*.jar"/>
+		<fileset dir="${lib_substBMA}" includes="**/*.jar"/>
 	</path>
 
 	<!-- start -->
