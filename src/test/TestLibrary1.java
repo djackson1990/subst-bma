@@ -11,6 +11,7 @@ public class TestLibrary1 {
         DoubleMatrix2D eigenV;
 
         double minProb = Property.DEFAULT.tolerance();
+        System.out.println(minProb);
 
     }
 }
