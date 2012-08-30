@@ -38,7 +38,7 @@ public abstract class DPSiteModel extends CalculationNode implements PluginList 
 
 
 
-    public SiteModel getSiteModel(int index){
+    public QuietSiteModel getSiteModel(int index){
         return siteModels.get(index);
     }
 

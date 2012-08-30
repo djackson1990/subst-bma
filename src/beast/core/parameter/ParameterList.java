@@ -159,7 +159,7 @@ public class ParameterList extends StateNode implements PluginList, Recycle {
     /*
      * Get the last parameter added.
      */
-    public RealParameter getLastParameter(){
+    public QuietRealParameter getLastParameter(){
         return parameterList.get(parameterList.size() - 1);
     }
 

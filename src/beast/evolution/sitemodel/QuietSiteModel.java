@@ -1,5 +1,12 @@
 package beast.evolution.sitemodel;
 
+import beast.core.StateNode;
+import beast.core.parameter.QuietRealParameter;
+import beast.core.parameter.RealParameter;
+import beast.evolution.substitutionmodel.SubstitutionModel;
+
+import java.util.ArrayList;
+
 /**
  * Created by IntelliJ IDEA.
  * User: cwu080
@@ -10,5 +17,117 @@ package beast.evolution.sitemodel;
 public class QuietSiteModel extends SiteModel {
     public void makeAccept(){
         super.accept();
+    }
+
+
+    int gammaCatCount;
+    SubstitutionModel substitutionModel;
+
+    public QuietSiteModel(SubstitutionModel substModel,
+                          QuietRealParameter muParameter) throws Exception{
+        this(substModel,
+                muParameter,
+                null,
+                null,
+                false,
+                1);
+
+    }
+
+    public QuietSiteModel(SubstitutionModel substModel,
+                          QuietRealParameter muParameter,
+                          RealParameter shapeParameter,
+                          RealParameter invarParameter,
+                          boolean useBeast1StyleGamma,
+                          int gammaCategoryCount) throws Exception{
+        substitutionModel = substModel;
+
+        this.useBeast1StyleGamma = useBeast1StyleGamma;
+
+        if (muParameter == null) {
+            this.muParameter = new RealParameter("1.0");
+        }else{
+            this.muParameter = muParameter;
+        }
+        muParameter.setBounds(Math.max(muParameter.getLower(), 0.0), Math.min(muParameter.getUpper(), Double.POSITIVE_INFINITY));
+
+
+        this.shapeParameter = shapeParameter;
+        if (shapeParameter != null) {
+            // The quantile calculator fails when the shape parameter goes much below
+            // 1E-3 so we have put a hard lower bound on it. If this is not there then
+            // the category rates can go to 0 and cause a -Inf likelihood (whilst this
+            // is not a problem as the state will be rejected, it could mask other issues
+            // and this seems the better approach.
+            shapeParameter.setBounds(Math.max(shapeParameter.getLower(), 1.0E-3), Math.min(shapeParameter.getUpper(), 1.0E3));
+        }
+
+
+        if (invarParameter == null) {
+            this.invarParameter = new RealParameter("0.0");
+            this.invarParameter.setBounds(Math.max(0.0, invarParameter.getLower()), Math.min(1.0, invarParameter.getUpper()));
+        }else{
+            this.invarParameter = invarParameter;
+
+        }
+
+
+
+        if (/*invarParameter != null && */(invarParameter.getValue() < 0 || invarParameter.getValue() > 1)) {
+            throw new Exception("proportion invariant should be between 0 and 1");
+        }
+        gammaCatCount = gammaCategoryCount;
+        refresh();
+
+        addCondition(muParameter);
+        addCondition(invarParameter);
+        addCondition(shapeParameter);
+
+    }
+
+
+    @Override
+    protected void refresh() {
+        if (shapeParameter != null) {
+            categoryCount = gammaCatCount;
+            if (categoryCount < 1) {
+                System.out.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
+                categoryCount = 1;
+            }
+        } else {
+            categoryCount = 1;
+        }
+
+        if (/*invarParameter != null && */invarParameter.getValue() > 0) {
+            if (m_bPropInvariantIsCategory) {
+                categoryCount += 1;
+            }
+        }
+
+        categoryRates = new double[categoryCount];
+        categoryProportions = new double[categoryCount];
+        calculateCategoryRates(null);
+        //ratesKnown = false;
+    }
+
+    /**
+     * add item to the list *
+     * @param stateNode
+     */
+    public void addCondition(final StateNode stateNode) {
+        if (stateNode == null) return;
+
+        if (conditions == null) conditions = new ArrayList<String>();
+
+        conditions.add(stateNode.getID());
+    }
+
+    @Override
+    public SubstitutionModel getSubstitutionModel() {
+        return substitutionModel;
+    }
+
+    public QuietRealParameter getRateParameter(){
+        return (QuietRealParameter)muParameter;
     }
 }
