@@ -3,6 +3,7 @@ package beast.evolution.operators;
 import beast.core.*;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.evolution.operators.util.Vertex;
 import beast.evolution.substitutionmodel.NtdBMA;
 import beast.util.Randomizer;
 
@@ -197,31 +198,6 @@ public class NetworkIntRandomWalkOperator extends Operator {
 
 
     }
-    class Vertex extends Plugin {
-        public static final String ID_NUM = "idNum";
-        public static final String NEIGHBOURS = "neighbours";
-        public Input<Integer> idNum = new Input<Integer>(ID_NUM, "Unique id number of the vertex.");
-        public Input<String> neighbours = new Input<String>(NEIGHBOURS, "A string of the id number of adjacent nodes separated by a while space");
-             private int id;
-        private int[] neighbourIds;
-             public void initAndValidate() throws Exception {
-            id = idNum.get();
-            String[] neighboursStr = neighbours.get().split("\\s+");
-            neighbourIds = new int[neighboursStr.length];
-            for(int i = 0; i < neighboursStr.length;i++){
-                neighbourIds[i] = Integer.parseInt(neighboursStr[i]);
-            }
-             }
 
-             public int getId(){
-            return id;
-        }
-             public int[] getNeighbours(){
-            return neighbourIds;
-        }
-             public String toString(){
-            return "Id: "+id+ ", neighbours: "+neighbours.get() ;
-        }
-    }
 
 }
