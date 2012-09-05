@@ -1,6 +1,7 @@
 package beast.evolution.substitutionmodel;
 
 import beast.core.Description;
+import beast.core.parameter.QuietRealParameter;
 import beast.evolution.tree.Node;
 import beast.core.parameter.RealParameter;
 
@@ -25,27 +26,27 @@ public class SwitchingNtdBMA extends NtdBMA{
     }
 
     public SwitchingNtdBMA(
-            RealParameter logKappa,
-            RealParameter logTN,
-            RealParameter logAC,
-            RealParameter logAT,
-            RealParameter logGC,
+            QuietRealParameter logKappa,
+            QuietRealParameter logTN,
+            QuietRealParameter logAC,
+            QuietRealParameter logAT,
+            QuietRealParameter logGC,
             //RealParameter logGT,
-            RealParameter modelChoose,
-            RealParameter frequencies){
+            QuietRealParameter modelChoose,
+            QuietRealParameter frequencies){
         super(logKappa,logTN, logAC, logAT,
                 logGC, modelChoose, frequencies);
     }
 
     public void initialize(
-            RealParameter logKappa,
-            RealParameter logTN,
-            RealParameter logAC,
-            RealParameter logAT,
-            RealParameter logGC,
+            QuietRealParameter logKappa,
+            QuietRealParameter logTN,
+            QuietRealParameter logAC,
+            QuietRealParameter logAT,
+            QuietRealParameter logGC,
             //RealParameter logGT,
-            RealParameter modelChoose,
-            RealParameter frequencies){
+            QuietRealParameter modelChoose,
+            QuietRealParameter frequencies){
         updateTN = true;
         updateHKY = true;
         super.initialize(logKappa,logTN, logAC, logAT,

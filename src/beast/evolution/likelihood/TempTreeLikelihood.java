@@ -3,11 +3,11 @@ package beast.evolution.likelihood;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
-import beast.core.parameter.QuietRealParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AlignmentSubset;
 import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.sitemodel.DummySiteModel;
 import beast.evolution.sitemodel.QuietSiteModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.NtdBMA;
@@ -27,7 +27,7 @@ public class TempTreeLikelihood extends Distribution {
             Input.Validate.REQUIRED
     );
 
-    public Input<QuietSiteModel> siteModelInput = new Input<QuietSiteModel>(
+    public Input<DummySiteModel> siteModelInput = new Input<DummySiteModel>(
             "siteModel",
             "Models the evolution of a site in an alignment",
             Input.Validate.REQUIRED
@@ -102,16 +102,16 @@ public class TempTreeLikelihood extends Distribution {
         try{
 
             if(substModel instanceof NtdBMA){
-                ((QuietRealParameter)((NtdBMA)substModel).getLogKappa()).setValueQuietly(0, modelParameters.getValue(0));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogTN()).setValueQuietly(0, modelParameters.getValue(1));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogAT()).setValueQuietly(0,modelParameters.getValue(3));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogGC()).setValueQuietly(0,modelParameters.getValue(4));
-                ((QuietRealParameter)((NtdBMA)substModel).getModelChoose()).setValueQuietly(0,modelCode.getValue());
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(0,freqs.getValue(0));
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(1,freqs.getValue(1));
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(2,freqs.getValue(2));
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(3,freqs.getValue(3));
+                ((NtdBMA)substModel).getLogKappa().setValueQuietly(0,modelParameters.getValue(0));
+                ((NtdBMA)substModel).getLogTN().setValueQuietly(0,modelParameters.getValue(1));
+                ((NtdBMA)substModel).getLogAC().setValueQuietly(0,modelParameters.getValue(2));
+                ((NtdBMA)substModel).getLogAT().setValueQuietly(0,modelParameters.getValue(3));
+                ((NtdBMA)substModel).getLogGC().setValueQuietly(0,modelParameters.getValue(4));
+                ((NtdBMA)substModel).getModelChoose().setValueQuietly(0,modelCode.getValue());
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(0,freqs.getValue(0));
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(1,freqs.getValue(1));
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(2,freqs.getValue(2));
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(3,freqs.getValue(3));
 
             }else{
                 throw new RuntimeException("Need NtdBMA");
@@ -143,16 +143,16 @@ public class TempTreeLikelihood extends Distribution {
         try{
 
             if(substModel instanceof NtdBMA){
-                ((QuietRealParameter)((NtdBMA)substModel).getLogKappa()).setValueQuietly(0,modelParameters.getValue(0));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogTN()).setValueQuietly(0,modelParameters.getValue(1));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogAT()).setValueQuietly(0,modelParameters.getValue(3));
-                ((QuietRealParameter)((NtdBMA)substModel).getLogGC()).setValueQuietly(0,modelParameters.getValue(4));
-                ((QuietRealParameter)((NtdBMA)substModel).getModelChoose()).setValueQuietly(0,modelCode.getValue());
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(0,freqs.getValue(0));
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(1,freqs.getValue(1));
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(2,freqs.getValue(2));
-                ((QuietRealParameter)((NtdBMA)substModel).getFreqs()).setValueQuietly(3,freqs.getValue(3));
+                ((NtdBMA)substModel).getLogKappa().setValueQuietly(0,modelParameters.getValue(0));
+                ((NtdBMA)substModel).getLogTN().setValueQuietly(0,modelParameters.getValue(1));
+                ((NtdBMA)substModel).getLogAC().setValueQuietly(0,modelParameters.getValue(2));
+                ((NtdBMA)substModel).getLogAT().setValueQuietly(0,modelParameters.getValue(3));
+                ((NtdBMA)substModel).getLogGC().setValueQuietly(0,modelParameters.getValue(4));
+                ((NtdBMA)substModel).getModelChoose().setValueQuietly(0,modelCode.getValue());
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(0,freqs.getValue(0));
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(1,freqs.getValue(1));
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(2,freqs.getValue(2));
+                ((NtdBMA)substModel).getFreqs().setValueQuietly(3,freqs.getValue(3));
 
             }else{
                 throw new RuntimeException("Need NtdBMA");
@@ -164,7 +164,7 @@ public class TempTreeLikelihood extends Distribution {
                     "substModel", ntdBMA
             );*/
             ((NtdBMA)substModel).setUpdateMatrix(true);
-            ((QuietRealParameter)siteModelInput.get().getRateParameter()).setValueQuietly(0,rate.getValue());
+            siteModelInput.get().getRateParameter().setValueQuietly(0,rate.getValue());
             int iPat = alignment.getPatternIndex(site);         
             logP = treeLiks[iPat].calculateLogP();
         }catch(Exception e){
@@ -179,7 +179,7 @@ public class TempTreeLikelihood extends Distribution {
             RealParameter rateParameter,
             int site){
         try{
-            ((QuietRealParameter)siteModelInput.get().getRateParameter()).setValueQuietly(0,rateParameter.getValue());
+            siteModelInput.get().getRateParameter().setValueQuietly(0,rateParameter.getValue());
             int iPat = alignment.getPatternIndex(site);
             logP = treeLiks[iPat].calculateLogP();
         }catch(Exception e){
@@ -203,7 +203,6 @@ public class TempTreeLikelihood extends Distribution {
     }
 
     public boolean requiresRecalculation(){
-        System.err.println("what?");
         return false;
     }
 

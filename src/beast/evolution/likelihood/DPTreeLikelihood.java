@@ -97,14 +97,20 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
 
             }
             System.out.println(); */
-            NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(clusterWeights[i]);
-            treeLik.initByName(
+            NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
+                    clusterWeights[i],
+                    alignment,
+                    treeInput.get(),
+                    useAmbiguitiesInput.get(),
+                    dpSiteModel.getSiteModel(i),
+                    branchRateModelInput.get());
+            /*treeLik.initByName(
                     "data", alignment,
                     "tree", treeInput.get(),
                     "siteModel", dpSiteModel.getSiteModel(i),
                     "branchRateModel", branchRateModelInput.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
-            );
+            );*/
             treeLiks.add(treeLik);
 
             
@@ -132,11 +138,11 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
                 /*logP += treeLik.calculateLogP();*/
                 double tmp = treeLik.calculateLogP();
         		logP += tmp;
-                //System.out.println("calcLogP: "+tmp);
+                System.out.println("calcLogP: "+tmp);
                 //System.out.println("calcLogP: "+tmp+treeLik.m_data.get()+" "+((SiteModel)treeLik.m_siteModel).getRateParameter());
         	} else {
         		logP += treeLik.getCurrentLogP();
-                //System.out.println("currLogP: "+treeLik.calculateLogP());
+                System.out.println("currLogP: "+treeLik.calculateLogP());
         	}
             if (Double.isInfinite(logP) || Double.isNaN(logP)) {
             	return logP;
@@ -196,15 +202,21 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
 
         //WVAlignment wvalign = new WVAlignment(alignment, patternWeights);
         //WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
-        NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(patternWeights);
+        NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
+                patternWeights,
+                alignment,
+                treeInput.get(),
+                useAmbiguitiesInput.get(),
+                siteModel,
+                branchRateModelInput.get());
         try{
-            treeLik.initByName(
+            /*treeLik.initByName(
                     "data", alignment,
                     "tree", treeInput.get(),
                     "siteModel", siteModel,
                     "branchRateModel", branchRateModelInput.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
-            );
+            );*/
 
             treeLik.calculateLogP();
             treeLik.store();
@@ -235,15 +247,21 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
         }
         //WVAlignment wvalign = new WVAlignment(alignment, patternWeights);
         //WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
-        NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(patternWeights);
+        NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
+                patternWeights,
+                alignment,
+                treeInput.get(),
+                useAmbiguitiesInput.get(),
+                siteModel,
+                branchRateModelInput.get());
         try{
-            treeLik.initByName(
+            /*treeLik.initByName(
                     "data", alignment,
                     "tree", treeInput.get(),
                     "siteModel", siteModel,
                     "branchRateModel", branchRateModelInput.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
-            );
+            );*/
             treeLik.calculateLogP();
             treeLik.store();
             treeLiks.add(treeLik);
@@ -268,7 +286,7 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
         treeLiks.remove(removedIndex);
     }
 
-    private void updateWeights(){
+    protected void updateWeights(){
         int dirtySite = dpSiteModel.getLastDirtySite();
         //System.out.println("changeType: "+changeType);
         if(changeType == ChangeType.ADDED){

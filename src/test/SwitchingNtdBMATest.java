@@ -1,6 +1,7 @@
 package test;
 
 import beast.core.Description;
+import beast.core.parameter.QuietRealParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import junit.framework.TestCase;
@@ -23,7 +24,7 @@ public class SwitchingNtdBMATest extends TestCase {
         double getLogAT();
         double getLogGC();
         double getLogGT();
-        RealParameter getModelChoose() throws Exception;
+        QuietRealParameter getModelChoose() throws Exception;
 
         double getDistance();
 
@@ -60,8 +61,8 @@ public class SwitchingNtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public RealParameter getModelChoose() throws Exception{
-            RealParameter modelChoose = new RealParameter();
+        public QuietRealParameter getModelChoose() throws Exception{
+            QuietRealParameter modelChoose = new QuietRealParameter();
             modelChoose.initByName(
                     "value", "3",
                     "lower", "0",
@@ -112,8 +113,8 @@ public class SwitchingNtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public RealParameter getModelChoose() throws Exception{
-            RealParameter modelChoose = new RealParameter();
+        public QuietRealParameter getModelChoose() throws Exception{
+            QuietRealParameter modelChoose = new QuietRealParameter();
             modelChoose.initByName(
                     "value", "4",
                     "upper", "0",
@@ -166,8 +167,8 @@ public class SwitchingNtdBMATest extends TestCase {
             return Math.log(0.8);
         }
 
-        public RealParameter getModelChoose() throws Exception{
-            RealParameter modelChoose = new RealParameter();
+        public QuietRealParameter getModelChoose() throws Exception{
+            QuietRealParameter modelChoose = new QuietRealParameter();
             modelChoose.initByName(
                     "value", "5",
                     "lower", "0",
@@ -219,8 +220,8 @@ public class SwitchingNtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public RealParameter getModelChoose() throws Exception{
-            RealParameter modelChoose = new RealParameter();
+        public QuietRealParameter getModelChoose() throws Exception{
+            QuietRealParameter modelChoose = new QuietRealParameter();
             modelChoose.initByName(
                     "value", "3",
                     "lower", "0",
@@ -273,8 +274,8 @@ public class SwitchingNtdBMATest extends TestCase {
             return Math.log(0.5);
         }
 
-        public RealParameter getModelChoose() throws Exception{
-            RealParameter modelChoose = new RealParameter();
+        public QuietRealParameter getModelChoose() throws Exception{
+            QuietRealParameter modelChoose = new QuietRealParameter();
             modelChoose.initByName(
                     "value", "4",
                     "lower", "0",
@@ -328,8 +329,8 @@ public class SwitchingNtdBMATest extends TestCase {
             return Math.log(0.8);
         }
 
-        public RealParameter getModelChoose() throws Exception{
-            RealParameter modelChoose = new RealParameter();
+        public QuietRealParameter getModelChoose() throws Exception{
+            QuietRealParameter modelChoose = new QuietRealParameter();
             modelChoose.initByName(
                     "value", "5",
                     "upper", "0",
@@ -358,12 +359,12 @@ public class SwitchingNtdBMATest extends TestCase {
     public void testNtdBMA() throws Exception{
         for (Instance test : all) {
 
-            RealParameter logKappa = new RealParameter();
-            RealParameter logTN = new RealParameter();
-            RealParameter logAC = new RealParameter();
-            RealParameter logAT = new RealParameter();
-            RealParameter logGC = new RealParameter();
-            RealParameter logGT = new RealParameter();
+            QuietRealParameter logKappa = new QuietRealParameter();
+            QuietRealParameter logTN = new QuietRealParameter();
+            QuietRealParameter logAC = new QuietRealParameter();
+            QuietRealParameter logAT = new QuietRealParameter();
+            QuietRealParameter logGC = new QuietRealParameter();
+            QuietRealParameter logGT = new QuietRealParameter();
 
             logKappa.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogKappa(),1);
             logTN.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogTN(),1);
@@ -371,9 +372,9 @@ public class SwitchingNtdBMATest extends TestCase {
             logAT.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogAT(),1);
             logGC.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogGC(),1);
             logGT.init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, ""+test.getLogGT(),1);
-            RealParameter modelChoose = test.getModelChoose();
+            QuietRealParameter modelChoose = test.getModelChoose();
 
-            RealParameter f = new RealParameter();
+            QuietRealParameter f = new QuietRealParameter();
             f.init(0.0,1.0,test.getPi(),4);
 
             SwitchingNtdBMA ntdBMA = new SwitchingNtdBMA();

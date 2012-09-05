@@ -266,7 +266,7 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
         treeLiks.remove(removedIndex);
     }
 
-    private void updateWeights(){
+    protected void updateWeights(){
         int dirtySite = dpSiteModel.getLastDirtySite();
         //System.out.println("changeType: "+changeType);
         if(changeType == ChangeType.ADDED){
