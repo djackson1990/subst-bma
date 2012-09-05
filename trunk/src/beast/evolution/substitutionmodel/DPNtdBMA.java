@@ -130,15 +130,10 @@ public class DPNtdBMA extends CalculationNode implements PluginList, Recycle {
     private void addModel(){
 
 
-        RealParameter parameter = paramList.getParameter(paramList.getDimension()-1);
-        RealParameter model = modelList.getParameter(modelList.getDimension()-1);
-        RealParameter freqs = freqsList.getParameter(freqsList.getDimension()-1);
-        Frequencies frequencies = new Frequencies();
-        try{
-            frequencies.initByName("frequencies",freqs);
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
+        QuietRealParameter parameter = paramList.getParameter(paramList.getDimension()-1);
+        QuietRealParameter model = modelList.getParameter(modelList.getDimension()-1);
+        QuietRealParameter freqs = freqsList.getParameter(freqsList.getDimension()-1);
+
 
         ntdBMAs.add(createSwitchingNtdBMA(parameter,model,freqs));
 
@@ -238,14 +233,14 @@ public class DPNtdBMA extends CalculationNode implements PluginList, Recycle {
     int newModelCreatedCount = 0;
     int storedNewModelCreatedCount;
     public SwitchingNtdBMA createSwitchingNtdBMA(
-            RealParameter modelParameters,
-            RealParameter modelCode,
-            RealParameter frequencies){
-        RealParameter logKappa = new RealParameterWrapper(modelParameters, 0);
-        RealParameter logTN = new RealParameterWrapper(modelParameters,1);
-        RealParameter logAC = new RealParameterWrapper(modelParameters,2);
-        RealParameter logAT = new RealParameterWrapper(modelParameters,3);
-        RealParameter logGC = new RealParameterWrapper(modelParameters,4);
+            QuietRealParameter modelParameters,
+            QuietRealParameter modelCode,
+            QuietRealParameter frequencies){
+        QuietRealParameter logKappa = new RealParameterWrapper(modelParameters, 0);
+        QuietRealParameter logTN = new RealParameterWrapper(modelParameters,1);
+        QuietRealParameter logAC = new RealParameterWrapper(modelParameters,2);
+        QuietRealParameter logAT = new RealParameterWrapper(modelParameters,3);
+        QuietRealParameter logGC = new RealParameterWrapper(modelParameters,4);
         //RealParameter logGT = new RealParameterWrapper(modelParameters,5);
        
         //System.err.println();

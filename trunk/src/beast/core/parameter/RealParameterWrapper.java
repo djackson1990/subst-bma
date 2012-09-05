@@ -7,7 +7,7 @@ import beast.core.Input;
  * @author Chieh-Hsi Wu
  */
 @Description("Wrap around a parameter but only look at one value.")
-public class RealParameterWrapper extends RealParameter{
+public class RealParameterWrapper extends QuietRealParameter{
     public Input<RealParameter> parameterInput = new Input<RealParameter>(
             "parameter",
             "Parameter to be wrapped around",

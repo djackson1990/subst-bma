@@ -2,6 +2,7 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.parameter.QuietRealParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
@@ -25,23 +26,23 @@ public class NtdBMA extends SubstitutionModel.Base{
 
 
 
-    public Input<RealParameter> logKappaInput = new Input<RealParameter>("logKappa", "parameter representing log of HKY kappa parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logTNInput = new Input<RealParameter>("logTN", "parameter representing log of TN parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logACInput = new Input<RealParameter>("logAC", "parameter representing log of AC parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logATInput = new Input<RealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> logGCInput = new Input<RealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> logKappaInput = new Input<QuietRealParameter>("logKappa", "parameter representing log of HKY kappa parameter", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> logTNInput = new Input<QuietRealParameter>("logTN", "parameter representing log of TN parameter", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> logACInput = new Input<QuietRealParameter>("logAC", "parameter representing log of AC parameter", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> logATInput = new Input<QuietRealParameter>("logAT", "parameter representing log of AT parameter", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> logGCInput = new Input<QuietRealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
     //public Input<RealParameter> logGTInput = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
-    public Input<RealParameter> modelChooseInput = new Input<RealParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
-    public Input<RealParameter> freqInput = new Input<RealParameter>("frequencies", "Stationary frequencies the model", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> modelChooseInput = new Input<QuietRealParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> freqInput = new Input<QuietRealParameter>("frequencies", "Stationary frequencies the model", Input.Validate.REQUIRED);
 
-    RealParameter logKappa;
-    RealParameter logTN;
-    RealParameter logAC;
-    RealParameter logAT;
-    RealParameter logGC;
+    QuietRealParameter logKappa;
+    QuietRealParameter logTN;
+    QuietRealParameter logAC;
+    QuietRealParameter logAT;
+    QuietRealParameter logGC;
     //public RealParameter logGT;
-    RealParameter modelChoose;
-    RealParameter frequencies;
+    QuietRealParameter modelChoose;
+    QuietRealParameter frequencies;
 
     public static final int NTD_PAIRS = 16;
 
@@ -101,14 +102,14 @@ public class NtdBMA extends SubstitutionModel.Base{
     public NtdBMA(){frequenciesInput.setRule(Input.Validate.OPTIONAL);}
 
     public NtdBMA(
-            RealParameter logKappa,
-            RealParameter logTN,
-            RealParameter logAC,
-            RealParameter logAT,
-            RealParameter logGC,
+            QuietRealParameter logKappa,
+            QuietRealParameter logTN,
+            QuietRealParameter logAC,
+            QuietRealParameter logAT,
+            QuietRealParameter logGC,
             //RealParameter logGT,
-            RealParameter modelChoose,
-            RealParameter frequencies){
+            QuietRealParameter modelChoose,
+            QuietRealParameter frequencies){
 
 
         frequenciesInput.setRule(Input.Validate.OPTIONAL);
@@ -134,14 +135,14 @@ public class NtdBMA extends SubstitutionModel.Base{
         //q = new double[STATE_COUNT][STATE_COUNT];
     } // initAndValidate
 
-    public void initialize(RealParameter logKappa,
-            RealParameter logTN,
-            RealParameter logAC,
-            RealParameter logAT,
-            RealParameter logGC,
+    public void initialize(QuietRealParameter logKappa,
+            QuietRealParameter logTN,
+            QuietRealParameter logAC,
+            QuietRealParameter logAT,
+            QuietRealParameter logGC,
             //RealParameter logGT,
-            RealParameter modelChoose,
-            RealParameter frequencies){
+            QuietRealParameter modelChoose,
+            QuietRealParameter frequencies){
         this.logKappa = logKappa;
         this.logTN = logTN;
         this.logAC = logAC;
@@ -447,31 +448,31 @@ public class NtdBMA extends SubstitutionModel.Base{
 
     } // getTransitionProbabilities
 
-    public RealParameter getLogKappa(){
+    public QuietRealParameter getLogKappa(){
         return logKappa;
     }
 
-    public RealParameter getLogTN(){
+    public QuietRealParameter getLogTN(){
         return logTN;
     }
 
-    public RealParameter getLogAC(){
+    public QuietRealParameter getLogAC(){
         return logAC;
     }
 
-    public RealParameter getLogAT(){
+    public QuietRealParameter getLogAT(){
         return logAT;
     }
 
-    public RealParameter getLogGC(){
+    public QuietRealParameter getLogGC(){
         return logGC;
     }
 
-    public RealParameter getModelChoose(){
+    public QuietRealParameter getModelChoose(){
         return modelChoose;
     }
 
-    public RealParameter getFreqs(){
+    public QuietRealParameter getFreqs(){
         return frequencies;
     }
 
