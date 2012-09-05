@@ -138,11 +138,11 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
                 /*logP += treeLik.calculateLogP();*/
                 double tmp = treeLik.calculateLogP();
         		logP += tmp;
-                System.out.println("calcLogP: "+tmp);
+                //System.out.println("calcLogP: "+tmp);
                 //System.out.println("calcLogP: "+tmp+treeLik.m_data.get()+" "+((SiteModel)treeLik.m_siteModel).getRateParameter());
         	} else {
         		logP += treeLik.getCurrentLogP();
-                System.out.println("currLogP: "+treeLik.calculateLogP());
+                //System.out.println("currLogP: "+treeLik.calculateLogP());
         	}
             if (Double.isInfinite(logP) || Double.isNaN(logP)) {
             	return logP;
