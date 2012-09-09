@@ -2,6 +2,7 @@ package beast.evolution.likelihood;
 
 
 import beast.core.parameter.QuietRealParameter;
+import beast.evolution.sitemodel.DummySiteModel;
 import beast.evolution.sitemodel.QuietSiteModel;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import beast.evolution.tree.Tree;
@@ -228,7 +229,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             int[] sites) throws Exception{
         double[] siteLogP = new double[sites.length];
         try{
-            ((QuietSiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rateParameter.getValue());
+            ((DummySiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rateParameter.getValue());
             calculateLogP();
             for(int i = 0; i < sites.length;i++){
                 siteLogP[i] = m_fPatternLogLikelihoods[m_data.get().getPatternIndex(sites[i])];
@@ -247,7 +248,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             int exceptSite) throws Exception{
         double[] siteLogP = new double[sites.length-1];
         try{
-            ((QuietSiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rateParameter.getValue());
+            ((DummySiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rateParameter.getValue());
             calculateLogP();
             int k = 0;
             for(int i = 0; i < sites.length;i++){
@@ -266,7 +267,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             RealParameter rateParameter) throws Exception{
 
         try{
-            ((QuietSiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rateParameter.getValue());
+            ((DummySiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rateParameter.getValue());
 
 
         }catch(Exception e){
