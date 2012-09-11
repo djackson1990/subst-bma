@@ -148,7 +148,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
         ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(2,freqs.getValue(2));
         ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(3,freqs.getValue(3));
         substModel.setUpdateMatrix(true);
-        ((QuietSiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rate.getValue());
+        ((DummySiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rate.getValue());
         return calculateLogP();
 
 

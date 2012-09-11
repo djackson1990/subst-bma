@@ -171,7 +171,7 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel implements Plu
         return siteModelsMatrix[clusterMap[NTDBMA][siteIndex]][clusterMap[RATES][siteIndex]].getSubstitutionModel();
     }
 
-    public RealParameter getRate(int siteIndex){
+    public QuietRealParameter getRate(int siteIndex){
         return siteModelsMatrix[clusterMap[NTDBMA][siteIndex]][clusterMap[RATES][siteIndex]].getRateParameter();
     }
 
