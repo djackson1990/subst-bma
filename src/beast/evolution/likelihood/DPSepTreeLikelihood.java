@@ -74,14 +74,14 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
 
             //Create the tree likelihood
             //WVTreeLikelihood treeLik = new WVTreeLikelihood(clusterWeights[ntdBMAId][ratesId]);
-            NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(clusterWeights[ntdBMAId][ratesId]);
-            treeLik.initByName(
-                    "data", alignment,
-                    "tree", treeInput.get(),
-                    "siteModel", dpSiteModel.getSiteModel(i),
-                    "branchRateModel", branchRateModelInput.get(),
-                    "useAmbiguities",useAmbiguitiesInput.get()
-            );
+
+            NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
+                    clusterWeights[ntdBMAId][ratesId],
+                    alignment,
+                    treeInput.get(),
+                    useAmbiguitiesInput.get(),
+                    dpSiteModel.getSiteModel(i),
+                    branchRateModelInput.get());
 
             //Add to list and matrix for the convenience of processesing
             treeLiks.add(treeLik);
@@ -233,16 +233,17 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
         int[] patternWeights = new int[alignment.getPatternCount()];
 
         //WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
-        NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(patternWeights);
+        //NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(patternWeights);
+        NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
+                    patternWeights,
+                    alignment,
+                    treeInput.get(),
+                    useAmbiguitiesInput.get(),
+                    siteModel,
+                    branchRateModelInput.get());
         try{
 
-            treeLik.initByName(
-                    "data", alignment,
-                    "tree", treeInput.get(),
-                    "siteModel", siteModel,
-                    "branchRateModel", branchRateModelInput.get(),
-                    "useAmbiguities", useAmbiguitiesInput.get()
-            );
+
 
             treeLik.calculateLogP();
             treeLik.store();
