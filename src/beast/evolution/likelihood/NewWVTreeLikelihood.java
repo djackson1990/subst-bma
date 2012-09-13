@@ -529,4 +529,9 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         System.out.println("modelID: "+((SwitchingNtdBMA)m_substitutionModel).getIDNumber());
         System.out.println("modelID: " + ((QuietSiteModel) m_siteModel).getRateParameter().getIDNumber());
     }
+
+    public int getWeight(int patternIndex){
+        return patternWeights[patternIndex];
+
+    }
 }

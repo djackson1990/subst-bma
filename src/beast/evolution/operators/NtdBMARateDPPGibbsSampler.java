@@ -229,7 +229,7 @@ public class NtdBMARateDPPGibbsSampler  extends Operator implements Loggable {
                     System.out.println("existingModelVals: "+existingModelVals[i]);
                     System.out.println("existingFreqsVals: "+existingFreqsVals[i]);
                     throw new RuntimeException(temp1+" "+temp2);
-                }*/
+                } */
                 //System.err.println("clusterCounts: "+clusterCounts[i]);
                 //logFullCond[i] = logFullCond[i]+ dpTreeLikelihood.getSiteLogLikelihood(existingCluster[i],index);
                 logFullCond[i] = logFullCond[i]+getSiteLogLikelihood(
