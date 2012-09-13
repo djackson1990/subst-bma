@@ -34,6 +34,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
 
     public NewWVTreeLikelihood(int[] patternWeights){
         this.patternWeights = patternWeights;
+        storedPatternWeights = new int[patternWeights.length];
 
     }
 
