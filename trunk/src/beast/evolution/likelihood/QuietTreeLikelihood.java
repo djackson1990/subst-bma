@@ -90,9 +90,9 @@ public class QuietTreeLikelihood extends TreeLikelihood{
         int nStateCount = data.getMaxStateCount();
         int nPatterns = data.getPatternCount();
         if (nStateCount == 4) {
-            m_likelihoodCore = new BeerLikelihoodCore4();
+            m_likelihoodCore = new CHWLikelihoodCore4();
         } else {
-            m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
+            m_likelihoodCore = new CHWLikelihoodCore(nStateCount);
         }
         System.out.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 

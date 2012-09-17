@@ -1,5 +1,7 @@
 package beast.evolution.likelihood;
 
+import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Tree;
 import beast.evolution.sitemodel.SiteModel;
@@ -8,7 +10,16 @@ import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 /**
  * @author Chieh-Hsi Wu
  */
-public class TempSiteTreeLikelihood extends TreeLikelihood{
+public class TempSiteTreeLikelihood extends QuietTreeLikelihood{
+
+    public TempSiteTreeLikelihood(Alignment data,
+                               Tree tree,
+                               boolean useAmbiguities,
+                               SiteModel siteModel,
+                               BranchRateModel.Base branchRateModel){
+        super(data,tree,useAmbiguities,siteModel,branchRateModel);
+
+    }
 
     
 
@@ -19,7 +30,7 @@ public class TempSiteTreeLikelihood extends TreeLikelihood{
         //System.out.println("model ID: "+((SwitchingNtdBMA)((SiteModel)m_siteModel).getSubstitutionModel()).getIDNumber());
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
         m_nHasDirt = Tree.IS_FILTHY;
-        Tree tree = m_tree.get();
+
 
 
        	traverse(tree.getRoot());

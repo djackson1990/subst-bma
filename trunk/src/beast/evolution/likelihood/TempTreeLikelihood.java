@@ -78,14 +78,15 @@ public class TempTreeLikelihood extends Distribution {
 
         for(int i = 0; i < firstPatternOccur.length; i++){
             AlignmentSubset sitePattern = new AlignmentSubset(alignment,firstPatternOccur[i]);
-            TempSiteTreeLikelihood treeLik = new TempSiteTreeLikelihood();
-                treeLik.initByName(
-                    "data", sitePattern,
-                    "tree", treeInput.get(),
-                    "siteModel", siteModelInput.get(),
-                    "branchRateModel", branchRateModelInput.get(),
-                    "useAmbiguities", useAmbiguitiesInput.get()
+            TempSiteTreeLikelihood treeLik = new TempSiteTreeLikelihood(
+                    sitePattern,
+                    treeInput.get(),
+                    useAmbiguitiesInput.get(),
+                    siteModelInput.get(),
+                    branchRateModelInput.get()
+
             );
+
             treeLiks[i] = treeLik;
         }
 
