@@ -125,11 +125,11 @@ public class LogNormal extends LogNormalDistributionModel {
             return Math.exp(m_normal.inverseCumulativeProbability(p));
 		}
 
-		@Override
 		public double density(double fX) {
+
 	        return m_normal.density(Math.log(fX)) / fX;
 		}
-		@Override
+
 		public double logDensity(double fX) {
             return m_normal.logDensity(Math.log(fX)) - Math.log(fX);
 		}
