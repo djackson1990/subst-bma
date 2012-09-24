@@ -70,14 +70,14 @@ public class UniformDistribution extends ParametricDistribution{
 			return (upper-lower)*p+lower;
 		}
 
-		@Override
+
 		public double density(double x) {
             if(x > upper || x < lower){
                 return 0;
             }
 			return 1.0/(upper-lower);
 		}
-		@Override
+
 		public double logDensity(double x) {
             if(x > upper || x < lower){
                 return Double.NEGATIVE_INFINITY;
