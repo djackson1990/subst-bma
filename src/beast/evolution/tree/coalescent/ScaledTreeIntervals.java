@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
-public class NewScaledTreeIntervals extends TreeIntervals {
+public class ScaledTreeIntervals extends TreeIntervals {
 
 
 
