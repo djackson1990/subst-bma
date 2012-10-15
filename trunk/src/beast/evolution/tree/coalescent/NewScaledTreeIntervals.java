@@ -20,9 +20,11 @@ public class NewScaledTreeIntervals extends TreeIntervals {
     public void initAndValidate(){
         scalerChanged = true;
         treeChanged = true;
-        calculateIntervals();
-        intervalsKnown = false;
         scaler = scalerInput.get();
+        intervalsKnown = false;
+        calculateIntervals();
+
+
     }
 
     public Input<Scaler> scalerInput = new Input<Scaler>(
@@ -31,8 +33,8 @@ public class NewScaledTreeIntervals extends TreeIntervals {
             Input.Validate.REQUIRED
     );
 
-    //private double[] scaledIntervals;
-    //private double[] storedScaledIntervals;
+    private double[] rawIntervals;
+    private double[] storedRawIntervals;
 
     private Scaler scaler;
 
@@ -57,243 +59,22 @@ public class NewScaledTreeIntervals extends TreeIntervals {
         return true;
     }
 
-    @Override
-    protected void restore() {
-        //intervalsKnown = false;
-        double[] tmp = storedIntervals;
-        storedIntervals = intervals;
-        intervals = tmp;
+    protected void calculateIntervals(){
+        if(treeChanged){
+            calculateRawIntervals();
+        }
+        intervals = new double[rawIntervals.length];
+        double scalerFactor = scaler.getScaleFactor();
 
-        double[] tmp1 = storedRawIntervals;
-        storedRawIntervals = rawIntervals;
-        rawIntervals = tmp1;
+        for(int i = 0;i < intervals.length;i++){
+            intervals[i] = rawIntervals[i]*scalerFactor;
 
-        int[] tmp2 = storedLineageCounts;
-        storedLineageCounts = lineageCounts;
-        lineageCounts = tmp2;
+        }
+        intervalsKnown = true;
 
-        int tmp3 = storedIntervalCount;
-        storedIntervalCount = intervalCount;
-        intervalCount = tmp3;
-        super.restore();
     }
 
-    @Override
-    protected void store() {
-        System.arraycopy(lineageCounts, 0, storedLineageCounts, 0, lineageCounts.length);
-        System.arraycopy(intervals, 0, storedIntervals, 0, intervals.length);
-        storedIntervalCount = intervalCount;
-        super.store();
-    }
-
-    /**
-     * Specifies that the intervals are unknown (i.e., the beast.tree has changed).
-     */
-    public void setIntervalsUnknown() {
-        intervalsKnown = false;
-    }
-
-    /**
-     * Sets the limit for which adjacent events are merged.
-     *
-     * @param multifurcationLimit A value of 0 means merge addition of leafs (terminal nodes) when possible but
-     *                            return each coalescense as a separate event.
-     */
-    public void setMultifurcationLimit(double multifurcationLimit) {
-        // invalidate only if changing anything
-        if (this.multifurcationLimit != multifurcationLimit) {
-            this.multifurcationLimit = multifurcationLimit;
-            intervalsKnown = false;
-        }
-    }
-
-    public int getSampleCount() {
-        // Assumes a binary tree!
-        return m_tree.get().getInternalNodeCount();
-    }
-
-    /**
-     * get number of intervals
-     */
-    public int getIntervalCount() {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        return intervalCount;
-    }
-
-    /**
-     * Gets an interval.
-     */
-    public double getInterval(int i) {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        if (i < 0 || i >= intervalCount) throw new IllegalArgumentException();
-        return intervals[i];
-    }
-
-    /**
-     * Defensive implementation creates copy
-     *
-     * @return
-     */
-    public double[] getIntervals(double[] inters) {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        if (inters == null) inters = new double[intervals.length];
-        System.arraycopy(intervals, 0, inters, 0, intervals.length);
-        return inters;
-    }
-
-    public double[] getCoalescentTimes(double[] coalescentTimes) {
-
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-
-        if (coalescentTimes == null) coalescentTimes = new double[getSampleCount()];
-
-        double time = 0;
-        int coalescentIndex = 0;
-        for (int i = 0; i < intervals.length; i++) {
-            time += intervals[i];
-            for (int j = 0; j < getCoalescentEvents(i); j++) {
-                coalescentTimes[coalescentIndex] = time;
-                coalescentIndex += 1;
-            }
-        }
-        return coalescentTimes;
-    }
-
-    /**
-     * Returns the number of uncoalesced lineages within this interval.
-     * Required for s-coalescents, where new lineages are added as
-     * earlier samples are come across.
-     */
-    public int getLineageCount(int i) {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        if (i >= intervalCount) throw new IllegalArgumentException();
-        return lineageCounts[i];
-    }
-
-    /**
-     * @param interval the index of the interval
-     * @return a list of the nodes representing the lineages in the ith interval.
-     */
-//    public final List<Node> getLineages(int interval) {
-//
-//        if (lineages[interval] == null) {
-//
-//            List<Node> lines = new ArrayList<Node>();
-//            for (int i = 0; i <= interval; i++) {
-//                if (lineagesAdded[i] != null) lines.addAll(lineagesAdded[i]);
-//                if (lineagesRemoved[i] != null) lines.removeAll(lineagesRemoved[i]);
-//            }
-//            lineages[interval] = Collections.unmodifiableList(lines);
-//
-//        }
-//        return lineages[interval];
-//    }
-
-    /**
-     * Returns the number coalescent events in an interval
-     */
-    public int getCoalescentEvents(int i) {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        if (i >= intervalCount) throw new IllegalArgumentException();
-        if (i < intervalCount - 1) {
-            return lineageCounts[i] - lineageCounts[i + 1];
-        } else {
-            return lineageCounts[i] - 1;
-        }
-    }
-
-    /**
-     * Returns the type of interval observed.
-     */
-    public IntervalType getIntervalType(int i) {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        if (i >= intervalCount) throw new IllegalArgumentException();
-        int numEvents = getCoalescentEvents(i);
-
-        if (numEvents > 0) return IntervalType.COALESCENT;
-        else if (numEvents < 0) return IntervalType.SAMPLE;
-        else return IntervalType.NOTHING;
-    }
-
-//    public Node getCoalescentNode(int interval) {
-//        if (getIntervalType(interval) == IntervalType.COALESCENT) {
-//            if (lineagesRemoved[interval] != null) {
-//                if (lineagesRemoved[interval].size() == 1) {
-//                    return lineagesRemoved[interval].get(0);
-//                } else throw new IllegalArgumentException("multiple lineages lost over this interval!");
-//            } else throw new IllegalArgumentException("Inconsistent: no intervals lost over this interval!");
-//        } else throw new IllegalArgumentException("Interval " + interval + " is not a coalescent interval.");
-//    }
-
-    /**
-     * get the total height of the genealogy represented by these
-     * intervals.
-     */
-    public double getTotalDuration() {
-
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        double height = 0.0;
-        for (int j = 0; j < intervalCount; j++) {
-            height += intervals[j];
-        }
-        return height;
-    }
-
-    /**
-     * Checks whether this set of coalescent intervals is fully resolved
-     * (i.e. whether is has exactly one coalescent event in each
-     * subsequent interval)
-     */
-    public boolean isBinaryCoalescent() {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        for (int i = 0; i < intervalCount; i++) {
-            if (getCoalescentEvents(i) > 0) {
-                if (getCoalescentEvents(i) != 1) return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks whether this set of coalescent intervals coalescent only
-     * (i.e. whether is has exactly one or more coalescent event in each
-     * subsequent interval)
-     */
-    public boolean isCoalescentOnly() {
-        if (!intervalsKnown) {
-            calculateIntervals();
-        }
-        for (int i = 0; i < intervalCount; i++) {
-            if (getCoalescentEvents(i) < 1) return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Recalculates all the intervals for the given beast.tree.
-     */
-    @SuppressWarnings("unchecked")
-    private void calculateIntervals() {
+    protected void calculateRawIntervals(){
         Tree tree = m_tree.get();
 
         final int nodeCount = tree.getNodeCount();
@@ -307,14 +88,14 @@ public class NewScaledTreeIntervals extends TreeIntervals {
 
         HeapSort.sort(times, indices);
 
-        if (intervals == null || intervals.length != nodeCount) {
-            intervals = new double[nodeCount];
+        if (rawIntervals == null || rawIntervals.length != nodeCount) {
+            rawIntervals = new double[nodeCount];
             lineageCounts = new int[nodeCount];
             lineagesAdded = new List[nodeCount];
             lineagesRemoved = new List[nodeCount];
 //            lineages = new List[nodeCount];
 
-            storedIntervals = new double[nodeCount];
+            storedRawIntervals = new double[nodeCount];
             storedLineageCounts = new int[nodeCount];
 
         } else {
@@ -379,7 +160,7 @@ public class NewScaledTreeIntervals extends TreeIntervals {
             if (lineagesAdded > 0) {
 
                 if (intervalCount > 0 || ((finish - start) > multifurcationLimit)) {
-                    intervals[intervalCount] = finish - start;
+                    rawIntervals[intervalCount] = finish - start;
                     lineageCounts[intervalCount] = numLines;
                     intervalCount += 1;
                 }
@@ -392,7 +173,7 @@ public class NewScaledTreeIntervals extends TreeIntervals {
 
             if (lineagesRemoved > 0) {
 
-                intervals[intervalCount] = finish - start;
+                rawIntervals[intervalCount] = finish - start;
                 lineageCounts[intervalCount] = numLines;
                 intervalCount += 1;
                 start = finish;
@@ -401,82 +182,14 @@ public class NewScaledTreeIntervals extends TreeIntervals {
             numLines -= lineagesRemoved;
         }
 
-        intervalsKnown = true;
+
     }
 
-    private void addLineage(int interval, Node node) {
-        if (lineagesAdded[interval] == null) lineagesAdded[interval] = new ArrayList<Node>();
-        lineagesAdded[interval].add(node);
+    protected void store(){
+
+        System.arraycopy(rawIntervals, 0, storedRawIntervals, 0, rawIntervals.length);
+        storedIntervals = new double[intervals.length];
+        super.store();
     }
 
-    private void removeLineage(int interval, Node node) {
-        if (lineagesRemoved[interval] == null) lineagesRemoved[interval] = new ArrayList<Node>();
-        lineagesRemoved[interval].add(node);
-    }
-
-    /**
-     * @return the delta parameter of Pybus et al (Node spread statistic)
-     */
-    public double getDelta() {
-
-        return IntervalList.Utils.getDelta(this);
-    }
-
-    /**
-     * extract coalescent times and tip information into array times from beast.tree.
-     *
-     * @param tree        the beast.tree
-     * @param times       the times of the nodes in the beast.tree
-     * @param childCounts the number of children of each node
-     */
-    private static void collectTimes(Tree tree, double[] times, int[] childCounts) {
-        Node[] nodes = tree.getNodesAsArray();
-        for (int i = 0; i < nodes.length; i++) {
-            Node node = nodes[i];
-            times[i] = node.getHeight();
-            childCounts[i] = node.isLeaf() ? 0 : 2;
-        }
-    }
-
-    /**
-     * The beast.tree. RRB: not a good idea to keep a copy around, since it changes all the time.
-     */
-//    private Tree tree = null;
-
-    /**
-     * The widths of the intervals.
-     */
-    private double[] intervals;
-    private double[] storedIntervals;
-
-
-    /*
-     * Scaled widths of the intervals
-     */
-    private double[] rawIntervals;
-    private double[] storedRawIntervals;
-
-
-    /**
-     * The number of uncoalesced lineages within a particular interval.
-     */
-    private int[] lineageCounts;
-    private int[] storedLineageCounts;
-
-    /**
-     * The lineages in each interval (stored by node ref).
-     */
-    private List<Node>[] lineagesAdded;
-    private List<Node>[] lineagesRemoved;
-//    private List<Node>[] lineages;
-
-    private int intervalCount = 0;
-    private int storedIntervalCount = 0;
-
-    /**
-     * are the intervals known?
-     */
-    private boolean intervalsKnown = false;
-
-    private double multifurcationLimit = -1.0;
 }
