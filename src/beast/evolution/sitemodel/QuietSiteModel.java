@@ -18,7 +18,7 @@ public class QuietSiteModel extends SiteModel {
     @Override
     public void initAndValidate() throws Exception {
 
-    	useBeast1StyleGamma = useBeast1StyleGammaInput.get();
+    	useBeast1StyleGamma = true; // useBeast1StyleGammaInput.get();
         muParameter = muParameterInput.get();
         if (muParameter == null) {
             muParameter = new RealParameter("1.0");
