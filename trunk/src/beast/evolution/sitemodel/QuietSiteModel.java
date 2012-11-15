@@ -1,5 +1,6 @@
 package beast.evolution.sitemodel;
 
+import beast.core.Description;
 import beast.core.StateNode;
 import beast.core.parameter.QuietRealParameter;
 import beast.core.parameter.RealParameter;
@@ -8,12 +9,9 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 29/08/12
- * Time: 2:39 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This site model is used to be created internally on the fly during the MCMC.")
 public class QuietSiteModel extends SiteModel {
     @Override
     public void initAndValidate() throws Exception {

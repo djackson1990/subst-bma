@@ -1,5 +1,6 @@
 package beast.evolution.sitemodel;
 
+import beast.core.Description;
 import beast.core.parameter.ChangeType;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Parent class of all DP site models that can only handle a single alignment.")
 public abstract class DPSingleAlignSiteModel extends DPSiteModel {
 
     public abstract int getRemovedIndex();

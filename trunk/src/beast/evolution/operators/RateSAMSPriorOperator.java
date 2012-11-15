@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Operator;
 import beast.core.Input;
 import beast.core.parameter.*;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Operator that splits and merges categories of substitution rate.")
 public class RateSAMSPriorOperator extends Operator {
     public Input<DPPointer> ratePointersInput = new Input<DPPointer>(
             "ratesPointers",

@@ -1,12 +1,11 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
+
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 6/09/2011
- * Time: 2:30:09 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This class is for testing purpose.")
 public class DummyDPSepTreeLikelihood extends DPSepTreeLikelihood{
     
 

@@ -1,5 +1,6 @@
 package beast.core.util;
 
+import beast.core.Description;
 import beast.core.parameter.DPPointer;
 import beast.core.parameter.ParameterList;
 import beast.core.Input;
@@ -7,12 +8,9 @@ import beast.core.Input;
 import java.io.PrintStream;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 13/09/2011
- * Time: 12:22:56 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This class prints the ID numbers of a list of parameters to which a DPPointer refers.")
 public class PrintPointerIDNumber extends PrintListIDNumber{
 
     public Input<DPPointer> pointersInput = new Input<DPPointer>("pointers", "list of items to be counted", Input.Validate.REQUIRED);

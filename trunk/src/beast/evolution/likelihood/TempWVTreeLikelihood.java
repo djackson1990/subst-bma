@@ -1,6 +1,7 @@
 package beast.evolution.likelihood;
 
 
+import beast.core.Description;
 import beast.core.parameter.QuietRealParameter;
 import beast.evolution.sitemodel.DummySiteModel;
 import beast.evolution.sitemodel.QuietSiteModel;
@@ -14,6 +15,7 @@ import beast.core.parameter.RealParameter;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Used to compute the tree likelihood for operators that samples the partitioning space. Used when there is only one partitioning. Pattern weights can be modified.")
 public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
     public Input<IntegerParameter> patternWeightInput = new Input<IntegerParameter>(
             "patternWeights",
@@ -137,16 +139,16 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
 
 
         SwitchingNtdBMA  substModel = (SwitchingNtdBMA)m_substitutionModel;
-        ((QuietRealParameter)substModel.getLogKappa()).setValueQuietly(0, modelParameters.getValue(0));
-        ((QuietRealParameter)substModel.getLogTN()).setValueQuietly(0,modelParameters.getValue(1));
-        ((QuietRealParameter)substModel.getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
-        ((QuietRealParameter)substModel.getLogAT()).setValueQuietly(0,modelParameters.getValue(3));
-        ((QuietRealParameter)substModel.getLogGC()).setValueQuietly(0,modelParameters.getValue(4));
-        ((QuietRealParameter)substModel.getModelChoose()).setValueQuietly(0,modelCode.getValue());
-        ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(0,freqs.getValue(0));
-        ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(1,freqs.getValue(1));
-        ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(2,freqs.getValue(2));
-        ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(3,freqs.getValue(3));
+        (substModel.getLogKappa()).setValueQuietly(0, modelParameters.getValue(0));
+        (substModel.getLogTN()).setValueQuietly(0,modelParameters.getValue(1));
+        (substModel.getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
+        (substModel.getLogAT()).setValueQuietly(0,modelParameters.getValue(3));
+        (substModel.getLogGC()).setValueQuietly(0,modelParameters.getValue(4));
+        (substModel.getModelChoose()).setValueQuietly(0,modelCode.getValue());
+        (substModel.getFreqs()).setValueQuietly(0,freqs.getValue(0));
+        (substModel.getFreqs()).setValueQuietly(1,freqs.getValue(1));
+        (substModel.getFreqs()).setValueQuietly(2,freqs.getValue(2));
+        (substModel.getFreqs()).setValueQuietly(3,freqs.getValue(3));
         substModel.setUpdateMatrix(true);
         ((DummySiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rate.getValue());
         return calculateLogP();
@@ -203,16 +205,16 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
 
 
                 SwitchingNtdBMA  substModel = (SwitchingNtdBMA)m_substitutionModel;
-                ((QuietRealParameter)substModel.getLogKappa()).setValueQuietly(0,modelParameters.getValue(0));
-                ((QuietRealParameter)substModel.getLogTN()).setValueQuietly(0,modelParameters.getValue(1));
-                ((QuietRealParameter)substModel.getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
-                ((QuietRealParameter)substModel.getLogAT()).setValueQuietly(0,modelParameters.getValue(3));
-                ((QuietRealParameter)substModel.getLogGC()).setValueQuietly(0,modelParameters.getValue(4));
-                ((QuietRealParameter)substModel.getModelChoose()).setValueQuietly(0,modelCode.getValue());
-                ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(0,freqs.getValue(0));
-                ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(1,freqs.getValue(1));
-                ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(2,freqs.getValue(2));
-                ((QuietRealParameter)substModel.getFreqs()).setValueQuietly(3,freqs.getValue(3));
+                (substModel.getLogKappa()).setValueQuietly(0,modelParameters.getValue(0));
+                (substModel.getLogTN()).setValueQuietly(0,modelParameters.getValue(1));
+                (substModel.getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
+                (substModel.getLogAT()).setValueQuietly(0,modelParameters.getValue(3));
+                (substModel.getLogGC()).setValueQuietly(0,modelParameters.getValue(4));
+                (substModel.getModelChoose()).setValueQuietly(0,modelCode.getValue());
+                (substModel.getFreqs()).setValueQuietly(0,freqs.getValue(0));
+                (substModel.getFreqs()).setValueQuietly(1,freqs.getValue(1));
+                (substModel.getFreqs()).setValueQuietly(2,freqs.getValue(2));
+                (substModel.getFreqs()).setValueQuietly(3,freqs.getValue(3));
                 substModel.setUpdateMatrix(true);
                 return calculateLogP();
 

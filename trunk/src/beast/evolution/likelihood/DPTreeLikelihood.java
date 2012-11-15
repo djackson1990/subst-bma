@@ -19,6 +19,7 @@ import java.util.Random;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Tree likelihood that supports Dirichlet process mixture model on the partitionings of substitution model and rate together.")
 public class DPTreeLikelihood extends Distribution implements PluginList {
 
     protected DPSiteModel dpSiteModel;
@@ -200,7 +201,7 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
         int[] patternWeights = new int[alignment.getPatternCount()];
         patternWeights[alignment.getPatternIndex(dpSiteModel.getLastDirtySite())] +=1;
 
-        //WVAlignment wvalign = new WVAlignment(alignment, patternWeights);
+        //OldWVAlignment wvalign = new OldWVAlignment(alignment, patternWeights);
         //WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
         NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
                 patternWeights,
@@ -245,7 +246,7 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
             //System.out.println(i+" splitting: "+patternWeights[patternIndex]);
             prevTreeLikelihood.removeWeight(patternIndex,1);
         }
-        //WVAlignment wvalign = new WVAlignment(alignment, patternWeights);
+        //OldWVAlignment wvalign = new OldWVAlignment(alignment, patternWeights);
         //WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
         NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
                 patternWeights,

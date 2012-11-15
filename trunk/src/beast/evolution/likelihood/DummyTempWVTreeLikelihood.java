@@ -1,15 +1,14 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.evolution.sitemodel.SiteModel;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 30/09/2011
- * Time: 10:40:56 AM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+
+@Description("This class is well useful for testing purpose.")
 public class DummyTempWVTreeLikelihood extends TempWVTreeLikelihood{
 
     public double calculateLogP(

@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
@@ -8,8 +9,6 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AlignmentSubset;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.DummySiteModel;
-import beast.evolution.sitemodel.QuietSiteModel;
-import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.NtdBMA;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Tree;
@@ -20,6 +19,7 @@ import java.util.Random;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Used to compute the tree likelihood for operators that samples the partitioning space. Used when there is only one partitioning.")
 public class TempTreeLikelihood extends Distribution {
     public Input<Alignment> dataInput = new Input<Alignment>(
             "data",

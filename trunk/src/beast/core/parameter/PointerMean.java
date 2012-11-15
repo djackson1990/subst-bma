@@ -1,10 +1,9 @@
 package beast.core.parameter;
 
-import beast.core.CalculationNode;
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.Valuable;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Scaler;
 
 import java.io.PrintStream;
@@ -14,8 +13,8 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
-public class PointerMean extends Scaler implements Loggable, Valuable
-{
+@Description("This object returns the mean values of a vector parameters to which the DPPointer refers.")
+public class PointerMean extends Scaler implements Loggable, Valuable{
     //ParameterList
     public Input<ParameterList> paramListInput = new Input<ParameterList>(
             "paramList",

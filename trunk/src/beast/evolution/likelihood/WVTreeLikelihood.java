@@ -1,21 +1,19 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.parameter.QuietRealParameter;
 import beast.evolution.sitemodel.QuietSiteModel;
 import beast.evolution.tree.Tree;
-import beast.evolution.alignment.WVAlignment;
 import beast.evolution.alignment.AscertainedAlignment;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
-import beast.evolution.sitemodel.SiteModel;
-import beast.core.Input;
 
 import java.util.Arrays;
 
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class is used to tree likelihood with variable pattern weights.")
 public class WVTreeLikelihood extends TreeLikelihood{
 
     protected int[] patternWeights;

@@ -1,6 +1,6 @@
 package beast.evolution.likelihood;
 
-import beast.evolution.sitemodel.SiteModel;
+import beast.core.Description;
 import beast.evolution.sitemodel.DPNtdRateSepSiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.NtdBMA;
@@ -10,6 +10,7 @@ import beast.core.parameter.RealParameter;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("The tree likelihood used by the operators when using independent DPPs to the substitution model and rate partitioning.")
 public class SepTempTreeLikelihood extends TempTreeLikelihood{
     public Input<DPNtdRateSepSiteModel> dpNtdRateSepSiteModelInput = new Input<DPNtdRateSepSiteModel>(
             "NtdRateSepSiteModel",

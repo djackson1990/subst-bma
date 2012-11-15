@@ -1,13 +1,14 @@
 package beast.evolution.alignment;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Tree;
 
 /**
  * @author Chieh-Hsi Wu
  */
-
-public class WVAlignment extends Alignment{
+@Description("This class should allow weight patterns to vary, but I think it is incomplete and it is not used.")
+public class OldWVAlignment extends Alignment{
     public Input<Alignment> alignmentInput = new Input<Alignment>("data", "sequence data for the beast.tree", Input.Validate.REQUIRED);
     public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Input.Validate.REQUIRED);
         
@@ -21,13 +22,13 @@ public class WVAlignment extends Alignment{
     private Alignment alignment;
     
 
-    public WVAlignment(Alignment alignment){
+    public OldWVAlignment(Alignment alignment){
         this(alignment,alignment.getWeights());
 
     }
 
 
-    public WVAlignment(Alignment alignment, int[] weights){
+    public OldWVAlignment(Alignment alignment, int[] weights){
         this.alignment = alignment;
         m_nWeight = weights;
         storedWeight = new int[weights.length];

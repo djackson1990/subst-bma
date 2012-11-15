@@ -1,14 +1,12 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.State;
 import beast.core.Input;
-import beast.core.Valuable;
-import beast.core.parameter.DPValuable;
 import beast.core.parameter.DPPointer;
 import beast.core.parameter.ParameterList;
 import beast.core.parameter.RealParameter;
-import beast.math.distributions.ParameterListPrior;
 import beast.math.distributions.ParametricDistribution;
 
 import java.util.Random;
@@ -17,6 +15,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class is probably used for testing.")
 public class PointerLikelihood extends Distribution {
     public Input<DPPointer> pointersInput = new Input<DPPointer>(
             "pointers",

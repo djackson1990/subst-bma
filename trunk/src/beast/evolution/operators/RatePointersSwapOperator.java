@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.DPPointer;
@@ -11,6 +12,7 @@ import beast.util.Randomizer;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Operator that splits and merges categories of substitution rate.")
 public class RatePointersSwapOperator extends Operator {
     public Input<DPPointer> ratePointerInput = new Input<DPPointer>("ratesPointers", "Pointers that records the assignment of sites to rate", Input.Validate.REQUIRED);
     public Input<DPValuable> dpValInput = new Input<DPValuable>("dpVal", "A valuable that stores information about the category assignments", Input.Validate.REQUIRED);

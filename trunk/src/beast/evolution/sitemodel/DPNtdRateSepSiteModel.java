@@ -1,5 +1,6 @@
 package beast.evolution.sitemodel;
 
+import beast.core.Description;
 import beast.core.MCMCNodeFactory;
 import beast.core.PluginList;
 import beast.core.parameter.*;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Manages a list of simple gamma site models. Can create and remove site models on the fly. Used when independent DPPs are applied to the partitioning schemes of the substitution model and rate.")
 public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel implements PluginList {
 
     private int lastDirtySite = -1;

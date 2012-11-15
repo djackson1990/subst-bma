@@ -7,12 +7,9 @@ import beast.core.parameter.DPPointer;
 import java.io.PrintStream;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 13/09/2011
- * Time: 12:04:22 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This class prints the ID number of parameters in a ParameterList")
 public class PrintListIDNumber extends CalculationNode implements Loggable {
     public Input<ParameterList> paramListInput = new Input<ParameterList>(
             "paramList",

@@ -19,6 +19,8 @@ import java.util.Random;
 /**
  * @author Chieh-Hsi Wu
  */
+
+@Description("Does a lot of unnecessary calculation (calculates likelihoods at sites that are not required). Used for testing.")
 public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList {
 
     private DPSiteModel dpSiteModel;
@@ -192,7 +194,7 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
         int[] patternWeights = new int[alignment.getPatternCount()];
         patternWeights[alignment.getPatternIndex(dpSiteModel.getLastDirtySite())] +=1;
 
-        //WVAlignment wvalign = new WVAlignment(alignment, patternWeights);
+        //OldWVAlignment wvalign = new OldWVAlignment(alignment, patternWeights);
         //WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
         WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
         try{
@@ -231,7 +233,7 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
             //System.out.println(i+" splitting: "+patternWeights[patternIndex]);
             prevTreeLikelihood.removeWeight(patternIndex,1);
         }
-        //WVAlignment wvalign = new WVAlignment(alignment, patternWeights);
+        //OldWVAlignment wvalign = new OldWVAlignment(alignment, patternWeights);
         //WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
         WVTreeLikelihood treeLik = new WVTreeLikelihood(patternWeights);
         try{
