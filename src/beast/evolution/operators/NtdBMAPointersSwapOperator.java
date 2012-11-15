@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.DPPointer;
@@ -10,6 +11,7 @@ import beast.util.Randomizer;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This operator swaps sites from different substitution model categories.")
 public class NtdBMAPointersSwapOperator extends Operator {
     //assignment
     public Input<DPPointer> paramPointersInput = new Input<DPPointer>(

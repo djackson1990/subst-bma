@@ -1,13 +1,10 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.parameter.QuietRealParameter;
 import beast.evolution.sitemodel.DPNtdRateSepSiteModel;
 import beast.evolution.sitemodel.DummySiteModel;
-import beast.evolution.sitemodel.QuietSiteModel;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
-import beast.evolution.substitutionmodel.NtdBMA;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Tree;
 import beast.core.Input;
@@ -19,6 +16,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("The tree likelihood used by the operators when using independent DPPs to the substitution model and rate partitioning. It allows pattern weights to be modified.")
 public class SepTempWVTreeLikelihood extends TempWVTreeLikelihood{
     public Input<DPNtdRateSepSiteModel> dpNtdRateSepSiteModelInput = new Input<DPNtdRateSepSiteModel>(
             "NtdRateSepSiteModel",

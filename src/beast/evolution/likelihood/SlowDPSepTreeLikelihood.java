@@ -1,12 +1,9 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.MCMCNodeFactory;
-import beast.evolution.sitemodel.DPSiteModel;
 import beast.evolution.sitemodel.DPNtdRateSepSiteModel;
 import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.tree.Tree;
-import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import beast.core.parameter.ChangeType;
 import beast.core.Input;
@@ -16,6 +13,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Does a lot of unnecessary calculation (calculates likelihoods at sites that are not required). Used for testing.")
 public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
 
     private DPNtdRateSepSiteModel dpSiteModel;
@@ -54,7 +52,7 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
         int siteCount = alignment.getSiteCount();
         for(int i = 0; i < siteCount; i++){
             clusterIds = dpSiteModel.getCurrClusters(i);
-            clusterWeights[clusterIds[dpSiteModel.NTDBMA]][clusterIds[dpSiteModel.RATES]][alignment.getPatternIndex(i)]++;
+            clusterWeights[clusterIds[DPNtdRateSepSiteModel.NTDBMA]][clusterIds[DPNtdRateSepSiteModel.RATES]][alignment.getPatternIndex(i)]++;
         }
 
         /*
@@ -103,32 +101,32 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
         int[] prevClusterIds = dpSiteModel.getPrevClusters(dirtySite);
 
         //Create a new tree likelihood (with zero weights) when there is a new site model.
-        if(treeLiksMatrix[currClusterIds[dpSiteModel.NTDBMA]][currClusterIds[dpSiteModel.RATES]] == null){
-            //System.out.println("Add clusters at: "+currClusterIds[dpSiteModel.NTDBMA]+" "+currClusterIds[dpSiteModel.RATES]);
-            addTreeLikelihood(currClusterIds[dpSiteModel.NTDBMA],currClusterIds[dpSiteModel.RATES]);
+        if(treeLiksMatrix[currClusterIds[DPNtdRateSepSiteModel.NTDBMA]][currClusterIds[DPNtdRateSepSiteModel.RATES]] == null){
+            //System.out.println("Add clusters at: "+currClusterIds[DPNtdRateSepSiteModel.NTDBMA]+" "+currClusterIds[DPNtdRateSepSiteModel.RATES]);
+            addTreeLikelihood(currClusterIds[DPNtdRateSepSiteModel.NTDBMA],currClusterIds[DPNtdRateSepSiteModel.RATES]);
         }
-        //System.out.println(prevClusterIds[dpSiteModel.NTDBMA]+" "+prevClusterIds[dpSiteModel.RATES]);
+        //System.out.println(prevClusterIds[DPNtdRateSepSiteModel.NTDBMA]+" "+prevClusterIds[DPNtdRateSepSiteModel.RATES]);
         //Move weight
         moveWeight(
-            prevClusterIds[dpSiteModel.NTDBMA],
-            prevClusterIds[dpSiteModel.RATES],
-            currClusterIds[dpSiteModel.NTDBMA],
-            currClusterIds[dpSiteModel.RATES],
+            prevClusterIds[DPNtdRateSepSiteModel.NTDBMA],
+            prevClusterIds[DPNtdRateSepSiteModel.RATES],
+            currClusterIds[DPNtdRateSepSiteModel.NTDBMA],
+            currClusterIds[DPNtdRateSepSiteModel.RATES],
             dirtySite,
             1
         );
 
         //Remove likelihoods that have zero weights
-        if(dpSiteModel.getCombinationWeight(prevClusterIds[dpSiteModel.NTDBMA], prevClusterIds[dpSiteModel.RATES]) == 0){
-            treeLiks.remove(treeLiksMatrix[prevClusterIds[dpSiteModel.NTDBMA]][prevClusterIds[dpSiteModel.RATES]]);
-            treeLiksMatrix[prevClusterIds[dpSiteModel.NTDBMA]][prevClusterIds[dpSiteModel.RATES]] = null;
+        if(dpSiteModel.getCombinationWeight(prevClusterIds[DPNtdRateSepSiteModel.NTDBMA], prevClusterIds[DPNtdRateSepSiteModel.RATES]) == 0){
+            treeLiks.remove(treeLiksMatrix[prevClusterIds[DPNtdRateSepSiteModel.NTDBMA]][prevClusterIds[DPNtdRateSepSiteModel.RATES]]);
+            treeLiksMatrix[prevClusterIds[DPNtdRateSepSiteModel.NTDBMA]][prevClusterIds[DPNtdRateSepSiteModel.RATES]] = null;
         }
     }
 
     private void updates(){
         int[] dirtySites =  dpSiteModel.getLastDirtySites();
         for(int dirtySite:dirtySites){
-            update(dirtySite);            
+            update(dirtySite);
         }
 
         for(int dirtySite:dirtySites){
@@ -136,9 +134,9 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
             int[] prevClusterIds = dpSiteModel.getPrevClusters(dirtySite);
 
         //Remove likelihoods that have zero weights
-            if(dpSiteModel.getCombinationWeight(prevClusterIds[dpSiteModel.NTDBMA], prevClusterIds[dpSiteModel.RATES]) == 0){
-                treeLiks.remove(treeLiksMatrix[prevClusterIds[dpSiteModel.NTDBMA]][prevClusterIds[dpSiteModel.RATES]]);
-                treeLiksMatrix[prevClusterIds[dpSiteModel.NTDBMA]][prevClusterIds[dpSiteModel.RATES]] = null;
+            if(dpSiteModel.getCombinationWeight(prevClusterIds[DPNtdRateSepSiteModel.NTDBMA], prevClusterIds[DPNtdRateSepSiteModel.RATES]) == 0){
+                treeLiks.remove(treeLiksMatrix[prevClusterIds[DPNtdRateSepSiteModel.NTDBMA]][prevClusterIds[DPNtdRateSepSiteModel.RATES]]);
+                treeLiksMatrix[prevClusterIds[DPNtdRateSepSiteModel.NTDBMA]][prevClusterIds[DPNtdRateSepSiteModel.RATES]] = null;
             }
         }
     }
@@ -149,19 +147,19 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
         int[] prevClusterIds = dpSiteModel.getPrevClusters(dirtySite);
 
         //Create a new tree likelihood (with zero weights) when there is a new site model.
-        if(treeLiksMatrix[currClusterIds[dpSiteModel.NTDBMA]][currClusterIds[dpSiteModel.RATES]] == null){
-            //System.out.println("Add cluster at: "+currClusterIds[dpSiteModel.NTDBMA]+" "+currClusterIds[dpSiteModel.RATES]);
-            addTreeLikelihood(currClusterIds[dpSiteModel.NTDBMA],currClusterIds[dpSiteModel.RATES]);
+        if(treeLiksMatrix[currClusterIds[DPNtdRateSepSiteModel.NTDBMA]][currClusterIds[DPNtdRateSepSiteModel.RATES]] == null){
+            //System.out.println("Add cluster at: "+currClusterIds[DPNtdRateSepSiteModel.NTDBMA]+" "+currClusterIds[DPNtdRateSepSiteModel.RATES]);
+            addTreeLikelihood(currClusterIds[DPNtdRateSepSiteModel.NTDBMA],currClusterIds[DPNtdRateSepSiteModel.RATES]);
         }
-        //System.out.println(prevClusterIds[dpSiteModel.NTDBMA]+" "+prevClusterIds[dpSiteModel.RATES]);
+        //System.out.println(prevClusterIds[DPNtdRateSepSiteModel.NTDBMA]+" "+prevClusterIds[DPNtdRateSepSiteModel.RATES]);
         //Move weight
 
 
         moveWeight(
-            prevClusterIds[dpSiteModel.NTDBMA],
-            prevClusterIds[dpSiteModel.RATES],
-            currClusterIds[dpSiteModel.NTDBMA],
-            currClusterIds[dpSiteModel.RATES],
+            prevClusterIds[DPNtdRateSepSiteModel.NTDBMA],
+            prevClusterIds[DPNtdRateSepSiteModel.RATES],
+            currClusterIds[DPNtdRateSepSiteModel.NTDBMA],
+            currClusterIds[DPNtdRateSepSiteModel.RATES],
             dirtySite,
             1
         );
@@ -181,7 +179,7 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
                     }
                 }
             }
-    
+
          */
 
 
@@ -267,23 +265,23 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
     public double getSiteLogLikelihood(int inputType, int clusterID, int siteIndex){
         //System.out.println("pattern: "+alignment.getPatternIndex(siteIndex));
         int[] currClusters = dpSiteModel.getCurrClusters(siteIndex);
-        //System.out.println("clusterID: "+clusterID+" "+prevClusters[dpSiteModel.RATES]+" "+alignment.getPatternIndex(siteIndex));
-        if(inputType == dpSiteModel.NTDBMA){
-            if(treeLiksMatrix[clusterID][currClusters[dpSiteModel.RATES]] != null){
+        //System.out.println("clusterID: "+clusterID+" "+prevClusters[DPNtdRateSepSiteModel.RATES]+" "+alignment.getPatternIndex(siteIndex));
+        if(inputType == DPNtdRateSepSiteModel.NTDBMA){
+            if(treeLiksMatrix[clusterID][currClusters[DPNtdRateSepSiteModel.RATES]] != null){
 
-                //WVTreeLikelihood tmpTL = treeLiksMatrix[clusterID][prevClusters[dpSiteModel.RATES]];
-                WVTreeLikelihood tmpTL = treeLiksMatrix[clusterID][currClusters[dpSiteModel.RATES]];
-                //System.out.println("clusterID: "+clusterID+" "+prevClusters[dpSiteModel.RATES]+" "+alignment.getPatternIndex(siteIndex));
+                //WVTreeLikelihood tmpTL = treeLiksMatrix[clusterID][prevClusters[DPNtdRateSepSiteModel.RATES]];
+                WVTreeLikelihood tmpTL = treeLiksMatrix[clusterID][currClusters[DPNtdRateSepSiteModel.RATES]];
+                //System.out.println("clusterID: "+clusterID+" "+prevClusters[DPNtdRateSepSiteModel.RATES]+" "+alignment.getPatternIndex(siteIndex));
                 //tmpTL.printThings();
                 return tmpTL.getPatternLogLikelihood(alignment.getPatternIndex(siteIndex));
 
             }
         }else{
 
-            if(treeLiksMatrix[currClusters[dpSiteModel.NTDBMA]][clusterID] != null){
-                //WVTreeLikelihood tmpTL = treeLiksMatrix[prevClusters[dpSiteModel.NTDBMA]][clusterID];
+            if(treeLiksMatrix[currClusters[DPNtdRateSepSiteModel.NTDBMA]][clusterID] != null){
+                //WVTreeLikelihood tmpTL = treeLiksMatrix[prevClusters[DPNtdRateSepSiteModel.NTDBMA]][clusterID];
                 //System.out.println("hi!!");
-                WVTreeLikelihood tmpTL = treeLiksMatrix[currClusters[dpSiteModel.NTDBMA]][clusterID];
+                WVTreeLikelihood tmpTL = treeLiksMatrix[currClusters[DPNtdRateSepSiteModel.NTDBMA]][clusterID];
                 return tmpTL.getPatternLogLikelihood(alignment.getPatternIndex(siteIndex));
             }
         }

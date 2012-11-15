@@ -1,5 +1,6 @@
 package beast.core.parameter;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.Plugin;
@@ -9,12 +10,9 @@ import java.io.PrintStream;
 import java.util.logging.StreamHandler;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 15/02/12
- * Time: 3:15 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("Use this class to print the mean value of a ParameterList.")
 public class ParameterMeanLogger extends Plugin implements Loggable {
     //ParameterList
     public Input<ParameterList> paramListInput = new Input<ParameterList>(

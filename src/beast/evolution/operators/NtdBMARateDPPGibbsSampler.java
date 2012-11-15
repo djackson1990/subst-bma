@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Operator;
 import beast.core.Loggable;
 import beast.core.Input;
@@ -19,6 +20,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Gibbs sampler with DPP for NtdBMA and rate having the same partition scheme.")
 public class NtdBMARateDPPGibbsSampler  extends Operator implements Loggable {
     public Input<DPPointer> parameterPointersInput = new Input<DPPointer>(
             "parameterPointers",

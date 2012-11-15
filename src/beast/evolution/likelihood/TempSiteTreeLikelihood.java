@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
@@ -10,6 +11,7 @@ import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Used to compute the tree likelihood for operators that samples the partitioning space.")
 public class TempSiteTreeLikelihood extends QuietTreeLikelihood{
 
     public TempSiteTreeLikelihood(Alignment data,

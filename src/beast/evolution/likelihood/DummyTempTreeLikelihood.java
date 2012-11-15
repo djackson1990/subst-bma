@@ -1,15 +1,13 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.NtdBMA;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 1/09/2011
- * Time: 4:44:57 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This class is well useful for testing purpose.")
 public class DummyTempTreeLikelihood extends TempTreeLikelihood{
 
     public double calculateLogP(

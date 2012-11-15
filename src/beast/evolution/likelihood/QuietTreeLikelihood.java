@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.BranchRateModel;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
-
+@Description("The tree likelihood used and created on the fly during the MCMC when using the DPM model.")
 public class QuietTreeLikelihood extends TreeLikelihood{
     protected Alignment data;
     protected Tree tree;

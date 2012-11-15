@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.*;
@@ -15,6 +16,7 @@ import java.util.List;
 /**
  *@author Chieh-Hsi Wu
  */
+@Description("Operator that splits and merges categories of substitution model and rate. The substitution model and rate shares the same partition scheme.")
 public class NtdBMARateSAMSPriorOperator extends Operator {
 
     public Input<DPPointer> paramPointersInput = new Input<DPPointer>(

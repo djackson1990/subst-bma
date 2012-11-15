@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.*;
@@ -18,6 +19,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Operator that splits and merges categories of substitution model.")
 public class NtdBMASAMSPriorOperator extends Operator {
     public Input<DPPointer> paramPointersInput = new Input<DPPointer>(
             "parameterPointers",

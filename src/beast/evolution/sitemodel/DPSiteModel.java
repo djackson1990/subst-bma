@@ -1,6 +1,7 @@
 package beast.evolution.sitemodel;
 
 import beast.core.CalculationNode;
+import beast.core.Description;
 import beast.core.PluginList;
 import beast.core.Input;
 import beast.core.parameter.ChangeType;
@@ -11,8 +12,8 @@ import java.util.ArrayList;
 
 /**
  * @author Chieh-Hsi Wu
- *
  */
+@Description("Parent class of all DP site models.")
 public abstract class DPSiteModel extends CalculationNode implements PluginList {
 
     protected ArrayList<QuietSiteModel> siteModels;

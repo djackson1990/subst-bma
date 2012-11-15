@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.parameter.ParameterList;
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.BooleanParameter;
@@ -10,6 +11,7 @@ import beast.util.Randomizer;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("ScaleOperator performed on a list of parameters.")
 public class PLScaleOperator extends ScaleOperator{
     public Input<ParameterList> parameterListInput =
             new Input<ParameterList>(

@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.parameter.QuietRealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Tree likelihood supports alignment pattern weights to change during the MCMC.")
 public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     WVLikelihoodCore m_likelihoodCore;
    

@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.ParameterList;
@@ -9,6 +10,7 @@ import beast.math.distributions.DirichletDistribution;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This is the Gibb sampler for categorial distribution assuming a Dirichlet prior.")
 public class CategoricalPDirichletPriorSampler extends Operator {
     public Input<RealParameter> categoricalProbsInput = new Input<RealParameter>(
             "categorialProbs",

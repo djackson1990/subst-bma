@@ -1,5 +1,6 @@
 package beast.evolution.speciation;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
@@ -9,6 +10,8 @@ import beast.evolution.tree.Tree;
 /**
  * @author Chieh-Hsi
  */
+@Description("This yule model takes an extra parameter so that node heights are scaled correctly. " +
+        "This is used when we cannot estimate time and substitution rate(s) separately.")
 public class YuleModelWithScaling extends YuleModel {
     public Input<Scaler> scalerInput = new Input<Scaler>("scaler", "Some thing that scales the tree branches");
     public Input<RealParameter> scalerParameterInput = new Input<RealParameter>("scalerParameter", "Some parameter that scales the tree branches", Input.Validate.XOR, scalerInput);
