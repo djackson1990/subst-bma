@@ -1,6 +1,7 @@
 package beast.math.distributions;
 
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Valuable;
 import beast.core.parameter.RealParameter;
@@ -14,6 +15,7 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 /**
  * @author Marc Suchard (Migrated by CHW)
  */
+@Description("This class implements the Wishart distribution.")
 public class Wishart extends ParametricDistribution implements MultivariateDistribution {
     public Input<RealParameter> scaleMatrixInput = new Input<RealParameter>("scaleMatrix","Scale matrix of the Wishart distribution", Input.Validate.REQUIRED);
     public Input<Integer> dfInput = new Input<Integer>("df","Degrees of freedom of the Wishart distribution", Input.Validate.REQUIRED);

@@ -1,5 +1,6 @@
 package beast.evolution.tree.coalescent;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Scaler;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Use this class the scale the tree intervals to the correct units for coalescent likelihood.")
 public class ScaledTreeIntervals extends TreeIntervals {
 
 

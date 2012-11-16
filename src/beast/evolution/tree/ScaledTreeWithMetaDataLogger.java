@@ -7,12 +7,9 @@ import beast.evolution.branchratemodel.BranchRateModel;
 import java.io.PrintStream;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 2/12/11
- * Time: 11:38 AM
- * To change this template use File | Settings | File Templates. 1328580712742
+ * @author Chieh-Hsi Wu
  */
+@Description("Scales the tree with the provided scaler and then log it with metadata.")
 public class ScaledTreeWithMetaDataLogger  extends TreeWithMetaDataLogger implements Loggable {
     public Input<Scaler> m_scaler = new Input<Scaler>("scaler","To scale the branch lengths by some number.", Input.Validate.REQUIRED);
     public Input<RealParameter> scalerParameterInput = new Input<RealParameter>("scalerParameter", "Some parameter that scales the tree branches", Input.Validate.XOR, m_scaler);

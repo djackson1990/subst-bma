@@ -5,11 +5,7 @@ import beast.core.Input;
 import beast.core.MCMCNodeFactory;
 import beast.core.parameter.ChangeType;
 import beast.core.parameter.QuietRealParameter;
-import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.DPNtdBMA;
-import beast.evolution.substitutionmodel.SwitchingNtdBMA;
-
-import java.util.ArrayList;
 
 /**
  * @author Chieh-Hsi Wu

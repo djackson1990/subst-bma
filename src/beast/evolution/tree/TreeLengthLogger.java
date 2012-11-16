@@ -1,6 +1,7 @@
 package beast.evolution.tree;
 
 import beast.core.CalculationNode;
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 
@@ -8,8 +9,8 @@ import java.io.PrintStream;
 
 /**
  * @author Chieh-Hsi Wu
- *
  */
+@Description("Reports the length of the tree.")
 public class TreeLengthLogger extends CalculationNode implements Loggable{
     public Input<Tree> treeInput = new Input<Tree>("tree", "tree to report length for.", Input.Validate.REQUIRED);
     public Input<Scaler> scalerInput = new Input<Scaler>("scaler","Provide scaleFactor to scale the tree length.");
