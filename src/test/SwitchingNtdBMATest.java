@@ -385,7 +385,7 @@ public class SwitchingNtdBMATest extends TestCase {
                     "logAT",logAT,
                     "logGC",logGC,
                     "modelChoose",modelChoose,
-                    "frequencies",f
+                    "frequenciesParameter",f
             );
 
 
