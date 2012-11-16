@@ -1,14 +1,13 @@
 package beast.evolution.sitemodel;
 
+import beast.core.Description;
+
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Jessie Wu
- * Date: 19/10/11
- * Time: 3:14 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("An incomplete attemp to improve the efficiency of computation.")
 public class EfficientDPNtdRateSepSiteModel extends DPNtdRateSepSiteModel{
 
     public void updateMap(int siteIndex, int ntdBMACluster, int rateCluster) throws Exception{

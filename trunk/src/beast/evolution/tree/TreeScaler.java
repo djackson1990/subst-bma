@@ -1,9 +1,6 @@
 package beast.evolution.tree;
 
-import beast.core.Plugin;
-import beast.core.Input;
-import beast.core.StateNodeInitialiser;
-import beast.core.StateNode;
+import beast.core.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -11,7 +8,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
-
+@Description("This class is used to scale the tree to a certain height.")
 public class TreeScaler extends Tree implements StateNodeInitialiser{
     public Input<Scaler> scaleFactorInput = new Input<Scaler>(
             "scaleFactor",

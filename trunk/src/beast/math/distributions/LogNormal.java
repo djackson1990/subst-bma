@@ -1,5 +1,6 @@
 package beast.math.distributions;
 
+import beast.core.Description;
 import beast.core.Input;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
@@ -9,6 +10,7 @@ import org.apache.commons.math.distribution.NormalDistributionImpl;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Lognormal distribution which takes the parameter precision instead of standard deviation in log space.")
 public class LogNormal extends LogNormalDistributionModel {
     public Input<Boolean> sIsPrecInput = new Input<Boolean>("sIsPrec", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
 

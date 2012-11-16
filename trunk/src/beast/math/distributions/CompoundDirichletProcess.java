@@ -1,5 +1,6 @@
 package beast.math.distributions;
 
+import beast.core.Description;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 
 import java.util.List;
@@ -11,12 +12,9 @@ import beast.core.parameter.ParameterList;
 import beast.core.Input;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Jessie Wu
- * Date: 17/07/2011
- * Time: 12:05:02 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("The base measure of this Dirichlet process is the product of a list of distributions/densities.")
 public class CompoundDirichletProcess extends ParametricDistribution{
 
     public Input<DPValuable> dpValuableInput = new Input<DPValuable>(
