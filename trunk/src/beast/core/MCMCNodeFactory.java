@@ -1,12 +1,9 @@
 package beast.core;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 22/08/12
- * Time: 2:54 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This class is used so that internally initialized calculation nodes can be checked properly in the MCMC.")
 public class MCMCNodeFactory {
 
     public static void checkDirtiness(CalculationNode calcNode){
