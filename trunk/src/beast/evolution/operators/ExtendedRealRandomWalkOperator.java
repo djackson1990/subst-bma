@@ -13,9 +13,9 @@ public class ExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
 
     public Input<String> windowSizesInput =
             new Input<String>("windowSizes", "the size of the window both up and down when using uniform interval OR standard deviation when using Gaussian", Input.Validate.REQUIRED);
-    public Input<RealParameter> cpInput =
+    /*public Input<RealParameter> cpInput =
                 new Input<RealParameter>("parameter", "the parameter to operate a random walk on.", Input.Validate.REQUIRED);
-
+    */
     protected double[] windowSizes;
     protected int lastChangedValueIndex;
 
@@ -25,7 +25,7 @@ public class ExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
     }
 
     public void initAndValidate() {
-        windowSizes = new double[cpInput.get().getDimension()];
+        windowSizes = new double[parameterInput.get().getDimension()];
         String[] windowSizesStr =  windowSizesInput.get().split("\\s+");
         setupWindowSizes(windowSizesStr);
     }
@@ -52,7 +52,7 @@ public class ExtendedRealRandomWalkOperator extends RealRandomWalkOperator{
      */
     @Override
     public double proposal() {
-        RealParameter param = cpInput.get(this);
+        RealParameter param = parameterInput.get(this);
         int i = Randomizer.nextInt(param.getDimension());
         double value = param.getValue(i);
         double newValue = getProposedVal(
