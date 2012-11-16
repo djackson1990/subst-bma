@@ -104,7 +104,7 @@
         <input name="logAT" spec="QuietRealParameter" value="0.0"/>
         <input name="logGC" spec="QuietRealParameter" value="0.0"/>
         <input name="modelChoose" spec="QuietRealParameter" value="1.0"/>
-        <input name="frequencies" spec="QuietRealParameter" value="0.25 0.25 0.25 0.25"/>
+        <input name="frequenciesParameter" spec="QuietRealParameter" value="0.25 0.25 0.25 0.25"/>
     </input>
 
     <!-- site model                                                              -->
@@ -129,7 +129,7 @@
         <input name="logAT" spec="QuietRealParameter" value="0.0"/>
         <input name="logGC" spec="QuietRealParameter" value="0.0"/>
         <input name="modelChoose" spec="QuietRealParameter" value="1.0"/>
-        <input name="frequencies" spec="QuietRealParameter" value="0.25 0.25 0.25 0.25"/>
+        <input name="frequenciesParameter" spec="QuietRealParameter" value="0.25 0.25 0.25 0.25"/>
     </input>
 
     <!-- site model                                                              -->

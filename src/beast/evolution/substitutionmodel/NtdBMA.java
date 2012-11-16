@@ -33,7 +33,7 @@ public class NtdBMA extends SubstitutionModel.Base{
     public Input<QuietRealParameter> logGCInput = new Input<QuietRealParameter>("logGC", "parameter representing log of GC parameter", Input.Validate.REQUIRED);
     //public Input<RealParameter> logGTInput = new Input<RealParameter>("logGT", "parameter representing log of GT parameter", Input.Validate.REQUIRED);
     public Input<QuietRealParameter> modelChooseInput = new Input<QuietRealParameter>("modelChoose", "Integer presenting the model", Input.Validate.REQUIRED);
-    public Input<QuietRealParameter> freqInput = new Input<QuietRealParameter>("frequencies", "Stationary frequencies the model", Input.Validate.REQUIRED);
+    public Input<QuietRealParameter> freqInput = new Input<QuietRealParameter>("frequenciesParameter", "Stationary frequencies the model", Input.Validate.REQUIRED);
 
     QuietRealParameter logKappa;
     QuietRealParameter logTN;

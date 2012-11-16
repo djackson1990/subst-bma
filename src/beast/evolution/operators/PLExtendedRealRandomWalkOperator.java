@@ -16,7 +16,7 @@ public class PLExtendedRealRandomWalkOperator extends ExtendedRealRandomWalkOper
      
     public PLExtendedRealRandomWalkOperator(){
         super();
-        cpInput.setRule(Input.Validate.OPTIONAL);
+        parameterInput.setRule(Input.Validate.OPTIONAL);
     }
 
     private ParameterList parameterList;
