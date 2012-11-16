@@ -384,7 +384,7 @@ public class NtdBMATest extends TestCase {
                     "logAT",logAT,
                     "logGC",logGC,
                     "modelChoose",modelChoose,
-                    "frequencies",f
+                    "frequenciesParameter",f
             );
 
             double distance = test.getDistance();
