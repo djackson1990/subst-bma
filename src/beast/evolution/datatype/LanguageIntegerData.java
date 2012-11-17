@@ -1,5 +1,6 @@
 package beast.evolution.datatype;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.util.HeapSort;
 
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Data type for languages coded as numbers.")
 public class LanguageIntegerData extends DataType.Base{
     public Input<String> symbolsInput = new Input<String>(
             "symbols",
