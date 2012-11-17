@@ -3,6 +3,7 @@ package beast.evolution.likelihood;
 import beast.core.Description;
 import beast.core.parameter.QuietRealParameter;
 import beast.evolution.sitemodel.QuietSiteModel;
+import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
 import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.StrictClockModel;
@@ -54,7 +55,10 @@ public class WVTreeLikelihood extends TreeLikelihood{
     	m_beagle = null;*/
 
         int nodeCount = m_tree.get().getNodeCount();
-        m_siteModel = m_pSiteModel.get();
+        if (!(m_pSiteModel.get() instanceof SiteModel.Base)) {
+        	throw new Exception ("siteModel input should be of type SiteModel.Base");
+        }
+        m_siteModel = (SiteModel.Base) m_pSiteModel.get();
         m_siteModel.setDataType(m_data.get().getDataType());
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
 
