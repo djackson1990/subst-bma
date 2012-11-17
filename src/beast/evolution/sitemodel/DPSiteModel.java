@@ -6,6 +6,7 @@ import beast.core.PluginList;
 import beast.core.Input;
 import beast.core.parameter.ChangeType;
 import beast.core.parameter.RealParameter;
+import beast.evolution.datatype.DataType;
 import beast.evolution.substitutionmodel.DPNtdBMA;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  * @author Chieh-Hsi Wu
  */
 @Description("Parent class of all DP site models.")
-public abstract class DPSiteModel extends CalculationNode implements PluginList {
+public abstract class DPSiteModel extends CalculationNode implements PluginList, SiteModelInterface {
 
     protected ArrayList<QuietSiteModel> siteModels;
     protected ArrayList<QuietSiteModel> storedSiteModels;
@@ -22,6 +23,11 @@ public abstract class DPSiteModel extends CalculationNode implements PluginList 
 
     public void initAndValidate() throws Exception{
         siteModels = new ArrayList<QuietSiteModel>();
+    }
+
+    @Override
+    public void setDataType(final DataType dataType) {
+        //m_dataType = dataType;
     }
 
 

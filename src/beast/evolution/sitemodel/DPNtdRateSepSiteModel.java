@@ -18,7 +18,7 @@ import java.util.Arrays;
  * @author Chieh-Hsi Wu
  */
 @Description("Manages a list of simple gamma site models. Can create and remove site models on the fly. Used when independent DPPs are applied to the partitioning schemes of the substitution model and rate.")
-public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel implements PluginList {
+public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
 
     private int lastDirtySite = -1;
     public static final int NTDBMA = 0;

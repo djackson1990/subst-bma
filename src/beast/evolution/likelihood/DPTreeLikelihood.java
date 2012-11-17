@@ -20,7 +20,7 @@ import java.util.Random;
  * @author Chieh-Hsi Wu
  */
 @Description("Tree likelihood that supports Dirichlet process mixture model on the partitionings of substitution model and rate together.")
-public class DPTreeLikelihood extends Distribution implements PluginList {
+public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginList {
 
     protected DPSiteModel dpSiteModel;
     //protected ArrayList<WVTreeLikelihood> treeLiks = new ArrayList<WVTreeLikelihood>();
@@ -28,28 +28,6 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
     protected ArrayList<NewWVTreeLikelihood> storedTreeLiks = new ArrayList<NewWVTreeLikelihood>();
     protected ChangeType changeType = ChangeType.ALL;
 
-    public Input<DPSiteModel> dpSiteModelInput = new Input<DPSiteModel>(
-            "siteModelList",
-            "array which points a set of unique parameter values",
-            Input.Validate.REQUIRED
-    );
-
-    public Input<Alignment> alignmentInput = new Input<Alignment>(
-            "data",
-            "sequence data for the beast.tree",
-            Input.Validate.REQUIRED
-    );
-
-    public Input<Tree> treeInput = new Input<Tree>(
-            "tree",
-            "phylogenetic beast.tree with sequence data in the leafs",
-            Input.Validate.REQUIRED
-    );
-
-    public Input<BranchRateModel.Base> branchRateModelInput = new Input<BranchRateModel.Base>(
-            "branchRateModel",
-            "A model describing the rates on the branches of the beast.tree."
-    );
     public Input<Boolean> useAmbiguitiesInput = new Input<Boolean>(
             "useAmbiguities",
             "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)",
@@ -70,11 +48,13 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
     protected DPValuable dpVal;
 
     public void initAndValidate() throws Exception{
+        if(!(m_pSiteModel.get() instanceof DPSiteModel)){
+            throw new RuntimeException("DPSiteModel required for site model.");
+        }
+        dpSiteModel = (DPSiteModel) m_pSiteModel.get();
 
-        dpSiteModel = dpSiteModelInput.get();
 
-
-        alignment = alignmentInput.get();
+        alignment = m_data.get();
         int patternCount = alignment.getPatternCount();
 
 
@@ -101,10 +81,10 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
             NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
                     clusterWeights[i],
                     alignment,
-                    treeInput.get(),
+                    m_tree.get(),
                     useAmbiguitiesInput.get(),
                     dpSiteModel.getSiteModel(i),
-                    branchRateModelInput.get());
+                    m_pBranchRateModel.get());
             /*treeLik.initByName(
                     "data", alignment,
                     "tree", treeInput.get(),
@@ -206,10 +186,10 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
         NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
                 patternWeights,
                 alignment,
-                treeInput.get(),
+                m_tree.get(),
                 useAmbiguitiesInput.get(),
                 siteModel,
-                branchRateModelInput.get());
+                m_pBranchRateModel.get());
         try{
             /*treeLik.initByName(
                     "data", alignment,
@@ -251,10 +231,10 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
         NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
                 patternWeights,
                 alignment,
-                treeInput.get(),
+                m_tree.get(),
                 useAmbiguitiesInput.get(),
                 siteModel,
-                branchRateModelInput.get());
+                m_pBranchRateModel.get());
         try{
             /*treeLik.initByName(
                     "data", alignment,
@@ -356,10 +336,10 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
 
             
             recalculate = true;
-        }else if(treeInput.get().somethingIsDirty()){
+        }else if(m_tree.get().somethingIsDirty()){
             recalculate = true;
 
-        }else if(branchRateModelInput.get().isDirtyCalculation()){
+        }else if(m_pBranchRateModel.get().isDirtyCalculation()){
             recalculate = true;
         }
         if(recalculate){
@@ -398,7 +378,7 @@ public class DPTreeLikelihood extends Distribution implements PluginList {
     }
 
     public Tree getTree(){
-        return treeInput.get();
+        return m_tree.get();
     }
 
     public int[] getClusterWeights(int clusterIndex){

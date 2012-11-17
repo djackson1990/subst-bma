@@ -21,27 +21,25 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
     private WVTreeLikelihood[][] storedTreeLiksMatrix;
     private ChangeType changeType = ChangeType.ALL;
 
-    public Input<DPNtdRateSepSiteModel> dpSepSiteModelInput = new Input<DPNtdRateSepSiteModel>(
-            "dpSepSiteModelList",
-            "array which points a set of unique parameter values",
-            Input.Validate.REQUIRED
-    );
+
 
     public SlowDPSepTreeLikelihood(){
         /*
          * We need DPNtdRateSepSiteModel specifically,
          * therefore an Input<DPSiteModel> is not useful.
          */
-        dpSiteModelInput.setRule(Input.Validate.OPTIONAL);
         dpValInput.setRule(Input.Validate.OPTIONAL);
     }
 
     public void initAndValidate() throws Exception{
 
 
-        alignment = alignmentInput.get();
+        alignment = m_data.get();
         int patternCount = alignment.getPatternCount();
-        dpSiteModel = dpSepSiteModelInput.get();
+        if(!(m_pSiteModel.get() instanceof DPNtdRateSepSiteModel)){
+            throw new RuntimeException("DPNtdRateSepSiteModel object is required for site model");
+        }
+        dpSiteModel = (DPNtdRateSepSiteModel) m_pSiteModel.get();
         int siteModelCount = dpSiteModel.getSiteModelCount();
 
         /*
@@ -74,9 +72,9 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
             WVTreeLikelihood treeLik = new WVTreeLikelihood(clusterWeights[ntdBMAId][ratesId]);
             treeLik.initByName(
                     "data", alignment,
-                    "tree", treeInput.get(),
+                    "tree", m_tree.get(),
                     "siteModel", dpSiteModel.getSiteModel(i),
-                    "branchRateModel", branchRateModelInput.get(),
+                    "branchRateModel", m_pBranchRateModel.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
             );
 
@@ -238,9 +236,9 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
         try{
             treeLik.initByName(
                     "data", alignment,
-                    "tree", treeInput.get(),
+                    "tree", m_tree.get(),
                     "siteModel", siteModel,
-                    "branchRateModel", branchRateModelInput.get(),
+                    "branchRateModel", m_pBranchRateModel.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
             );
             treeLik.calculateLogP();
@@ -346,10 +344,10 @@ public class SlowDPSepTreeLikelihood extends SlowDPTreeLikelihood{
                 changeType = ChangeType.ALL;
             }
             recalculate = true;
-        }else if(treeInput.get().somethingIsDirty()){
+        }else if(m_tree.get().somethingIsDirty()){
             recalculate = true;
 
-        }else if(branchRateModelInput.get().isDirtyCalculation()){
+        }else if(m_pBranchRateModel.get().isDirtyCalculation()){
             recalculate = true;
         }
         
