@@ -25,27 +25,26 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
     private NewWVTreeLikelihood[][] storedTreeLiksMatrix;
     private ChangeType changeType = ChangeType.ALL;
 
-    public Input<DPNtdRateSepSiteModel> dpSepSiteModelInput = new Input<DPNtdRateSepSiteModel>(
-            "dpSepSiteModelList",
-            "array which points a set of unique parameter values",
-            Input.Validate.REQUIRED
-    );
+
 
     public DPSepTreeLikelihood(){
         /*
          * We need DPNtdRateSepSiteModel specifically,
          * therefore an Input<DPSiteModel> is not useful.
          */
-        dpSiteModelInput.setRule(Input.Validate.OPTIONAL);
+
         dpValInput.setRule(Input.Validate.OPTIONAL);
     }
 
     public void initAndValidate() throws Exception{
 
 
-        alignment = alignmentInput.get();
+        alignment = m_data.get();
         int patternCount = alignment.getPatternCount();
-        dpSiteModel = dpSepSiteModelInput.get();
+        if(!(m_pSiteModel.get() instanceof DPNtdRateSepSiteModel)){
+            throw new RuntimeException("DPNtdRateSepSiteModel required for site model.");
+        }
+        dpSiteModel = (DPNtdRateSepSiteModel)m_pSiteModel.get();
         int siteModelCount = dpSiteModel.getSiteModelCount();
 
         /*
@@ -79,10 +78,10 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
             NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
                     clusterWeights[ntdBMAId][ratesId],
                     alignment,
-                    treeInput.get(),
+                    m_tree.get(),
                     useAmbiguitiesInput.get(),
                     dpSiteModel.getSiteModel(i),
-                    branchRateModelInput.get());
+                    m_pBranchRateModel.get());
 
             //Add to list and matrix for the convenience of processesing
             treeLiks.add(treeLik);
@@ -238,10 +237,10 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
         NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(
                     patternWeights,
                     alignment,
-                    treeInput.get(),
+                    m_tree.get(),
                     useAmbiguitiesInput.get(),
                     siteModel,
-                    branchRateModelInput.get());
+                    m_pBranchRateModel.get());
         try{
 
 
@@ -362,10 +361,10 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
                 changeType = ChangeType.ALL;
             }
             recalculate = true;
-        }else if(treeInput.get().somethingIsDirty()){
+        }else if(m_tree.get().somethingIsDirty()){
             recalculate = true;
 
-        }else if(branchRateModelInput.get().isDirtyCalculation()){
+        }else if(m_pBranchRateModel.get().isDirtyCalculation()){
             recalculate = true;
         }
         

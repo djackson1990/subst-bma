@@ -97,7 +97,7 @@
     <input spec='DPSepTreeLikelihood' id="treeLikelihood">
         <data idref="alignment"/>
         <tree idref="tree"/>
-        <dpSepSiteModelList idref="dpNtdRateSepSiteModel"/>
+        <siteModel idref="dpNtdRateSepSiteModel"/>
         <branchRateModel idref="branchRates"/>
     </input>
 

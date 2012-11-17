@@ -70,11 +70,13 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
     private DPValuable dpVal;
 
     public void initAndValidate() throws Exception{
+        if(!(m_pSiteModel.get() instanceof DPSiteModel)){
+            throw new RuntimeException("DPSiteModel object required for site model.");
+        }
+        dpSiteModel = (DPSiteModel)m_pSiteModel.get();
 
-        dpSiteModel = dpSiteModelInput.get();
 
-
-        alignment = alignmentInput.get();
+        alignment = m_data.get();
         int patternCount = alignment.getPatternCount();
 
 
@@ -101,9 +103,9 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
             WVTreeLikelihood treeLik = new WVTreeLikelihood(clusterWeights[i]);
             treeLik.initByName(
                     "data", alignment,
-                    "tree", treeInput.get(),
+                    "tree", m_tree.get(),
                     "siteModel", dpSiteModel.getSiteModel(i),
-                    "branchRateModel", branchRateModelInput.get(),
+                    "branchRateModel", m_pBranchRateModel.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
             );
             treeLiks.add(treeLik);
@@ -200,9 +202,9 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
         try{
             treeLik.initByName(
                     "data", alignment,
-                    "tree", treeInput.get(),
+                    "tree", m_tree.get(),
                     "siteModel", siteModel,
-                    "branchRateModel", branchRateModelInput.get(),
+                    "branchRateModel", m_pBranchRateModel.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
             );
 
@@ -239,9 +241,9 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
         try{
             treeLik.initByName(
                     "data", alignment,
-                    "tree", treeInput.get(),
+                    "tree", m_tree.get(),
                     "siteModel", siteModel,
-                    "branchRateModel", branchRateModelInput.get(),
+                    "branchRateModel", m_pBranchRateModel.get(),
                     "useAmbiguities",useAmbiguitiesInput.get()
             );
             treeLik.calculateLogP();
@@ -326,10 +328,10 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
 
             
             recalculate = true;
-        }else if(treeInput.get().somethingIsDirty()){
+        }else if(m_tree.get().somethingIsDirty()){
             recalculate = true;
 
-        }else if(branchRateModelInput.get().isDirtyCalculation()){
+        }else if(m_pBranchRateModel.get().isDirtyCalculation()){
             recalculate = true;
         }
         if(recalculate){
@@ -367,7 +369,7 @@ public class SlowDPTreeLikelihood extends DPTreeLikelihood implements PluginList
     }
 
     public Tree getTree(){
-        return treeInput.get();
+        return m_tree.get();
     }
 
     public int[] getClusterWeights(int clusterIndex){

@@ -146,7 +146,7 @@
     <input spec='DPTreeLikelihood' id="treeLikelihood">
         <data idref="hcv_2003"/>
         <tree idref="tree"/>
-        <siteModelList idref="dpNtdRateSiteModel"/>
+        <siteModel idref="dpNtdRateSiteModel"/>
         <branchRateModel idref="strict.clock"/>
         <dpVal idref="dpValuable"/>
     </input>

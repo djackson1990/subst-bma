@@ -157,7 +157,7 @@
     <input spec='DPSepTreeLikelihood' id="treeLikelihood">
         <data idref="rsva"/>
         <tree idref="tree"/>
-        <dpSepSiteModelList idref="dpNtdRateSepSiteModel"/>
+        <siteModel idref="dpNtdRateSepSiteModel"/>
         <branchRateModel idref="strict.clock"/>
     </input>
 

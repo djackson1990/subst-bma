@@ -154,7 +154,7 @@
     <input spec='DPTreeLikelihood' id="treeLikelihood">
         <data idref="ebola"/>
         <tree idref="tree"/>
-        <siteModelList idref="dpNtdRateSiteModel"/>
+        <siteModel idref="dpNtdRateSiteModel"/>
         <branchRateModel idref="branchRates"/>
         <dpVal idref="dpValuable"/>
     </input>
