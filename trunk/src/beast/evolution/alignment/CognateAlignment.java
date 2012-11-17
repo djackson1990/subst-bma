@@ -1,5 +1,6 @@
 package beast.evolution.alignment;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.LanguageIntegerData;
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This class implements the alignment for cognate data.")
 public class CognateAlignment extends Alignment {
     public Input<LanguageIntegerData> dataTypeInput = new Input<LanguageIntegerData>(
             "dataType",
