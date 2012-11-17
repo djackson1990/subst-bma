@@ -47,7 +47,10 @@ public class QuietTreeLikelihood extends TreeLikelihood{
 
         data = m_data.get();
         tree = m_tree.get();
-        m_siteModel = m_pSiteModel.get();
+        if (!(m_pSiteModel.get() instanceof SiteModel.Base)) {
+        	throw new Exception ("siteModel input should be of type SiteModel.Base");
+        }
+        m_siteModel = (SiteModel.Base) m_pSiteModel.get();
         if (m_pBranchRateModel.get() != null) {
             m_branchRateModel = m_pBranchRateModel.get();
         } else {
