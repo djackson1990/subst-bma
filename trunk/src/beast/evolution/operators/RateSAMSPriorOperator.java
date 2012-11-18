@@ -116,6 +116,7 @@ public class RateSAMSPriorOperator extends Operator {
             logq = temp;
 
         }
+        //System.out.println("logq: "+logq);
         return logq;
     }
 
@@ -141,9 +142,13 @@ public class RateSAMSPriorOperator extends Operator {
                     clusterSites[k++] = initClusterSites[i];
                 }
             }
-            //Form a new cluster with index 1
-            ratePointers.point(index1,newParam);
 
+
+            //Form a new cluster with index 1
+            //ratePointers.point(index1,newParam);
+
+            int[] sitesInCluster1 = new int[initClusterSites.length];
+            sitesInCluster1[0] = index1;
             //Shuffle the cluster_-{index_1,index_2} to obtain a random permutation
             Randomizer.shuffle(clusterSites);
 
@@ -205,6 +210,7 @@ public class RateSAMSPriorOperator extends Operator {
             //Assign members of the existing cluster (except for indice 1 and 2) randomly
             //to the existing and the new cluster
             double psi1, psi2, newClusterProb, draw;
+
             for(int i = 0;i < clusterSites.length; i++){
 
                 psi1 = cluster1Count*lik1[i];
@@ -214,7 +220,8 @@ public class RateSAMSPriorOperator extends Operator {
                 draw = Randomizer.nextDouble();
                 if(draw < newClusterProb){
                     //System.out.println("in new cluster: "+clusterSites[i]);
-                    ratePointers.point(clusterSites[i],newParam);
+                    //ratePointers.point(clusterSites[i],newParam);
+                    sitesInCluster1[cluster1Count] = clusterSites[i];
                     logqSplit += Math.log(newClusterProb);
                     cluster1Count++;
                 }else{
@@ -225,6 +232,13 @@ public class RateSAMSPriorOperator extends Operator {
             }
             //System.out.println("logqSplit: "+logqSplit);
             logqSplit += baseDistr.logDensity(sampleVal[0][0]);
+
+            if(-logqSplit != Double.NEGATIVE_INFINITY){
+                for(int i = 0; i < cluster1Count; i++){
+                    ratePointers.point(sitesInCluster1[i],newParam);
+                }
+            }
+
             return -logqSplit;
 
 
@@ -255,7 +269,7 @@ public class RateSAMSPriorOperator extends Operator {
         int k = 0;
         for(int i = 0; i < cluster1Sites.length;i++){
             //Point every member in cluster 1 to cluster 2
-            ratePointers.point(cluster1Sites[i],mergedParameter);
+            //ratePointers.point(cluster1Sites[i],mergedParameter);
             if(cluster1Sites[i] != index1){
                 // For all members that are not index 1,
                 // record the cluster in which they have been before the merge,
@@ -402,6 +416,14 @@ public class RateSAMSPriorOperator extends Operator {
             rateList.mergeParameter(clusterIndex1,clusterIndex2);
         }catch(Exception e){
             throw new RuntimeException(e);
+        }
+
+        if(logqMerge != Double.NEGATIVE_INFINITY){
+            for(int i = 0; i < cluster1Sites.length;i++){
+                //Point every member in cluster 1 to cluster 2
+                ratePointers.point(cluster1Sites[i],mergedParameter);
+
+            }
         }
 
         return logqMerge;

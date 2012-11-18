@@ -453,10 +453,10 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         if(patternWeights[patId] == 0){
             m_likelihoodCore.getUnmasked()[patId] = false;
         }else if(patternWeights[patId] < 0){
-            for(int i = 0; i < patternWeights.length;i++){
+            /*for(int i = 0; i < patternWeights.length;i++){
                 System.out.print(patternWeights[i]+" ");
             }
-            System.out.println();
+            System.out.println();  */
             throw new RuntimeException("NEGATIVE WEIGHTS: "+patternWeights[patId]+" "+dweight);
         }
 

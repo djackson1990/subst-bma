@@ -1,0 +1,154 @@
+<!-- Build substBMA. It is also used by Hudson substBMA project. JUnit test is available for this build. -->
+<project basedir="." default="build_jar_all_substBMA" name="BUILD_substBMA">
+        <description>
+            Build substBMA.
+            Also used by Hudson substBMA project.
+            JUnit test is available for this build.
+            $Id: build_substBMA.xml $
+        </description>
+
+        <!-- set global properties for this build -->
+        <property name="src_substBMA" location="src" />
+        <property name="lib_substBMA" location="lib" />
+        <property name="build_substBMA" location="build" />
+        <property name="dist_substBMA" location="${build_substBMA}/dist" />
+        <property name="beast2path" location="../beast2" />
+        <property name="srcBeast2" location="${beast2path}/src" />
+        <property name="beast2classpath" location="${beast2path}/build" />
+
+    <import file="${beast2path}/build.xml" />
+
+
+        <property name="main_class_BEAST" value="beast.app.BeastMCMC" />
+        <property name="report" value="${build_substBMA}/junitreport"/>
+
+        <path id="classpath">
+        <pathelement path="${beast2classpath}"/>
+                <fileset dir="${beast2path}/lib" includes="**/*.jar"/>
+                <fileset dir="${lib_substBMA}" includes="**/*.jar"/>
+        </path>
+
+        <!-- start -->
+        <target name="initsubstBMA">
+                <echo message="${ant.project.name}: ${ant.file}" />
+        </target>
+
+        <target name="cleansubstBMA">
+        <delete dir="${build_substBMA}" />
+        </target>
+
+        <!-- clean previous build, and then compile Java source code, and Juint test -->
+        <target name="build_all_substBMA" depends="cleansubstBMA,compile-allsubstBMA,junitsubstBMA"
+        description="Clean and Build all run-time stuff">
+        </target>
+
+        <!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
+        <target name="build_jar_all_substBMA" depends="cleansubstBMA,compile-allsubstBMA,junitsubstBMA,dist_all_substBMA"
+        description="Clean and Build all run-time stuff">
+        </target>
+
+
+        <!-- No JUnit Test, clean previous build, compile Java source code, and make the substBMA.jar and beauti.jar -->
+        <target name="build_jar_all_substBMA_NoJUnitTest" depends="cleansubstBMA,compile-allsubstBMA,dist_all_substBMA"
+        description="Clean and Build all run-time stuff">
+        </target>
+
+        <!-- compile Java source code -->
+        <target name="compile-allsubstBMA" depends="initsubstBMA,compile-all">
+
+
+            <!-- Capture the path as a delimited property using the refid attribute -->
+            <property name="myclasspath" refid="classpath"/>
+            <!-- Emit the property to the ant console -->
+            <echo message="Classpath = ${myclasspath}"/>
+
+                <mkdir dir="${build_substBMA}" />
+
+                <!-- Compile the java code from ${src_substBMA} into ${build_substBMA} /bin -->
+                <javac srcdir="${src_substBMA}" destdir="${build_substBMA}" classpathref="classpath"
+                       fork="true"
+                       memoryinitialsize="256m"
+                       memorymaximumsize="256m">
+                        <include name="beast/**/**" />
+                        <!-- compile JUnit test classes -->
+                        <include name="test/**" />
+                </javac>
+                <echo message="Successfully compiled." />
+        </target>
+
+        <!-- make the beast.jar and beauti.jar -->
+        <target name="dist_all_substBMA" depends="compile-allsubstBMA" description="create substBMA jar">
+                <!-- Create the distribution directory -->
+                <mkdir dir="${dist_substBMA}" />
+
+                <!-- Put everything in ${build_substBMA} into the beast.jar file -->
+                <jar jarfile="${dist_substBMA}/substBMA.jar">
+                        <manifest>
+                                <attribute name="Built-By" value="${user.name}" />
+                                <attribute name="Main-Class" value="${main_class_BEAST}" />
+                        </manifest>
+                        <fileset dir="${build_substBMA}">
+                                <include name="beast/**/*.class" />
+                        </fileset>
+                        <fileset dir="${beast2classpath}">
+                                <include name="beast/**/*.class" />
+                                <include name="beast/**/*.properties" />
+                                <include name="beast/**/*.png" />
+                                <include name="beagle/**/*.class" />
+                                <include name="org/**/*.class" />
+                        </fileset>
+                        <zipgroupfileset dir="${lib}" includes="colt.jar" />
+                </jar>
+                <jar jarfile="${dist_substBMA}/substBMA.src.jar">
+                        <fileset dir="${src_substBMA}">
+                                <include name="beast/**/*.java" />
+                                <include name="beast/**/*.png" />
+                                <include name="beast/**/*.xsl" />
+                        </fileset>
+        </jar>
+        </target>
+
+        <!-- run beast.jar -->
+        <target name="run_substBMA">
+                <java jar="${dist_substBMA}/substBMA.jar" fork="true" />
+        </target>
+
+
+        <!-- JUnit test -->
+        <target name="junitsubstBMA">
+            <!-- Capture the path as a delimited property using the refid attribute -->
+            <property name="myclasspath" refid="classpath"/>
+            <!-- Emit the property to the ant console -->
+            <echo message="Classpath = ${myclasspath}"/>
+
+                <mkdir dir="${report}" />
+                <junit printsummary="yes"> <!--showoutput='yes'-->
+                        <classpath>
+                                <path refid="classpath" />
+                                <path location="${build_substBMA}" />
+                        </classpath>
+
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="${report}">
+                                <fileset dir="${src_substBMA}">
+                    <include name="test/**/*Test.java"/>
+                                </fileset>
+                                <fileset dir="${srcBeast2}">
+                    <include name="test/beast/integration/**/*Test.java"/>                                        
+                    <exclude name="test/beast/integration/**/ResumeTest.java"/>                                        
+                                </fileset>
+                        </batchtest>
+                </junit>
+                <echo message="JUnit test finished." />
+        </target>
+
+    <target name="junitreport">
+                <junitreport todir="${report}">
+                        <fileset dir="${report}" includes="*.xml"/>
+                        <report format="frames" todir="${report}"/>
+                </junitreport>
+                <echo message="JUnit test report finished." />
+        </target>
+</project>
+
