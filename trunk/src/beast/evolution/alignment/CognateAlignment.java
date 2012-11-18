@@ -15,7 +15,7 @@ import java.util.List;
 @Description("This class implements the alignment for cognate data.")
 public class CognateAlignment extends Alignment {
     public Input<LanguageIntegerData> dataTypeInput = new Input<LanguageIntegerData>(
-            "dataType",
+            "languageIntegerDataType",
             "The language integer data type congnates.",
             Input.Validate.REQUIRED
     );
@@ -35,6 +35,7 @@ public class CognateAlignment extends Alignment {
 
     public CognateAlignment(){
         m_pSequences.setRule(Input.Validate.OPTIONAL);
+        m_sDataType.setRule(Input.Validate.OPTIONAL);
     }
 
 
