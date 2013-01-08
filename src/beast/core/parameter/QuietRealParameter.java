@@ -16,6 +16,11 @@ public class QuietRealParameter extends RealParameter{
         super.initAndValidate();
     }
 
+    public QuietRealParameter(Double value) throws Exception{
+        super(new Double[]{value});
+
+    }
+
     public QuietRealParameter(Double[] values) throws Exception{
         super(values);
 
