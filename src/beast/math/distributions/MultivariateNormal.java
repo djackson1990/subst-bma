@@ -251,6 +251,36 @@ public class MultivariateNormal extends ParametricDistribution implements Multiv
         return dim * logNormalize + 0.5 * (dim * (Math.log(precision) - Math.log(scale)) - SSE * precision / scale);
     }
 
+
+    /* Exactly the same as the one above.
+     * It's just that in BEAST2 things tend to be objevts rather than primatives. */
+    public static double logPdf(Double[] x, Double[] mean, double[][] precision, double logDet, double scale) {
+
+        if (logDet == Double.NEGATIVE_INFINITY)
+            return logDet;
+
+        final int dim = x.length;
+        final double[] delta = new double[dim];
+        final double[] tmp = new double[dim];
+
+        for (int i = 0; i < dim; i++) {
+            delta[i] = x[i] - mean[i];
+        }
+
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                tmp[i] += delta[j] * precision[j][i];
+            }
+        }
+
+        double SSE = 0;
+
+        for (int i = 0; i < dim; i++)
+            SSE += tmp[i] * delta[i];
+
+        return dim * logNormalize + 0.5 * (logDet - dim * Math.log(scale) - SSE / scale);   // There was an error here.
+    }
+
     private static double[][] getInverse(double[][] x) {
         return new SymmetricMatrix(x).inverse().toComponents();
     }

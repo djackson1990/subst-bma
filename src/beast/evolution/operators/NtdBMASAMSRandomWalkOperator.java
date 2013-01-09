@@ -3,16 +3,15 @@ package beast.evolution.operators;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.parameter.DPPointer;
-import beast.core.parameter.DPValuable;
-import beast.core.parameter.ParameterList;
-import beast.core.parameter.QuietRealParameter;
+import beast.core.parameter.*;
 import beast.evolution.likelihood.DPSepTreeLikelihood;
 import beast.evolution.likelihood.DPTreeLikelihood;
 import beast.evolution.likelihood.SlowDPSepTreeLikelihood;
 import beast.evolution.likelihood.TempWVTreeLikelihood;
 import beast.evolution.sitemodel.DPNtdRateSepSiteModel;
 import beast.math.distributions.CompoundDirichletProcess;
+import beast.math.distributions.DirichletDistribution;
+import beast.math.distributions.MultivariateNormal;
 import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
 
@@ -23,8 +22,8 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
-@Description("Operator that splits and merges categories of substitution model, test phase 1.")
-public class NtdBMASAMSTempOperator extends Operator {
+@Description("Operator that splits and merges categories of substitution model, test phase 2.")
+public class NtdBMASAMSRandomWalkOperator extends Operator {
     private int nCantMerge = 0;
     public Input<DPPointer> paramPointersInput = new Input<DPPointer>(
             "parameterPointers",
@@ -86,6 +85,18 @@ public class NtdBMASAMSTempOperator extends Operator {
             Input.Validate.REQUIRED
     );
 
+    public Input<RealParameter> mvnPrecisionInput = new Input<RealParameter>(
+            "mvnPrecision",
+            "The precision for the multivariate random walk on the relative rate parameter.",
+            Input.Validate.REQUIRED
+    );
+
+    public Input<Double> scaleInput = new Input<Double>(
+            "scale",
+            "Magnitude of change for two randomly picked values.",
+            Input.Validate.REQUIRED
+    );
+
 
 
     private DPPointer paramPointers;
@@ -102,7 +113,9 @@ public class NtdBMASAMSTempOperator extends Operator {
     private TempWVTreeLikelihood tempLikelihood;
     private DPTreeLikelihood dpTreeLikelihood;
     HashMap<Double,double[]> modelNetworkMap= new HashMap<Double,double[]>();
-
+    private double[][] mvnPrecision;
+    private double logMVNPrecisionDet;
+    private double scale;
     public void initAndValidate(){
         paramList = paramListInput.get();
         modelList = modelListInput.get();
@@ -130,6 +143,21 @@ public class NtdBMASAMSTempOperator extends Operator {
         modelNetworkMap.put(4.0,new double[]{3.0,5.0});
         modelNetworkMap.put(5.0,new double[]{4.0});
         //System.out.println("is null? "+(modelNetworkMap.get(5.0) == null));
+
+        RealParameter mvnPrecisionParameter = mvnPrecisionInput.get();
+        int dim = (int)Math.sqrt(mvnPrecisionParameter.getDimension());
+
+        mvnPrecision = new double[dim][dim];
+        int k = 0;
+        for(int i = 0; i < mvnPrecision.length; i++){
+            for(int j = 0; j < mvnPrecision[i].length; j++){
+                mvnPrecision[i][j] =  mvnPrecisionParameter.getValue(k++);
+            }
+        }
+
+        logMVNPrecisionDet = Math.log(MultivariateNormal.calculatePrecisionMatrixDeterminate(mvnPrecision));
+
+        scale = scaleInput.get();
 
     }
 
@@ -621,6 +649,43 @@ public class NtdBMASAMSTempOperator extends Operator {
         }
 
     }
+
+
+    private QuietRealParameter relativeRateProposal(QuietRealParameter curr) throws Exception{
+        Double[] currVals = curr.getValues();
+        double[] meanVec = new double[currVals.length];
+        for(int i = 0; i < currVals.length; i++){
+            meanVec[i] = currVals[i];
+        }
+        double[] proposalValues = MultivariateNormal.nextMultivariateNormalPrecision(meanVec,mvnPrecision);
+        Double[] proposalVals = new Double[proposalValues.length];
+        for(int i = 0; i < proposalVals.length; i++){
+            proposalVals[i] = proposalValues[i];
+        }
+        QuietRealParameter proposal = new QuietRealParameter(proposalVals);
+        return proposal;
+    }
+
+    private QuietRealParameter frequenciesProposal(QuietRealParameter curr) throws Exception{
+        Double[] currVals = curr.getValues();
+        Double[] proposalVals = DirichletDistribution.nextDirichletScale(currVals,scale);
+        QuietRealParameter proposal = new QuietRealParameter(proposalVals);
+        return proposal;
+
+    }
+
+    private double getRelativeRateLogProposalDensity(RealParameter curr, RealParameter proposal){
+        return MultivariateNormal.logPdf(proposal.getValues(),curr.getValues(),mvnPrecision,logMVNPrecisionDet,1.0);
+    }
+
+    private double getFrequenciesLogProposalDensity(RealParameter curr, RealParameter proposal){
+        return DirichletDistribution.logPDF(proposal.getValues(), curr.getValues(), scale);
+    }
+
+
+
+
+
     public String toString() {
         String sName = getName();
         if (sName.length() < 70) {

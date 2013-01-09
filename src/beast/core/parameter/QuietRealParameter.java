@@ -21,6 +21,8 @@ public class QuietRealParameter extends RealParameter{
 
     }
 
+
+
     public QuietRealParameter(Double[] values) throws Exception{
         super(values);
 
@@ -54,5 +56,7 @@ public class QuietRealParameter extends RealParameter{
         }
         return null;
     }
+
+
 
 }
