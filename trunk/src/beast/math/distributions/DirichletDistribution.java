@@ -75,6 +75,45 @@ public class DirichletDistribution extends Dirichlet{
 
     }
 
+
+
+    public static Double[] nextDirichletScale(Double[] alpha, double scaleVal){
+        Double[] sample = new Double[alpha.length];
+        double sum = 0.0;
+        for(int j  =0; j < sample.length;j++){
+            sample[j] = Randomizer.nextGamma(alpha[j]*scaleVal,1.0);
+            sum += sample[j];
+        }
+
+        for(int j = 0; j < sample.length;j++){
+            sample[j] = sample[j]/sum;
+        }
+        return sample;
+
+    }
+
+
+    public static double logPDF(Double[] proposal, Double[] alpha, double scaleVal){
+
+        double[] fAlpha = new double[alpha.length];
+        for(int i = 0; i < fAlpha.length; i++){
+            fAlpha[i] = alpha[i]*scaleVal;
+        }
+
+        double fLogP = 0;
+        double fSumAlpha = 0;
+        for (int i = 0; i < proposal.length; i++) {
+            double fX = proposal[i];
+            fLogP += (fAlpha[i]-1) * Math.log(fX);
+            fLogP -= org.apache.commons.math.special.Gamma.logGamma(fAlpha[i]);
+            fSumAlpha += fAlpha[i];
+        }
+        fLogP += org.apache.commons.math.special.Gamma.logGamma(fSumAlpha);
+        return fLogP;
+
+
+    }
+
     public void printDetails(){
         System.err.println("alpha:"+alpha);
         System.err.println("scale:"+scale);
@@ -82,7 +121,7 @@ public class DirichletDistribution extends Dirichlet{
 
     public static void  main(String[] args){
         try{
-            RealParameter alpha = new RealParameter(new Double[]{50.0,50.0,50.0,50.0});
+            RealParameter alpha = new RealParameter(new Double[]{3.0,2.0,1.0,3.0});
             DirichletDistribution dirichlet = new DirichletDistribution();
             dirichlet.initByName(
                     "alpha", alpha
@@ -92,13 +131,21 @@ public class DirichletDistribution extends Dirichlet{
 
             for(int i = 0; i < 1000; i++){
                 RealParameter sample = new RealParameter(samples[i]);
-                sample.log(0,System.out);
-                System.out.println();
+                //sample.log(0,System.out);
+                //System.out.println();
 
             }
 
             //fitted alpha from VGAM
             //3.9830039 1.9792060 0.9378492 2.9612180
+
+            samples = new Double[1000][];
+            for(int i = 0 ; i < 1000; i++){
+                //System.out.println((i+1)+": ");
+                RealParameter sample = new RealParameter(nextDirichletScale(new Double[]{1.5,1.0,0.5,1.5},2));
+                sample.log(0,System.out);
+                System.out.println();
+            }
 
         }catch(Exception e){
             throw new RuntimeException(e);

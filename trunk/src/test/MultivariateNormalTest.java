@@ -157,10 +157,23 @@ public class MultivariateNormalTest extends TestCase {
                         "value",xStrs[i],
                         "lower",Double.NEGATIVE_INFINITY,
                         "upper",Double.POSITIVE_INFINITY);
-                double fLogX = multiNorm.calcLogP(x);
-                assertEquals(fLogX, expectedFLogX[i], 1e-10);
+                double fLogX1 = multiNorm.calcLogP(x);
+                assertEquals(fLogX1, expectedFLogX[i], 1e-10);
+
+
+                double fLogX2 =  MultivariateNormal.logPdf(
+                        x.getValues(),
+                        mean.getValues(),
+                        multiNorm.getScaleMatrix(),
+                        Math.log(MultivariateNormal.calculatePrecisionMatrixDeterminate(multiNorm.getScaleMatrix())),
+                        1.0
+                );
+
+                assertEquals(fLogX2, expectedFLogX[i], 1e-10);
             }
-            Normal norm = new Normal();
+
+
+
 
         }
     }
