@@ -88,6 +88,9 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
 	public boolean requiresRecalculation() {
         //System.out.println(pointers.getID()+" Hello?? "+ pointers.somethingIsDirty());
         pointersChanged =pointers.somethingIsDirty();
+        if(pointers.somethingIsDirty()){
+            update();
+        }
 		return pointers.somethingIsDirty();
 	}
 
@@ -117,9 +120,10 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
 
     private int[][] clusterSites;
     public int[] getClusterSites(int index){
-        if(pointers.somethingIsDirty()){
+        /*if(pointersChanged){
             update();
-        }
+        }*/
+
         
         int[] clusterSites = new int[clusterCounts[index]];
         System.arraycopy(this.clusterSites[index],0,clusterSites,0,clusterSites.length);
@@ -127,7 +131,7 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
     }
 
     public int[] getStoredClusterSites(int index){
-        int[] storedClusterSites = new int[clusterCounts[index]];
+        int[] storedClusterSites = new int[storedClusterCounts[index]];
         System.arraycopy(this.storedClusterSites[index],0,storedClusterSites,0,storedClusterSites.length);
         return storedClusterSites;
     }
