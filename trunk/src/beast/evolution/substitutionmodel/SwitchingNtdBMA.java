@@ -113,21 +113,6 @@ public class SwitchingNtdBMA extends NtdBMA{
         */
     }
 
-    public void printDetails(){
-        System.out.println("modelChoose: "+modelChoose.getValue());
-        System.out.println("logKappa: "+logKappa.getValue());
-        System.out.println("logTN: "+logTN.getValue());
-        System.out.println("logAC: "+logAC.getValue());
-        System.out.println("logAT: "+logAT.getValue());
-        System.out.println("logGC: "+logGC.getValue());
-        System.out.println("frequences: "+
-                frequencies.getValue(0)+ " "+
-                frequencies.getValue(1)+ " "+
-                frequencies.getValue(2)+ " "+
-                frequencies.getValue(3)+ " "
-        );
-
-    }
 
     public void getJC69TransitionProbabilities(
             Node node,

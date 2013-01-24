@@ -59,14 +59,6 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             Input.Validate.REQUIRED
     );
 
-
-
-    public Input<CompoundDirichletProcess> dpInput = new Input<CompoundDirichletProcess>(
-            "dirichletProcess",
-            "An object of Dirichlet Process",
-            Input.Validate.REQUIRED
-    );
-
     public Input<TempWVTreeLikelihood> tempLikelihoodInput = new Input<TempWVTreeLikelihood>(
             "tempLikelihood",
             "The temporary likelihood given the data at site i",
@@ -91,7 +83,7 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             Input.Validate.REQUIRED
     );
 
-    public Input<Double> scaleInput = new Input<Double>(
+    public Input<RealParameter> scaleInput = new Input<RealParameter>(
             "scale",
             "Magnitude of change for two randomly picked values.",
             Input.Validate.REQUIRED
@@ -126,23 +118,10 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
         freqsPointers = freqsPointersInput.get();
 
         pointerCount = paramPointers.getDimension();
-
-
-
-        dp = dpInput.get();
-        List<ParametricDistribution> distrs = dp.getBaseDistributions();
-        paramBaseDistr = distrs.get(0);
-        modelBaseDistr = distrs.get(1);
-        freqsBaseDistr = distrs.get(2);
         tempLikelihood = tempLikelihoodInput.get();
         dpTreeLikelihood = dpTreeLikelihoodInput.get();
 
-        modelNetworkMap.put(1.0,new double[]{3.0});
-        modelNetworkMap.put(2.0,new double[]{3.0});
-        modelNetworkMap.put(3.0,new double[]{1.0,2.0,4.0});
-        modelNetworkMap.put(4.0,new double[]{3.0,5.0});
-        modelNetworkMap.put(5.0,new double[]{4.0});
-        //System.out.println("is null? "+(modelNetworkMap.get(5.0) == null));
+
 
         RealParameter mvnPrecisionParameter = mvnPrecisionInput.get();
         int dim = (int)Math.sqrt(mvnPrecisionParameter.getDimension());
@@ -157,7 +136,7 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
 
         logMVNPrecisionDet = Math.log(MultivariateNormal.calculatePrecisionMatrixDeterminate(mvnPrecision));
 
-        scale = scaleInput.get();
+        scale = scaleInput.get().getValue();
 
     }
 
@@ -187,7 +166,7 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
 
         }else{
             //If the the two randomly drawn sites are not from the same cluster, perform a merge-move.
-
+            //System.out.println("clusterIndex 1: "+clusterIndex1);
             int[] cluster1Sites = dpValuableInput.get().getClusterSites(clusterIndex1);
             int[] cluster2Sites = dpValuableInput.get().getClusterSites(clusterIndex2);
 
@@ -205,19 +184,10 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             logq = temp;
 
         }
+        //System.out.println(logq);
         return logq;
     }
 
-    public QuietRealParameter getSample(ParametricDistribution distr, double upper, double lower) throws Exception{
-
-        Double[][] sampleVals = distr.sample(1);
-
-        QuietRealParameter sampleParameter = new QuietRealParameter(sampleVals[0]);
-        sampleParameter.setUpper(upper);
-        sampleParameter.setLower(lower);
-
-        return sampleParameter;
-    }
 
     public double split(int index1, int index2, int clusterIndex, int[] initClusterSites){
         try{
@@ -226,10 +196,19 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
 
 
             //Create a parameter by sampling from the prior
-            QuietRealParameter newParam = getSample(paramBaseDistr, paramList.getUpper(), paramList.getLower());
+            //QuietRealParameter newParam = getSample(paramBaseDistr, paramList.getUpper(), paramList.getLower());
             //QuietRealParameter newModel = getSample(modelBaseDistr, modelList.getUpper(), modelList.getLower());
+            //QuietRealParameter newFreqs = getSample(freqsBaseDistr, freqsList.getUpper(), freqsList.getLower());
+
+
+
+
+
+            RealParameter currParam = paramList.getParameter(clusterIndex);
+            RealParameter currFreqs = freqsList.getParameter(clusterIndex);
+            QuietRealParameter newParam = relativeRateProposal(paramList.getParameter(clusterIndex));
             QuietRealParameter newModel = new QuietRealParameter(modelList.getParameter(clusterIndex).getValue());
-            QuietRealParameter newFreqs = getSample(freqsBaseDistr, freqsList.getUpper(), freqsList.getLower());
+            QuietRealParameter newFreqs = frequenciesProposal(freqsList.getParameter(clusterIndex));
 
             //System.out.println(newModel.getValue());
             /*if((double)newModel.getValue() != (double)modelList.getParameter(clusterIndex).getValue()){
@@ -239,10 +218,7 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             } */
 
 
-            //Perform a split
-            paramList.splitParameter(clusterIndex,newParam);
-            modelList.splitParameter(clusterIndex,newModel);
-            freqsList.splitParameter(clusterIndex,newFreqs);
+
 
             //Remove the index 1 and index 2 from the cluster
             int[] clusterSites = new int[initClusterSites.length -2];
@@ -252,10 +228,11 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
                     clusterSites[k++] = initClusterSites[i];
                 }
             }
+
             //Form a new cluster with index 1
-            paramPointers.point(index1,newParam);
-            modelPointers.point(index1,newModel);
-            freqsPointers.point(index1,newFreqs);
+            //paramPointers.point(index1,newParam);
+            //modelPointers.point(index1,newModel);
+            //freqsPointers.point(index1,newFreqs);
 
             //Shuffle the cluster_-{index_1,index_2} to obtain a random permutation
             Randomizer.shuffle(clusterSites);
@@ -339,6 +316,8 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             //Assign members of the existing cluster (except for indice 1 and 2) randomly
             //to the existing and the new cluster
             double psi1, psi2, newClusterProb, draw;
+            int[] newAssignment = new int[clusterSites.length];
+            //System.out.println("clusterSites.length: "+clusterSites.length);
             for(int i = 0;i < clusterSites.length; i++){
 
                 psi1 = cluster1Count*lik1[i];
@@ -347,9 +326,11 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
                 draw = Randomizer.nextDouble();
                 if(draw < newClusterProb){
                     //System.out.println("in new cluster: "+clusterSites[i]);
-                    paramPointers.point(clusterSites[i],newParam);
-                    modelPointers.point(clusterSites[i],newModel);
-                    freqsPointers.point(clusterSites[i],newFreqs);
+                    //paramPointers.point(clusterSites[i],newParam);
+                    //modelPointers.point(clusterSites[i],newModel);
+                    //freqsPointers.point(clusterSites[i],newFreqs);
+
+                    newAssignment[cluster1Count-1] = clusterSites[i];
                     logqSplit += Math.log(newClusterProb);
                     cluster1Count++;
                 }else{
@@ -360,7 +341,34 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             }
 
             //logqSplit += paramBaseDistr.calcLogP(newParam) + modelBaseDistr.calcLogP(newModel)+freqsBaseDistr.calcLogP(newFreqs);
-            logqSplit += paramBaseDistr.calcLogP(newParam) + freqsBaseDistr.calcLogP(newFreqs);
+            logqSplit += getRelativeRateLogProposalDensity(currParam, newParam) + getFrequenciesLogProposalDensity(currFreqs,newFreqs);
+
+            //System.out.println(currParam+" "+newParam+" "+getRelativeRateLogProposalDensity(currParam, newParam));
+            //System.out.println(currFreqs+" "+newFreqs+" "+getFrequenciesLogProposalDensity(currFreqs,newFreqs));
+
+            if(-logqSplit > Double.NEGATIVE_INFINITY){
+                paramList  = paramListInput.get(this);
+                modelList  = modelListInput.get(this);
+                freqsList  = freqsListInput.get(this);
+                paramPointers = paramPointersInput.get(this);
+                modelPointers = modelPointersInput.get(this);
+                freqsPointers = freqsPointersInput.get(this);
+                //Perform a split
+                paramList.splitParameter(clusterIndex,newParam);
+                modelList.splitParameter(clusterIndex,newModel);
+                freqsList.splitParameter(clusterIndex,newFreqs);
+                //Form a new cluster with index 1
+                paramPointers.point(index1,newParam);
+                modelPointers.point(index1,newModel);
+                freqsPointers.point(index1,newFreqs);
+                for(int i = 0 ; i < (cluster1Count - 1);i++){
+                    paramPointers.point(newAssignment[i],newParam);
+                    modelPointers.point(newAssignment[i],newModel);
+                    freqsPointers.point(newAssignment[i],newFreqs);
+
+                }
+            }
+
             return -logqSplit;
 
 
@@ -497,8 +505,8 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             double[] lik2 = new double[logLik2.length];
 
             //scale it so it may be more accuate
-            double minLog;
-            /*for(int i = 0; i < logLik1.length; i++){
+            /*double minLog;
+            for(int i = 0; i < logLik1.length; i++){
                 minLog = Math.min(logLik1[i],logLik2[i]);
                 if(minLog == logLik1[i]){
                     lik1[i] = 1.0;
@@ -568,7 +576,7 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             }
 
             //logqMerge += paramBaseDistr.calcLogP(removedParam)+modelBaseDistr.calcLogP(removedModel)+freqsBaseDistr.calcLogP(removedFreqs);
-            logqMerge += paramBaseDistr.calcLogP(removedParam)+freqsBaseDistr.calcLogP(removedFreqs);
+            logqMerge += getRelativeRateLogProposalDensity(mergedParam, removedParam) + getFrequenciesLogProposalDensity(mergedFreqs,removedFreqs);
             paramList.mergeParameter(clusterIndex1,clusterIndex2);
             modelList.mergeParameter(clusterIndex1,clusterIndex2);
             freqsList.mergeParameter(clusterIndex1,clusterIndex2);
@@ -663,6 +671,7 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
             proposalVals[i] = proposalValues[i];
         }
         QuietRealParameter proposal = new QuietRealParameter(proposalVals);
+        proposal.setBounds(curr.getLower(),curr.getUpper());
         return proposal;
     }
 
@@ -670,16 +679,25 @@ public class NtdBMASAMSRandomWalkOperator extends Operator {
         Double[] currVals = curr.getValues();
         Double[] proposalVals = DirichletDistribution.nextDirichletScale(currVals,scale);
         QuietRealParameter proposal = new QuietRealParameter(proposalVals);
+        proposal.setBounds(curr.getLower(),curr.getUpper());
         return proposal;
 
     }
 
     private double getRelativeRateLogProposalDensity(RealParameter curr, RealParameter proposal){
-        return MultivariateNormal.logPdf(proposal.getValues(),curr.getValues(),mvnPrecision,logMVNPrecisionDet,1.0);
+        double temp =  MultivariateNormal.logPdf(proposal.getValues(),curr.getValues(),mvnPrecision,logMVNPrecisionDet,1.0);
+        if(Double.isNaN(temp)){
+            throw new RuntimeException(proposal+" "+curr);
+        }
+        return temp;
     }
 
     private double getFrequenciesLogProposalDensity(RealParameter curr, RealParameter proposal){
-        return DirichletDistribution.logPDF(proposal.getValues(), curr.getValues(), scale);
+        double temp =  DirichletDistribution.logPDF(proposal.getValues(), curr.getValues(), scale);
+        if(Double.isNaN(temp)){
+            temp = Double.NEGATIVE_INFINITY;
+        }
+        return temp;
     }
 
 

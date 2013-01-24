@@ -147,6 +147,15 @@ public class DirichletDistribution extends Dirichlet{
                 System.out.println();
             }
 
+
+
+            RealParameter alpha2 = new RealParameter(new Double[]{0.2548157632156566,0.1485647835002092,0.38521176312917504,0.016041715566902426});
+            DirichletDistribution dirichlet2 = new DirichletDistribution();
+            dirichlet.initByName(
+                    "alpha", alpha2
+            );
+            RealParameter x = new RealParameter(new Double[]{0.9984521439415227,0.0,2.923748527785318E-58,0.0015478560584773157});
+            System.out.println(dirichlet2.calcLogP(x));
         }catch(Exception e){
             throw new RuntimeException(e);
 
@@ -157,8 +166,16 @@ public class DirichletDistribution extends Dirichlet{
 
     @Override
     public double calcLogP(Valuable pX) throws Exception {
+
         double scaleVal = scale.getValue();
         Double [] fAlpha = alpha.getValues();
+        for(int i = 0; i < pX.getDimension(); i++){
+            if(pX.getArrayValue(i) == 0.0){
+                return Double.NEGATIVE_INFINITY;
+            }
+        }
+
+
         if (alpha.getDimension() != pX.getDimension()) {
             throw new Exception("Dimensions of alpha and x should be the same, but dim(alpha)=" + alpha.getDimension()
                     + " and dim(x)=" + pX.getDimension());
@@ -175,6 +192,7 @@ public class DirichletDistribution extends Dirichlet{
             fSumAlpha += fAlpha[i];
         }
         fLogP += org.apache.commons.math.special.Gamma.logGamma(fSumAlpha);
+        //System.out.println(fLogP);
         return fLogP;
     }
 

@@ -284,23 +284,32 @@ public class NtdBMA extends SubstitutionModel.Base{
             	m_rateMatrix[i][j] = UsefulShit.truncate(m_rateMatrix[i][j] / fSubst,10);
             }
         }*/
+        try{
+            elmhes(m_rateMatrix, ordr, STATE_COUNT);
+            eltran(m_rateMatrix, Evec, ordr, STATE_COUNT);
+            hqr2(STATE_COUNT, 1, STATE_COUNT, m_rateMatrix, Evec, Eval, evali);
+            luinverse(Evec, Ievc, STATE_COUNT);
 
-        elmhes(m_rateMatrix, ordr, STATE_COUNT);
-        eltran(m_rateMatrix, Evec, ordr, STATE_COUNT);
-        hqr2(STATE_COUNT, 1, STATE_COUNT, m_rateMatrix, Evec, Eval, evali);
-        luinverse(Evec, Ievc, STATE_COUNT);
 
-
-        // Check for valid decomposition
-        for (i = 0; i < STATE_COUNT; i++) {
-            if (Double.isNaN(Eval[i]) || Double.isInfinite(Eval[i]) ) {
-                wellConditioned = false;
-                return;
+            // Check for valid decomposition
+            for (i = 0; i < STATE_COUNT; i++) {
+                if (Double.isNaN(Eval[i]) || Double.isInfinite(Eval[i]) ) {
+                    wellConditioned = false;
+                    return;
+                }
             }
+        }catch(ArithmeticException e){
+            wellConditioned = false;
+            return;
+
+        }catch(IllegalArgumentException e){
+            wellConditioned = false;
+            return;
+
         }
 
         updateMatrix = false;
-        wellConditioned = true;
+        //wellConditioned = true;
 
 	} // setupRateMatrix
 
@@ -405,16 +414,7 @@ public class NtdBMA extends SubstitutionModel.Base{
         if (!wellConditioned) {
             System.err.println("THIS IS BOTHERSOME");
             System.err.println("distance: "+distance);
-                    System.out.println(logKappa.getValue());
-                    System.out.println(logTN.getValue());
-                    System.out.println(logAT.getValue());
-                    System.out.println(logAC.getValue());
-                    System.out.println(logGC.getValue());
-                    System.out.println(frequencies.getValue(0)+" "+
-                        frequencies.getValue(1)+" "+
-                        frequencies.getValue(2)+" "+
-                        frequencies.getValue(3));
-                    System.out.println(modelChoose.getValue());
+            printDetails();
             Arrays.fill(matrix, 0.0);
             return;
         }
@@ -706,6 +706,7 @@ public class NtdBMA extends SubstitutionModel.Base{
                 }
                 if (itn == 0) {
                     /* eigenvalues have not converged */
+                    printDetails();
                     throw new ArithmeticException();
                 }
                 y = h[na - 1][na - 1];
@@ -1184,6 +1185,22 @@ public class NtdBMA extends SubstitutionModel.Base{
         index = null;
         omtrx = null;
     }
+
+    public void printDetails(){
+            System.out.println("modelChoose: "+modelChoose.getValue());
+            System.out.println("logKappa: "+logKappa.getValue());
+            System.out.println("logTN: "+logTN.getValue());
+            System.out.println("logAC: "+logAC.getValue());
+            System.out.println("logAT: "+logAT.getValue());
+            System.out.println("logGC: "+logGC.getValue());
+            System.out.println("frequences: "+
+                    frequencies.getValue(0)+ " "+
+                    frequencies.getValue(1)+ " "+
+                    frequencies.getValue(2)+ " "+
+                    frequencies.getValue(3)+ " "
+            );
+
+        }
 
     protected void makeAccept() {
     	super.accept();

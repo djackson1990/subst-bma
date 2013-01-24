@@ -126,8 +126,10 @@ public class NtdBMARateDPPGibbsSampler  extends Operator implements Loggable {
     public double proposal(){
         //Get the pointer and the list of unique values
         //DPPointer paramPointers = parameterPointersInput.get(this);
-        //DPPointer freqPointers = freqPointersInput.get(this);
+        //DPPointer freqsPointers = freqPointersInput.get(this);
         //DPPointer modelPointers = modelPointersInput.get(this);
+        //DPPointer ratesPointers = ratesPointersInput.get(this);
+
         DPPointer paramPointers = parameterPointersInput.get();
         DPPointer freqsPointers = freqPointersInput.get();
         DPPointer modelPointers = modelPointersInput.get();
@@ -176,7 +178,7 @@ public class NtdBMARateDPPGibbsSampler  extends Operator implements Loggable {
 
         int counter = 0;
         int zeroCount = -1;
-
+        //System.out.println("clusterCounts.length: "+dpVal.getDimension());
         for(int i = 0; i < clusterCounts.length;i++){
             if(clusterCounts[i]>0){
                 clusterCounts[counter] = clusterCounts[i];

@@ -131,8 +131,7 @@ public class RateSAMSPriorOperator extends Operator {
             QuietRealParameter newParam = new QuietRealParameter(sampleVal[0]);
             newParam.setLower(rateList.getParameter(clusterIndex).getLower());
             newParam.setUpper(rateList.getParameter(clusterIndex).getUpper());
-            //Perform a split
-            rateList.splitParameter(clusterIndex,newParam);
+
 
             //Remove the index 1 and index 2 from the cluster
             int[] clusterSites = new int[initClusterSites.length -2];
@@ -234,6 +233,8 @@ public class RateSAMSPriorOperator extends Operator {
             logqSplit += baseDistr.logDensity(sampleVal[0][0]);
 
             if(-logqSplit != Double.NEGATIVE_INFINITY){
+                //Perform a split
+                rateList.splitParameter(clusterIndex,newParam);
                 for(int i = 0; i < cluster1Count; i++){
                     ratePointers.point(sitesInCluster1[i],newParam);
                 }
@@ -413,12 +414,13 @@ public class RateSAMSPriorOperator extends Operator {
 
             }
             logqMerge += baseDistr.calcLogP(rateList.getParameter(clusterIndex1));
-            rateList.mergeParameter(clusterIndex1,clusterIndex2);
+
         }catch(Exception e){
             throw new RuntimeException(e);
         }
 
         if(logqMerge != Double.NEGATIVE_INFINITY){
+            rateList.mergeParameter(clusterIndex1,clusterIndex2);
             for(int i = 0; i < cluster1Sites.length;i++){
                 //Point every member in cluster 1 to cluster 2
                 ratePointers.point(cluster1Sites[i],mergedParameter);
