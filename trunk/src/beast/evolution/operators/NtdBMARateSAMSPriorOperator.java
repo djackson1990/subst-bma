@@ -213,11 +213,7 @@ public class NtdBMARateSAMSPriorOperator extends Operator {
 
 
 
-            //Perform a split
-            //paramList.splitParameter(clusterIndex,newParam);
-            //modelList.splitParameter(clusterIndex,newModel);
-            //freqsList.splitParameter(clusterIndex,newFreqs);
-            //ratesList.splitParameter(clusterIndex,newRates);
+
 
             //Remove the index 1 and index 2 from the cluster
             int[] clusterSites = new int[initClusterSites.length -2];
@@ -227,15 +223,11 @@ public class NtdBMARateSAMSPriorOperator extends Operator {
                     clusterSites[k++] = initClusterSites[i];
                 }
             }
-
             //Form a new cluster with index 1
-            //paramPointers.point(index1,newParam);
-            //modelPointers.point(index1,newModel);
-            //freqsPointers.point(index1,newFreqs);
-            //ratesPointers.point(index1,newRates);
-
-            int[] sitesInCluster1 = new int[initClusterSites.length];
-            sitesInCluster1[0] = index1;
+            paramPointers.point(index1,newParam);
+            modelPointers.point(index1,newModel);
+            freqsPointers.point(index1,newFreqs);
+            ratesPointers.point(index1,newRates);
 
             //Shuffle the cluster_-{index_1,index_2} to obtain a random permutation
             Randomizer.shuffle(clusterSites);
@@ -296,6 +288,9 @@ public class NtdBMARateSAMSPriorOperator extends Operator {
             int cluster1Count = 1;
             int cluster2Count = 1;
 
+            int[] sitesInCluster1 = new int[initClusterSites.length];
+            sitesInCluster1[0] = index1;
+
             //Assign members of the existing cluster (except for indice 1 and 2) randomly
             //to the existing and the new cluster
             double psi1, psi2, newClusterProb, draw;
@@ -329,35 +324,32 @@ public class NtdBMARateSAMSPriorOperator extends Operator {
                     + freqsBaseDistr.calcLogP(newFreqs)+
                     + ratesBaseDistr.calcLogP(newRates);
 
-            if(-logqSplit > Double.NEGATIVE_INFINITY){
-                paramList  = paramListInput.get(this);
-                modelList  = modelListInput.get(this);
-                freqsList  = freqsListInput.get(this);
-                ratesList  = ratesListInput.get(this);
+            //Perform a split
+            paramList  = paramListInput.get(this);
+            modelList  = modelListInput.get(this);
+            freqsList  = freqsListInput.get(this);
+            ratesList  = ratesListInput.get(this);
+            paramPointers = paramPointersInput.get(this);
+            modelPointers = modelPointersInput.get(this);
+            freqsPointers = freqsPointersInput.get(this);
+            ratesPointers = ratesPointersInput.get(this);
+
+            paramList.splitParameter(clusterIndex,newParam);
+            modelList.splitParameter(clusterIndex,newModel);
+            freqsList.splitParameter(clusterIndex,newFreqs);
+            ratesList.splitParameter(clusterIndex,newRates);
+            //Form a new cluster with index 1
                 paramPointers = paramPointersInput.get(this);
                 modelPointers = modelPointersInput.get(this);
                 freqsPointers = freqsPointersInput.get(this);
                 ratesPointers = ratesPointersInput.get(this);
-
-                //Perform a split
-                paramList.splitParameter(clusterIndex,newParam);
-                modelList.splitParameter(clusterIndex,newModel);
-                freqsList.splitParameter(clusterIndex,newFreqs);
-                ratesList.splitParameter(clusterIndex,newRates);
-
-                //Form a new cluster with index 1
-                paramPointers.point(index1,newParam);
-                modelPointers.point(index1,newModel);
-                freqsPointers.point(index1,newFreqs);
-                ratesPointers.point(index1,newRates);
-                for(int i = 0 ; i < (cluster1Count - 1);i++){
+                for(int i = 0 ; i < cluster1Count ;i++){
                     paramPointers.point(sitesInCluster1[i],newParam);
                     modelPointers.point(sitesInCluster1[i],newModel);
                     freqsPointers.point(sitesInCluster1[i],newFreqs);
                     ratesPointers.point(sitesInCluster1[i],newRates);
 
                 }
-            }
             return -logqSplit;
 
 
