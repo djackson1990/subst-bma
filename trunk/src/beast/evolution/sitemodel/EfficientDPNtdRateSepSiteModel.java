@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * @author Chieh-Hsi Wu
  */
-@Description("An incomplete attemp to improve the efficiency of computation.")
+@Description("An incomplete attempt to improve the efficiency of computation.")
 public class EfficientDPNtdRateSepSiteModel extends DPNtdRateSepSiteModel{
 
     public void updateMap(int siteIndex, int ntdBMACluster, int rateCluster) throws Exception{

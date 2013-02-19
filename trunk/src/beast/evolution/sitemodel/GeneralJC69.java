@@ -1,5 +1,6 @@
 package beast.evolution.sitemodel;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.substitutionmodel.GeneralSubstitutionModel;
@@ -8,6 +9,7 @@ import beast.evolution.tree.Node;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("A more general version of JC69.")
 public class GeneralJC69 extends GeneralSubstitutionModel {
 
     public Input<Integer> stateCountInput = new Input<Integer>(
