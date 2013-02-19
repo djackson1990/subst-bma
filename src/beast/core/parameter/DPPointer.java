@@ -25,7 +25,7 @@ public class DPPointer extends StateNode {
 
     public Input<IntegerParameter> assignmentInput = new Input<IntegerParameter>(
             "initialAssignment",
-            "a parameter which species the assignment of elements to clusters",
+            "a parameter which specifies the assignment of elements to clusters",
             Input.Validate.REQUIRED
     );
 
