@@ -65,6 +65,7 @@ public class LanguageIntegerData extends DataType.Base{
             if(!codeMap.containsKey(ambiguityKey)){
                 int[] stateSet = new int[ambiguity.length];
                 for(int j = 0; j < stateSet.length; j++){
+                    System.out.println(codeMap.get(""+ambiguity[j])+" "+ambiguity[j]);
                     stateSet[j] = codeMap.get(""+ambiguity[j]);
                 }
                 m_mapCodeToStateSet[k] = stateSet;

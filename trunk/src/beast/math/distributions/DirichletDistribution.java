@@ -170,7 +170,7 @@ public class DirichletDistribution extends Dirichlet{
         double scaleVal = scale.getValue();
         Double [] fAlpha = alpha.getValues();
         for(int i = 0; i < pX.getDimension(); i++){
-            if(pX.getArrayValue(i) == 0.0){
+            if(pX.getArrayValue(i) == 0.0 || pX.getArrayValue(i) == 1.0){
                 return Double.NEGATIVE_INFINITY;
             }
         }
