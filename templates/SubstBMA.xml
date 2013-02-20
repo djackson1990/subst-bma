@@ -426,7 +426,7 @@
 
 
 <!-- TODO: possibly more conditions in the following connect??? -->
-            <connect srcID='paramListPrior.s$(n)'             targetID='prior' inputName='distribution' if='inlikelihood(parameterList.s:$(n)) and parameterList.sc$(n)/estimate=true'/>
+            <connect srcID='paramListPrior.s$(n)'             targetID='prior' inputName='distribution' if='inlikelihood(parameterList.s:$(n)) and parameterList.s:$(n)/estimate=true'/>
 
 
             <connect srcID='Tree.t:$(n)'                      targetID='state' inputName='stateNode' if='inposterior(Tree.t:$(n))'/>
