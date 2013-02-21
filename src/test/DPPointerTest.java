@@ -2,7 +2,7 @@ package test;
 
 import beast.core.parameter.*;
 import beast.core.State;
-import com.sun.servicetag.SystemEnvironment;
+//import com.sun.servicetag.SystemEnvironment;
 import junit.framework.TestCase;
 
 /**
