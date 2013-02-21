@@ -87,7 +87,9 @@
             beast.core.Logger.model,
             beast.evolution.tree.coalescent.BayesianSkyline.treeIntervals,
             beast.evolution.tree.coalescent.BayesianSkyline.groupSizes,
-            beast.evolution.tree.coalescent.BayesianSkyline.popSizes
+            beast.evolution.tree.coalescent.BayesianSkyline.popSizes,
+beast.math.distributions.ParameterListsPrior.xList,
+beast.math.distributions.ParameterListsPrior.x
             '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
     >

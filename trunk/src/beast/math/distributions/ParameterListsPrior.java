@@ -45,6 +45,16 @@ public class ParameterListsPrior extends Prior{
 		return logP;
 	}
 
-
+    @Override
+    public String getParameterName() {
+    	String name = "";
+    	for (ParameterList list : xListsInput.get()) {
+    		name += list.getID() + "/";
+    	}
+    	if (name.length() > 1) {
+    		name = name.substring(0, name.length() - 1);
+    	}
+    	return name;
+    }
 
 }
