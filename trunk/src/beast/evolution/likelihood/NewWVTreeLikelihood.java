@@ -7,6 +7,7 @@ import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.QuietSiteModel;
+import beast.evolution.substitutionmodel.NtdBMA;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -65,6 +66,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     }
 
     public void initAndValidate() throws Exception{
+
         super.initAndValidate();
         setup();
 
@@ -201,7 +203,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     @Override
     public double calculateLogP() throws Exception {
 
-
+        //((NtdBMA)m_substitutionModel).printDetails();
         boolean[] trueUnmasked = m_likelihoodCore.getUnmasked();
         //System.out.println("m_nHasDirt: "+m_nHasDirt);
         if(m_nHasDirt > -1){

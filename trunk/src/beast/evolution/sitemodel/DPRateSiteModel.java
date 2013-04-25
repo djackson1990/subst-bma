@@ -84,6 +84,16 @@ public class DPRateSiteModel extends DPSingleAlignSiteModel implements PluginLis
         return ratePointers.indexInList(index,rateList);
     }
 
+    public int getPrevCategoryIDNumber(int siteIndex){
+        return ratePointers.getStoredParameterIDNumber(siteIndex);
+    }
+
+    public int getCurrCategoryIDNumber(int siteIndex){
+        return ratePointers.getParameterIDNumber(siteIndex);
+    }
+
+
+
     public int getLastDirtySite(){
         return ratePointers.getLastDirty();
     }

@@ -8,6 +8,7 @@ import beast.core.Description;
 @Description("Types of changes that can occcur.")
 public enum ChangeType {
     POINTER_CHANGED,
+    MULTIPLE_POINTER_CHANGED,
     POINTERS_SWAPPED,
     VALUE_CHANGED,
     REMOVED,

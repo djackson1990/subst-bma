@@ -54,7 +54,10 @@ public abstract class DPMultiAlignSiteModel extends DPSiteModel {
     public abstract int getAlignmentIndex(int index);
     public abstract int getCategoryIDNumberFromIndex(int categoryIndex);
 
-    public abstract SiteModel getSiteModel(int alignmentIndex, int siteModelID);
+    public abstract QuietSiteModel getSiteModel(int alignmentIndex, int siteModelID);
+    public QuietSiteModel getSiteModelOfSiteIndex(int siteIndex){
+        return getSiteModel(getAlignmentIndex(siteIndex),getCurrCategoryIDNumber(siteIndex));
+    }
 
 
 

@@ -110,6 +110,15 @@ public class DPNtdSiteModel extends DPSingleAlignSiteModel {
 
     }
 
+    public int getPrevCategoryIDNumber(int siteIndex){
+        return dpNtdBMA.getPrevModelIDNumber(siteIndex);
+    }
+
+    public int getCurrCategoryIDNumber(int siteIndex){
+            return dpNtdBMA.getCurrModelIDNumber(siteIndex);
+
+        }
+
 
     public boolean requiresRecalculation(){
 

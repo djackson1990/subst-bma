@@ -107,6 +107,7 @@ public class DPNtdRateSiteModel extends DPRateSiteModel{
             //System.err.println("dirty1");
 
         }else if (ratePointers.somethingIsDirty()){
+
             changeType = ratePointers.getChangeType();
             if(changeType != substModelChangeType){
                 System.out.println(changeType+" "+substModelChangeType);

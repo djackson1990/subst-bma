@@ -37,6 +37,7 @@ public class DPPointer extends StateNode {
     private QuietRealParameter[] storedParameters;
     private int lastDirty = -1;
     private int[] lastSwappedSites;
+    private int[] lastDirtySites;
     private int storedLastDirty = -1;
     private ChangeType changeType;
 
@@ -87,12 +88,25 @@ public class DPPointer extends StateNode {
 
     }
 
+    public void multiPointerChanges(int[] fromSites, int toSite){
+        for(int fromSite: fromSites){
+            parameters[fromSite] = parameters[toSite];
+        }
+        lastDirtySites = new int[fromSites.length];
+        System.arraycopy(fromSites,0,lastDirtySites,0,fromSites.length);
+        changeType = ChangeType.MULTIPLE_POINTER_CHANGED;
+    }
+
     public ChangeType getChangeType(){
         return changeType;
     }
 
     public int[] getSwappedSites(){
         return Arrays.copyOf(lastSwappedSites, lastSwappedSites.length);
+    }
+
+    public int[] getLastDirtySites(){
+        return Arrays.copyOf(lastDirtySites, lastDirtySites.length);
     }
 
 

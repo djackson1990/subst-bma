@@ -43,7 +43,11 @@ public class DirichletDistribution extends Dirichlet{
 
 
     public void initAndValidate() throws Exception {
+        //System.out.println("This is initiated!");
+        //System.out.println(m_alpha.get().getID()+" "+m_alpha.get().getValue(0));
+
         alpha = m_alpha.get();
+        //System.out.println(alpha.getID()+" " +alpha.getValue(0));
         scale = scaleInput.get();
 	}
 
@@ -94,11 +98,13 @@ public class DirichletDistribution extends Dirichlet{
 
 
     public static double logPDF(Double[] proposal, Double[] alpha, double scaleVal){
-
+        //Put alpha values in an array.
         double[] fAlpha = new double[alpha.length];
         for(int i = 0; i < fAlpha.length; i++){
             fAlpha[i] = alpha[i]*scaleVal;
         }
+
+
 
         double fLogP = 0;
         double fSumAlpha = 0;
@@ -142,7 +148,7 @@ public class DirichletDistribution extends Dirichlet{
             samples = new Double[1000][];
             for(int i = 0 ; i < 1000; i++){
                 //System.out.println((i+1)+": ");
-                RealParameter sample = new RealParameter(nextDirichletScale(new Double[]{1.5,1.0,0.5,1.5},2));
+                RealParameter sample = new RealParameter(nextDirichletScale(new Double[]{1.5,1.0,0.5,1.5},0.02));
                 sample.log(0,System.out);
                 System.out.println();
             }
@@ -150,11 +156,12 @@ public class DirichletDistribution extends Dirichlet{
 
 
             RealParameter alpha2 = new RealParameter(new Double[]{0.2548157632156566,0.1485647835002092,0.38521176312917504,0.016041715566902426});
+            alpha2.setID("XXX");
             DirichletDistribution dirichlet2 = new DirichletDistribution();
-            dirichlet.initByName(
+            dirichlet2.initByName(
                     "alpha", alpha2
             );
-            RealParameter x = new RealParameter(new Double[]{0.9984521439415227,0.0,2.923748527785318E-58,0.0015478560584773157});
+            RealParameter x = new RealParameter(new Double[]{1.0,	4.178667426785708E-27,	4.0458954268572387E-76,	1.567575228801415E-55	});
             System.out.println(dirichlet2.calcLogP(x));
         }catch(Exception e){
             throw new RuntimeException(e);
@@ -169,11 +176,12 @@ public class DirichletDistribution extends Dirichlet{
 
         double scaleVal = scale.getValue();
         Double [] fAlpha = alpha.getValues();
-        for(int i = 0; i < pX.getDimension(); i++){
+        //System.out.println(alpha.getID());
+        /*for(int i = 0; i < pX.getDimension(); i++){
             if(pX.getArrayValue(i) == 0.0 || pX.getArrayValue(i) == 1.0){
                 return Double.NEGATIVE_INFINITY;
             }
-        }
+        }  */
 
 
         if (alpha.getDimension() != pX.getDimension()) {
@@ -182,12 +190,14 @@ public class DirichletDistribution extends Dirichlet{
         }
         for(int i = 0; i < fAlpha.length; i++){
             fAlpha[i] = fAlpha[i]*scaleVal;
+            //System.out.println(alpha.getValue(i)+" "+scaleVal);
         }
         double fLogP = 0;
         double fSumAlpha = 0;
         for (int i = 0; i < pX.getDimension(); i++) {
             double fX = pX.getArrayValue(i);
             fLogP += (fAlpha[i]-1) * Math.log(fX);
+            //System.out.println((fAlpha[i]-1) +" "+ Math.log(fX));
             fLogP -= org.apache.commons.math.special.Gamma.logGamma(fAlpha[i]);
             fSumAlpha += fAlpha[i];
         }

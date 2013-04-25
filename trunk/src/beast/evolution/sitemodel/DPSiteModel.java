@@ -45,6 +45,7 @@ public abstract class DPSiteModel extends CalculationNode implements PluginList,
 
 
 
+
     public QuietSiteModel getSiteModel(int index){
         return siteModels.get(index);
     }
@@ -103,6 +104,9 @@ public abstract class DPSiteModel extends CalculationNode implements PluginList,
     public abstract int getPrevCluster(int index);
     public abstract int getCurrCluster(int index);
     public abstract int getDirtySiteModelIndex();
+    public abstract int getCurrCategoryIDNumber(int siteIndex);
+    public abstract int getPrevCategoryIDNumber(int siteIndex);
+    public abstract QuietSiteModel getSiteModelOfSiteIndex(int siteIndex);
 
 
 

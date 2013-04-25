@@ -113,6 +113,14 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
         return pointers.getParameterIDNumber(index);
     }
 
+    public int getOneClusterSite(int clusterIndex){
+        return clusterSites[clusterIndex][0];
+    }
+
+    public int[] getLastDirtySites(){
+        return pointers.getLastDirtySites();
+    }
+
     /*public int getCategoryID(int index){
         return paramList.getParameter(index).getIDNumber();
 
@@ -130,6 +138,14 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
         return clusterSites;
     }
 
+    public int[] getMergedSites(){
+        int index = paramList.getDirtyIndex();
+        int[] storedClusterSites = new int[storedClusterCounts[index]];
+        System.arraycopy(this.storedClusterSites[index],0,storedClusterSites,0,storedClusterSites.length);
+        return storedClusterSites;
+
+    }
+
     public int[] getStoredClusterSites(int index){
         int[] storedClusterSites = new int[storedClusterCounts[index]];
         System.arraycopy(this.storedClusterSites[index],0,storedClusterSites,0,storedClusterSites.length);
@@ -144,6 +160,14 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
         return Arrays.copyOf(clusterCounts, clusterCounts.length);
     }
 
+    public int getClusterSize(int clusterIndex){
+        if(pointersChanged){
+            update();
+        }
+
+        return clusterCounts[clusterIndex];
+    }
+
     public int getCategoryCount(){
         return paramList.getDimension();
     }
@@ -151,6 +175,11 @@ public class DPValuable extends CalculationNode implements Valuable, Loggable{
     public int getCategoryIDNumber(int index){
         return paramList.getParameter(index).getIDNumber();
     }
+
+    public int getRemovedCategoryIDNumber(){
+        return paramList.getRemovedIDNumber();
+    }
+
 
 
     public void update(){

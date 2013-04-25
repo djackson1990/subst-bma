@@ -337,12 +337,12 @@ public class DPNtdBMA extends CalculationNode implements PluginList, Recycle {
             if(changeType == ChangeType.ADDED){
                 //System.out.println(getID()+"model added");
                 addModel();
-                setupPointerIndices();
+                //setupPointerIndices();
 
             }else if(changeType == ChangeType.REMOVED){
                 //System.out.println(getID()+"model removed, "+paramList.getRemovedIndex());
                 removeModel(freqsList.getRemovedIndex());
-                setupPointerIndices();
+                //setupPointerIndices();
 
             }else if(changeType == ChangeType.VALUE_CHANGED){
                 //System.out.println(getID()+": model changed");
@@ -372,7 +372,7 @@ public class DPNtdBMA extends CalculationNode implements PluginList, Recycle {
             //System.out.println(getID()+": pointer changed");
             changeType = pointers.getChangeType();
 
-            setupPointerIndices();
+            //setupPointerIndices();
         }
 
         //System.out.println("recalculate: "+recalculate+" "+changeType);
