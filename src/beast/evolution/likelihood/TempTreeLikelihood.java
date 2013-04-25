@@ -9,6 +9,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AlignmentSubset;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.DummySiteModel;
+import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.NtdBMA;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Tree;
@@ -54,6 +55,46 @@ public class TempTreeLikelihood extends Distribution {
     protected Alignment alignment;
     protected TempSiteTreeLikelihood[] treeLiks;
     protected SubstitutionModel substModel;
+
+    public TempTreeLikelihood(){}
+
+    public TempTreeLikelihood(Alignment alignment,
+                              Tree tree,
+                              boolean useAmbiguities,
+                              SiteModel siteModel,
+                              BranchRateModel.Base branchRateModel){
+        int siteCount = alignment.getSiteCount();
+        int patternCount = alignment.getPatternCount();
+        treeLiks = new TempSiteTreeLikelihood[patternCount];
+
+        int[] firstPatternOccur = new int[patternCount];
+        for(int iPat = 0; iPat < firstPatternOccur.length; iPat++){
+            firstPatternOccur[iPat] = -1;
+        }
+        for(int iSite = 0; iSite < siteCount; iSite++){
+
+            int iPat = alignment.getPatternIndex(iSite);
+            if(firstPatternOccur[iPat] == -1){
+                firstPatternOccur[iPat] = iSite;
+            }
+        }
+        for(int i = 0; i < firstPatternOccur.length; i++){
+            AlignmentSubset sitePattern = new AlignmentSubset(alignment,firstPatternOccur[i]);
+            TempSiteTreeLikelihood treeLik = new TempSiteTreeLikelihood(
+                    sitePattern,
+                    tree,
+                    useAmbiguities,
+                    siteModel,
+                    branchRateModel
+
+            );
+
+            treeLiks[i] = treeLik;
+        }
+
+        substModel = siteModelInput.get().getSubstitutionModel();
+
+    }
     
     public void initAndValidate() throws Exception{
         defaultMu = new RealParameter(new Double[]{1.0});
@@ -92,6 +133,44 @@ public class TempTreeLikelihood extends Distribution {
 
         substModel = siteModelInput.get().getSubstitutionModel();
         
+
+    }
+
+    public void setSubstModelParameter(
+            RealParameter modelParameters,
+            RealParameter modelCode,
+            RealParameter freqs){
+        if(substModel instanceof NtdBMA){
+            ((NtdBMA)substModel).getLogKappa().setValueQuietly(0,modelParameters.getValue(0));
+            ((NtdBMA)substModel).getLogTN().setValueQuietly(0,modelParameters.getValue(1));
+            ((NtdBMA)substModel).getLogAC().setValueQuietly(0,modelParameters.getValue(2));
+            ((NtdBMA)substModel).getLogAT().setValueQuietly(0,modelParameters.getValue(3));
+            ((NtdBMA)substModel).getLogGC().setValueQuietly(0,modelParameters.getValue(4));
+            ((NtdBMA)substModel).getModelChoose().setValueQuietly(0,modelCode.getValue());
+            ((NtdBMA)substModel).getFreqs().setValueQuietly(0,freqs.getValue(0));
+            ((NtdBMA)substModel).getFreqs().setValueQuietly(1,freqs.getValue(1));
+            ((NtdBMA)substModel).getFreqs().setValueQuietly(2,freqs.getValue(2));
+            ((NtdBMA)substModel).getFreqs().setValueQuietly(3,freqs.getValue(3));
+
+        }else{
+            throw new RuntimeException("Need NtdBMA");
+        }
+        ((NtdBMA)substModel).setUpdateMatrix(true);
+    }
+
+    public void setRateParameter(RealParameter rateParameter){
+        siteModelInput.get().getRateParameter().setValueQuietly(0,rateParameter.getValue());
+    }
+
+    public double calculateLogP(int site){
+        try{
+            int iPat = alignment.getPatternIndex(site);
+            logP = treeLiks[iPat].calculateLogP();
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+        return logP;
+
 
     }
 

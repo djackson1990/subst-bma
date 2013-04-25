@@ -26,6 +26,11 @@ public abstract class DPSingleAlignSiteModel extends DPSiteModel {
 
     public abstract int getDirtySiteModelIndex();
 
+    public QuietSiteModel getSiteModelOfSiteIndex(int siteIndex){
+        return siteModels.get(getCurrCluster(siteIndex));
+
+    }
+
 
 
 

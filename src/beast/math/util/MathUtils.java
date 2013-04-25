@@ -1,6 +1,7 @@
 package beast.math.util;
 
 
+import beast.util.Randomizer;
 
 /**
  * Methods from MathUtils in BEAST1
@@ -22,6 +23,35 @@ public class MathUtils  {
 		    r = 0.0;
 	    }
 	    return r;
+    }
+
+    public static int[] sample(int size, int[] vec, boolean replace){
+        int[] temp = new int[size];
+        if(replace){
+
+            for(int i = 0; i < size; i++){
+
+                temp[i] = vec[Randomizer.nextInt(vec.length)];
+
+
+            }
+
+        }else{
+            int sampledSiteIndex;
+            int[] temp2 = new int[vec.length];
+            System.arraycopy(vec, 0, temp2, 0, vec.length);
+            for(int i = 0; i < size; i++){
+                sampledSiteIndex  = Randomizer.nextInt(vec.length - i);
+                temp2[vec.length - i - 1] = temp2[sampledSiteIndex];
+                temp2[sampledSiteIndex] = vec[vec.length - i - 1];
+            }
+
+            System.arraycopy(temp2,vec.length-size,temp,0,size);
+
+        }
+
+         return temp;
+
     }
 
 

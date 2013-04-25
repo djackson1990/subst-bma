@@ -53,8 +53,8 @@ public class DPMultiAlignRateSiteModel extends DPMultiAlignSiteModel {
     protected ParameterList rateList;
     private List<SubstitutionModel.Base> substModels;
 
-    private HashMap<Integer,SiteModel>[]  siteModelMatrix;
-    private HashMap<Integer,SiteModel>[] storedSiteModelMatrix;
+    private HashMap<Integer,QuietSiteModel>[]  siteModelMatrix;
+    private HashMap<Integer,QuietSiteModel>[] storedSiteModelMatrix;
     private HashMap<Integer, Integer>[] siteModelCount;
     private HashMap<Integer, Integer>[] storedSiteModelCount;
     private DPValuable dpValRate;
@@ -82,8 +82,8 @@ public class DPMultiAlignRateSiteModel extends DPMultiAlignSiteModel {
         int alignmentCount = alignments.size();
 
 
-        siteModelMatrix = (HashMap<Integer,SiteModel>[]) new HashMap[alignmentCount];
-        storedSiteModelMatrix = (HashMap<Integer,SiteModel>[]) new HashMap[alignmentCount];
+        siteModelMatrix = (HashMap<Integer, QuietSiteModel>[]) new HashMap[alignmentCount];
+        storedSiteModelMatrix = (HashMap<Integer, QuietSiteModel>[]) new HashMap[alignmentCount];
 
         siteModelCount = (HashMap<Integer,Integer>[]) new HashMap[alignmentCount];
         storedSiteModelCount = (HashMap<Integer,Integer>[]) new HashMap[alignmentCount];
@@ -95,7 +95,7 @@ public class DPMultiAlignRateSiteModel extends DPMultiAlignSiteModel {
         alignmentRef = new int[totalSiteCount];
         int k = 0;
         for(int i = 0; i < alignmentCount; i++){
-            siteModelMatrix[i] =  new HashMap<Integer,SiteModel>();
+            siteModelMatrix[i] =  new HashMap<Integer,QuietSiteModel>();
             siteModelCount[i] = new HashMap<Integer, Integer>();
 
             Alignment alignment = alignments.get(i);
@@ -511,7 +511,7 @@ public class DPMultiAlignRateSiteModel extends DPMultiAlignSiteModel {
 
         for(int i = 0; i < siteModelMatrix.length;i++){
 
-            storedSiteModelMatrix[i] = (HashMap<Integer,SiteModel>)siteModelMatrix[i].clone();
+            storedSiteModelMatrix[i] = (HashMap<Integer,QuietSiteModel>)siteModelMatrix[i].clone();
         }
         for(int i = 0; i < siteModelCount.length; i++){
             storedSiteModelCount[i] = (HashMap<Integer,Integer>)siteModelCount[i].clone();
@@ -526,7 +526,7 @@ public class DPMultiAlignRateSiteModel extends DPMultiAlignSiteModel {
     }
 
     public void restore(){
-        HashMap<Integer,SiteModel>[] temp1 = siteModelMatrix;
+        HashMap<Integer,QuietSiteModel>[] temp1 = siteModelMatrix;
         siteModelMatrix = storedSiteModelMatrix;
         storedSiteModelMatrix = temp1;
 
@@ -573,7 +573,7 @@ public class DPMultiAlignRateSiteModel extends DPMultiAlignSiteModel {
         return alignmentRef[index];
     }
 
-    public SiteModel getSiteModel(int alignmentIndex, int siteModelID){
+    public QuietSiteModel getSiteModel(int alignmentIndex, int siteModelID){
         return siteModelMatrix[alignmentIndex].get(siteModelID);
     }
 

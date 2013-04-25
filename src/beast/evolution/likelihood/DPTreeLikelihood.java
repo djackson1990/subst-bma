@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.app.BeastMCMC;
 import beast.core.*;
 import beast.core.parameter.ChangeType;
 import beast.core.parameter.DPValuable;
@@ -11,10 +12,14 @@ import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import beast.evolution.tree.Tree;
 import beast.evolution.branchratemodel.BranchRateModel;
 
+import java.lang.Runnable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * @author Chieh-Hsi Wu
@@ -40,6 +45,10 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
             Input.Validate.REQUIRED
     );
 
+    public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads", "calculated the distributions in parallel using threads (default false)", false);
+    public Input<Boolean> useThreadsEvenlyInput = new Input<Boolean>("useThreadsEvenly", "calculated the distributions in parallel using threads (default false)", false);
+    boolean useThreads;
+    boolean useThreadsEvenly;
     /** calculation engine **/
 
     //private ArrayList<int[]> clusterWeights;
@@ -48,6 +57,9 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
     protected DPValuable dpVal;
 
     public void initAndValidate() throws Exception{
+        useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
+        useThreadsEvenly = useThreadsEvenlyInput.get() && (BeastMCMC.m_nThreads > 1);
+
         if(!(m_pSiteModel.get() instanceof DPSiteModel)){
             throw new RuntimeException("DPSiteModel required for site model.");
         }
@@ -71,6 +83,7 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
         }
 
         for(int i = 0; i < siteModelCount;i++){
+            //System.out.println("Hi!");
             //WVTreeLikelihood treeLik = new WVTreeLikelihood(clusterWeights[i]);
             /*System.out.print("cluster weights:");
             for(int j = 0; j<clusterWeights[i].length;j++){
@@ -104,7 +117,7 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
         return treeLiks.size();
     }
 
-    @Override
+    /*@Override
     public double calculateLogP() throws Exception{
         logP = 0.0;
         //System.out.println("hello: "+treeLiks.size());
@@ -116,7 +129,7 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
             //System.out.println("siteModel id: "+ ((SwitchingNtdBMA)treeLik.m_substitutionModel).getIDNumber());
         	if (treeLik.isDirtyCalculation()) {
                 //System.err.println("hello?");
-                /*logP += treeLik.calculateLogP();*/
+                //logP += treeLik.calculateLogP();
                 double tmp = treeLik.calculateLogP();
         		logP += tmp;
                 //System.out.println("calcLogP: "+tmp);
@@ -130,13 +143,214 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
             }
         }
 
-        /*if(sum != alignment.getSiteCount()){
-            throw new RuntimeException("WAY WRONG");
-        }*/
+        //if(sum != alignment.getSiteCount()){
+        //    throw new RuntimeException("WAY WRONG");
+        //}
         //System.out.println("logP: "+logP);
         return logP;
+    }  */
+
+
+    @Override
+    public double calculateLogP() throws Exception{
+        logP = 0.0;
+
+        int nrOfDirtyDistrs = 0;
+        /*for (Distribution dists : treeLiks) {
+                if (dists.isDirtyCalculation()) {
+                    nrOfDirtyDistrs++;
+                }
+            }
+        System.out.println("nrOfDirtyDistrs:"+nrOfDirtyDistrs); */
+        if(useThreadsEvenly){
+            logP = calculateLogPUsingThreadsEvenly();
+
+        }if (useThreads) {
+
+            logP = calculateLogPUsingThreads();
+        }else{
+            for(NewWVTreeLikelihood treeLik : treeLiks) {
+
+
+            	if (treeLik.isDirtyCalculation()) {
+                    double tmp = treeLik.calculateLogP();
+            		logP += tmp;
+            	} else {
+            		logP += treeLik.getCurrentLogP();
+            	}
+                if (Double.isInfinite(logP) || Double.isNaN(logP)) {
+                	return logP;
+                }
+            }
+    }
+    //System.out.println("End Compute Likelihood");
+        return logP;
+
     }
 
+    CountDownLatch m_nCountDown;
+    private double calculateLogPUsingThreads() throws Exception {
+        try {
+            //System.out.println("What?");
+            int nrOfDirtyDistrs = 0;
+            for (Distribution dists : treeLiks) {
+                if (dists.isDirtyCalculation()) {
+                    nrOfDirtyDistrs++;
+                }
+            }
+            //System.out.println("nrOfDirtyDistrs: "+nrOfDirtyDistrs);
+            m_nCountDown = new CountDownLatch(nrOfDirtyDistrs);
+            // kick off the threads
+            for (Distribution dists : treeLiks) {
+                if (dists.isDirtyCalculation()) {
+                    //System.out.println("isDirty");
+                    CoreRunnable coreRunnable = new CoreRunnable(dists);
+                    BeastMCMC.g_exec.execute(coreRunnable);
+                }
+            }
+            m_nCountDown.await();
+            logP = 0;
+            for (Distribution distr : treeLiks) {
+                logP += distr.getCurrentLogP();
+            }
+            return logP;
+        } catch (RejectedExecutionException e) {
+            useThreads = false;
+            //System.err.println("Stop using threads: " + e.getMessage());
+            // refresh thread pool
+            BeastMCMC.g_exec = Executors.newFixedThreadPool(BeastMCMC.m_nThreads);
+            return calculateLogP();
+        }
+    }
+
+
+    private double calculateLogPUsingThreadsEvenly() throws Exception {
+
+        try {
+
+            //int nrOfDirtyDistrs = 0;
+            ArrayList<Distribution> tempDists = new ArrayList<Distribution>();
+            for (Distribution dists : treeLiks) {
+                if (dists.isDirtyCalculation()) {
+                    tempDists.add(dists);
+                    //nrOfDirtyDistrs++;
+                }
+            }
+
+
+            if(tempDists.size() < BeastMCMC.m_nThreads){
+                m_nCountDown = new CountDownLatch(tempDists.size());
+                for(Distribution distr:tempDists){
+                    CoreRunnable coreRunnable = new CoreRunnable(distr);
+                    BeastMCMC.g_exec.execute(coreRunnable);
+                }
+            }else{
+            //m_nCountDown = new CountDownLatch(nrOfDirtyDistrs);
+                m_nCountDown = new CountDownLatch(BeastMCMC.m_nThreads);
+                // kick off the threads
+                int batchSize = tempDists.size()/ BeastMCMC.m_nThreads;
+
+                int start, end;
+                for (int i = 0; i < BeastMCMC.m_nThreads; i++) {
+                    //if (dists.isDirtyCalculation()) {    //todo
+                    start = batchSize*i;
+                    end = batchSize*(i + 1)-1;
+                    if(i == BeastMCMC.m_nThreads -1){
+                        end += tempDists.size()% BeastMCMC.m_nThreads;
+                    }
+
+                    EvenlyCoreRunnable coreRunnable = new EvenlyCoreRunnable(start, end, tempDists);
+
+                    BeastMCMC.g_exec.execute(coreRunnable);
+                    //}
+
+                }
+            }
+
+            m_nCountDown.await();
+
+            logP = 0;
+            for (Distribution distr : treeLiks) {
+                logP += distr.getCurrentLogP();
+            }
+            return logP;
+        } catch (RejectedExecutionException e) {
+            useThreadsEvenly = false;
+            System.err.println("Stop using threads: " + e.getMessage());
+            // refresh thread pool
+            BeastMCMC.g_exec = Executors.newFixedThreadPool(BeastMCMC.m_nThreads);
+            return calculateLogP();
+        }
+    }
+
+    class EvenlyCoreRunnable implements Runnable {
+        int start, end;
+        ArrayList<Distribution> dists;
+
+        EvenlyCoreRunnable(int start, int end, ArrayList<Distribution> dists) {
+            this.start = start;
+            this.end = end;
+            this.dists = dists;
+        }
+
+        public void run() {
+            Distribution distr = null;
+            try {
+                System.out.println("start: "+start+" end: "+end);
+                for(int i = start; i < end; i++){
+                    distr = dists.get(i);
+                    if (distr.isDirtyCalculation()) {
+
+                        //logP += distr.calculateLogP();
+                        distr.calculateLogP();
+                    } else {
+                        //logP += distr.getCurrentLogP();
+
+                        distr.getCurrentLogP();
+                    }
+
+                }
+
+            } catch (Exception e) {
+                System.err.println("Something went wrong in a calculation of " + distr.getID());
+                e.printStackTrace();
+                System.exit(0);
+            }
+            m_nCountDown.countDown();
+        }
+
+    }
+
+    class CoreRunnable implements Runnable {
+        Distribution distr;
+
+        CoreRunnable(Distribution core) {
+            distr = core;
+        }
+
+        public void run() {
+
+            try {
+                //long startTime = System.currentTimeMillis();
+                if (distr.isDirtyCalculation()) {
+                    //logP += distr.calculateLogP();
+                    distr.calculateLogP();
+                } else {
+                    //logP += distr.getCurrentLogP();
+                    distr.getCurrentLogP();
+                }
+                //long endTime = System.currentTimeMillis();
+
+                //System.out.println("That took " + (endTime - startTime) + " milliseconds");
+            } catch (Exception e) {
+                System.err.println("Something went wrong in a calculation of " + distr.getID());
+                e.printStackTrace();
+                System.exit(0);
+            }
+            m_nCountDown.countDown();
+        }
+
+    } // CoreRunnable
 
     public double getSiteLogLikelihood(int iCluster, int iSite){
         return treeLiks.get(iCluster).getPatternLogLikelihood(alignment.getPatternIndex(iSite));

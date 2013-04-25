@@ -296,6 +296,40 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
 
     }
 
+    void handleMultiPointerChanges(int changedInput) throws Exception{
+
+        int ntdBMAIDNum;
+        int muIDNum;
+        if(changedInput == NTDBMA){
+
+            clusterSites = dpValSubst.getLastDirtySites();
+            //This the substModel cluster that takes up the members of the removed substModel cluster
+            ntdBMAIDNum = dpNtdBMA.getDirtyModelIDNumber();
+            //System.out.println("ntdBMAIDNum: "+dpNtdBMA.getDimension());
+            for(int dirtySite: clusterSites){
+                muIDNum = ratesPointers.getParameterIDNumber(dirtySite);
+                updateMap(dirtySite, ntdBMAIDNum, muIDNum);
+            }
+
+        }else if(changedInput == RATES){
+            //The rate cluster that takes up the member of the removed rate cluster
+            muIDNum = ratesList.getDirtyParameterIDNumber();
+
+            int removedRateIndex = ratesList.getRemovedIndex();
+            clusterSites = dpValRate.getStoredClusterSites(removedRateIndex);
+
+            for(int dirtySite:clusterSites){
+                ntdBMAIDNum = dpNtdBMA.getModel(dpNtdBMA.getCurrCluster(dirtySite)).getIDNumber();
+                //System.out.println(ntdBMAIDNum +" " +muIDNum);
+                updateMap(dirtySite, ntdBMAIDNum, muIDNum);
+
+            }
+        }else{
+            throw new RuntimeException("Can only add clusters for either ntdBMA model or rates, changedInput: "+changedInput);
+        }
+
+    }
+
     public int getDirtySiteModelIndex(){
         throw new RuntimeException("Getting a single dirty site model index is not always applicable in this case!");
     }
@@ -591,11 +625,22 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
 
     }
 
+    public QuietSiteModel getSiteModelOfSiteIndex(int siteIndex){
+        return siteModelsMatrix[clusterMap[NTDBMA][siteIndex]][clusterMap[RATES][siteIndex]];
+    }
+
     public int getPrevCluster(int siteIndex){
         throw new RuntimeException("Retrieving the previous cluster index of a given site is not suitable in this case.");
     }
 
     public int getCurrCluster(int siteIndex){
+        throw new RuntimeException("Retrieving the current cluster index of a given site is not suitable in this case.");
+    }
+    public int getPrevCategoryIDNumber(int siteIndex){
+        throw new RuntimeException("Retrieving the previous cluster index of a given site is not suitable in this case.");
+    }
+
+    public int getCurrCategoryIDNumber(int siteIndex){
         throw new RuntimeException("Retrieving the current cluster index of a given site is not suitable in this case.");
     }
 

@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.app.BeastMCMC;
 import beast.core.Description;
 import beast.core.MCMCNodeFactory;
 import beast.evolution.sitemodel.DPSiteModel;
@@ -37,7 +38,8 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
     }
 
     public void initAndValidate() throws Exception{
-
+        useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
+        useThreadsEvenly = useThreadsEvenlyInput.get() && (BeastMCMC.m_nThreads > 1);
 
         alignment = m_data.get();
         int patternCount = alignment.getPatternCount();
