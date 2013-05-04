@@ -3,17 +3,14 @@ package beast.evolution.likelihood;
 import beast.app.BeastMCMC;
 import beast.core.Description;
 import beast.core.MCMCNodeFactory;
-import beast.evolution.sitemodel.DPSiteModel;
 import beast.evolution.sitemodel.DPNtdRateSepSiteModel;
+import beast.evolution.sitemodel.QuietSiteModel;
 import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.tree.Tree;
-import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import beast.core.parameter.ChangeType;
 import beast.core.Input;
 
-import java.util.ArrayList;
+import javax.sound.midi.SysexMessage;
 
 /**
  * @author Chieh-Hsi Wu
@@ -147,6 +144,12 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
             }
         }
     }
+
+
+
+
+
+
 
     private void update(int dirtySite){
         //int dirtySite = dpSiteModel.getLastDirtySite();
@@ -331,6 +334,18 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
 
     @Override
     protected boolean requiresRecalculation() {
+
+         /*QuietSiteModel q = dpSiteModel.getSiteModel(0,2);
+        if(q != null && treeLiksMatrix[0][2] !=null){
+
+              if(treeLiksMatrix[0][2].getSiteModel() != q){
+                  System.out.println("whoa!");
+                  treeLiksMatrix[0][2].printThings();
+                  throw new RuntimeException("whoa!");
+              }
+
+
+        }  */
         /*for(int i = 0; i < treeLiksMatrix.length; i++){
                 for(int j = 0; j < treeLiksMatrix[i].length; j++){
                     if(treeLiksMatrix[i][j] != null)
@@ -346,9 +361,9 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
             if(changeType == ChangeType.ADDED || changeType == ChangeType.REMOVED || changeType == ChangeType.POINTER_CHANGED){
                 //System.out.println("changeType: "+changeType);
                 update();
-            }else if(changeType == ChangeType.SPLIT || changeType == ChangeType.MERGE){
+            }else if(changeType == ChangeType.SPLIT || changeType == ChangeType.MERGE || changeType == ChangeType.MULTIPLE_POINTERS_CHANGED){
                 //storeTreeLikelihoods();
-
+                //System.out.println(changeType);
                 updates();
             }else if(changeType == ChangeType.POINTERS_SWAPPED){
                 int[] dirtySites = dpSiteModel.getLastDirtySites();
@@ -380,6 +395,18 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
 
 
         }
+
+        /*q = dpSiteModel.getSiteModel(0,2);
+        if(q != null && treeLiksMatrix[0][2] !=null){
+
+              if(treeLiksMatrix[0][2].getSiteModel() != q){
+                  System.out.println("whoa!");
+                  treeLiksMatrix[0][2].printThings();
+                  throw new RuntimeException("whoa!");
+              }
+
+
+        }    */
         return recalculate;
     }
 
@@ -410,6 +437,21 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
         //}
         super.restore();
     }
+
+    /*public double calculateLogP()throws Exception{
+        QuietSiteModel q = dpSiteModel.getSiteModel(0,2);
+        if(q != null && treeLiksMatrix[0][2] !=null){
+
+              if(treeLiksMatrix[0][2].getSiteModel() != q){
+                  System.out.println("whoa!");
+                  treeLiksMatrix[0][2].printThings();
+                  throw new RuntimeException("whoa!");
+              }
+
+
+        }
+        return super.calculateLogP();
+    }  */
 
 
 

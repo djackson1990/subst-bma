@@ -1,11 +1,9 @@
 package beast.evolution.operators;
 
-import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.DPPointer;
 import beast.core.parameter.DPValuable;
-import beast.core.parameter.RealParameter;
 import beast.math.util.MathUtil;
 import beast.util.Randomizer;
 
@@ -14,10 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Chieh-Hsi Wu
+ * Created by IntelliJ IDEA.
+ * User: cwu080
+ * Date: 27/04/13
+ * Time: 3:47 PM
+ * To change this template use File | Settings | File Templates.
  */
-@Description("This class re-assigns a random number of sites in a randomly picked category to another randomly picked category.")
-public class CategoryDeltaExchangeOperator extends Operator {
+public class MultiPointerSwapOperator extends Operator {
     public Input<Double> deltaInput = new Input<Double>(
             "delta",
             "Magnitude of change for two randomly picked categories.",
@@ -71,42 +72,55 @@ public class CategoryDeltaExchangeOperator extends Operator {
         }
 
 
+        int[] isites = dpVal.getClusterSites(icat);
+        int[] jsites = dpVal.getClusterSites(jcat);
+
         //Pick the number of sites to be moved
         int size = Randomizer.nextInt((int)Math.round(delta));
 
+
+
         //The number of the sites to be moved is greater or equal to number of sites in the clusters.
         //As a the (log) prior probability on this clustering structure is 0 (-infinity).
-        if(size >= dpVal.getClusterSize(icat)){
+        while(size > isites.length + jsites.length){
+            size = Randomizer.nextInt((int)Math.round(delta));
+        }
+
+        int[] sites = new int[isites.length + jsites.length];
+        System.arraycopy(isites, 0, sites, 0, isites.length);
+        System.arraycopy(jsites, 0, sites, isites.length, jsites.length);
+
+
+
+        int[] siteIndicesToBeMoved = new int[size];
+        int[] sitesToBeMoved = MathUtil.sample(size, sites, false, siteIndicesToBeMoved);
+        int[] desPointerIndex = new int[siteIndicesToBeMoved.length];
+
+        int siteFromITOJCount = 0;
+        int siteFromJTOICount = 0;
+        for(int i = 0; i < desPointerIndex.length; i++){
+
+            if(siteIndicesToBeMoved[i] < isites.length){
+                desPointerIndex[i] = jsites[0];
+                siteFromITOJCount++;
+            }else{
+                desPointerIndex[i] = isites[0];
+                siteFromJTOICount++;
+            }
+        }
+        if(siteFromJTOICount >= jsites.length || siteFromITOJCount >= isites.length ){
             return Double.NEGATIVE_INFINITY;
         }
+        //System.out.println();
 
 
-        int[] sites = dpVal.getClusterSites(icat);
-        /*System.out.print("cati: ");
-        for(int site:sites){
-            System.out.print(site+" ");
-        }
-        System.out.println();
-        System.out.print("catj: ");
-        int[] sitesj = dpVal.getClusterSites(jcat);
-        for(int sitej:sitesj){
-            System.out.print(sitej+" ");
-        }
-        System.out.println();*/
 
-        int[] sitesToBeMoved = MathUtil.sample(size, sites, false);
-        /*System.out.print("sitesToBeMoved: ");
 
-        for(int siteToBeMoved:sitesToBeMoved){
-            System.out.print(siteToBeMoved+" ");
-        }
-        System.out.println();  */
-        int sitej = dpVal.getOneClusterSite(jcat);
         for(DPPointer pointer: pointers){
-            pointer.multiPointerChanges(sitesToBeMoved, sitej);
+            pointer.multiPointerChanges(sitesToBeMoved, desPointerIndex);
         }
 
-        return 0.0;
+       return 0.0;
 
     }
 

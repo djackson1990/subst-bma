@@ -89,12 +89,58 @@ public class DPPointer extends StateNode {
     }
 
     public void multiPointerChanges(int[] fromSites, int toSite){
+        startEditing(null);
+
         for(int fromSite: fromSites){
+
+            //if(fromSite == toSite) throw new RuntimeException("Same site! fromSite: "+fromSite+" "+toSite);
             parameters[fromSite] = parameters[toSite];
         }
+        //System.out.println();
         lastDirtySites = new int[fromSites.length];
         System.arraycopy(fromSites,0,lastDirtySites,0,fromSites.length);
-        changeType = ChangeType.MULTIPLE_POINTER_CHANGED;
+        changeType = ChangeType.MULTIPLE_POINTERS_CHANGED;
+    }
+
+    public void multiPointerChanges(int[] fromSites, int[] toSites){
+        startEditing(null);
+
+        for(int i = 0; i < fromSites.length; i++){
+            parameters[fromSites[i]] = storedParameters[toSites[i]];
+        }
+        //System.out.println();
+        lastDirtySites = new int[fromSites.length];
+        System.arraycopy(fromSites,0,lastDirtySites,0,fromSites.length);
+        changeType = ChangeType.MULTIPLE_POINTERS_CHANGED;
+    }
+
+    public void multiPointerChanges(int[][] fromSites, int toSite[]){
+        startEditing(null);
+        QuietRealParameter[] toSitePointers = new QuietRealParameter[toSite.length];
+        for(int i = 0; i < toSitePointers.length; i++){
+            toSitePointers[i] = parameters[toSite[i]];
+        }
+
+        for(int i = 0; i < fromSites.length; i++){
+            for(int j  = 0; j < fromSites[i].length; j++){
+                parameters[fromSites[i][j]] = toSitePointers[i];
+            }
+        }
+        //System.out.println();
+
+        int totalLength = 0;
+        for(int[] array:fromSites){
+            totalLength += array.length;
+        }
+        lastDirtySites = new int[totalLength];
+        int k = 0;
+        for(int[] fromSitesArray:fromSites){
+            System.arraycopy(fromSitesArray,0,lastDirtySites,k,fromSitesArray.length);
+            k = fromSitesArray.length;
+
+        }
+
+        changeType = ChangeType.MULTIPLE_POINTERS_CHANGED;
     }
 
     public ChangeType getChangeType(){

@@ -71,6 +71,8 @@ public class DPNtdRateSiteModel extends DPRateSiteModel{
     }
 
 
+
+
     public boolean requiresRecalculation(){
 
         boolean recalculate = false;
@@ -114,7 +116,10 @@ public class DPNtdRateSiteModel extends DPRateSiteModel{
                 throw new RuntimeException("Can only handle same type of changes to subst and rate at one time.");
             }
             recalculate = true;
+
             //this.changeType = ChangeType.POINTER_CHANGED;
+
+
             //setupPointerIndices();
 
         }else if(rateList.somethingIsDirty()){

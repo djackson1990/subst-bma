@@ -114,6 +114,10 @@ public class DPRateSiteModel extends DPSingleAlignSiteModel implements PluginLis
         return ratePointers.getSwappedSites();
     }
 
+    public int[] getLastDirtySites(){
+        return ratePointers.getLastDirtySites();
+    }
+
     public void resetAllPointerIndices(){
         for(int i = 0; i < pointerIndices.length;i++){
             pointerIndices[i] = ratePointers.indexInList(i,rateList);

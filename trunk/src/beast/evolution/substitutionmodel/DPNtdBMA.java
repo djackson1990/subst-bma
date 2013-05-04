@@ -163,6 +163,10 @@ public class DPNtdBMA extends CalculationNode implements PluginList, Recycle {
         return pointers.getLastDirty();
     }
 
+    public int[] getLastDirtySites(){
+        return pointers.getLastDirtySites();
+    }
+
     /*
      * Returns the last added model
      */

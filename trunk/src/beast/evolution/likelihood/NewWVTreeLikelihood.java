@@ -7,6 +7,7 @@ import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.QuietSiteModel;
+import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.NtdBMA;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
@@ -279,11 +280,16 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     }
 
     protected void calcLogP() throws Exception {
+        /*if(m_siteModel instanceof  QuietSiteModel){
+            printThings();
+        System.out.println("mu: "+((QuietSiteModel)m_siteModel).getRateParameter()+" "+((QuietSiteModel)m_siteModel).getRateParameter().getIDNumber());
+        }*/
         logP = 0.0;
         if (m_bAscertainedSitePatterns) {
             double ascertainmentCorrection = ((AscertainedAlignment)data).getAscertainmentCorrection(m_fPatternLogLikelihoods);
             for (int i = 0; i < data.getPatternCount(); i++) {
             	logP += (m_fPatternLogLikelihoods[i] - ascertainmentCorrection) * patternWeights[i];
+
             }
         } else {
             //System.err.println("Likelihood: ");
@@ -302,7 +308,9 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
                 //System.out.println(m_data.get().getID()+" pattern "+i+" Likelihood: "+m_fPatternLogLikelihoods[i]+" "+patternWeights[i]);
 	            logP += m_fPatternLogLikelihoods[i] * patternWeights[i];
                 //System.out.println(m_fPatternLogLikelihoods[i] +" "+ patternWeights[i]);
+                //System.out.println("m_fPatternLogLikelihoods "+i+": "+m_fPatternLogLikelihoods[i]+" "+ patternWeights[i]);
 	        }
+
         }
     }
 
@@ -401,6 +409,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
      */
     @Override
     protected boolean requiresRecalculation() {
+        //printThings();
 
         m_nHasDirt = Tree.IS_CLEAN;
 
@@ -411,25 +420,25 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
             }else{
                 m_nHasDirt = -1;
             }
-            //System.err.println("flag2");
+            //System.out.println("flag2");
             return true;
         }
 
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
-            //System.err.println("flag3");
+            //System.out.println("flag3");
             return true;
         }
 
         if (data.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
-            //System.err.println("flag4");
+            //System.out.println("flag4");
             return true;
         }
 
         if (m_siteModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_DIRTY;
-            //System.err.println("flag5");
+            //System.out.println("flag5");
             return true;
         }
 
@@ -532,11 +541,15 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
 
     public void printThings(){
         System.out.println("modelID: "+((SwitchingNtdBMA)m_substitutionModel).getIDNumber());
-        System.out.println("modelID: " + ((QuietSiteModel) m_siteModel).getRateParameter().getIDNumber());
+        System.out.println("modelID: " + ((QuietSiteModel) m_siteModel).getRateParameter().getIDNumber()+" "+((QuietSiteModel) m_siteModel).isDirtyCalculation());
     }
 
     public int getWeight(int patternIndex){
         return patternWeights[patternIndex];
 
+    }
+
+    public SiteModel.Base getSiteModel(){
+        return m_siteModel;
     }
 }

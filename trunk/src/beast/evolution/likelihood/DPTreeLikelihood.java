@@ -4,14 +4,12 @@ import beast.app.BeastMCMC;
 import beast.core.*;
 import beast.core.parameter.ChangeType;
 import beast.core.parameter.DPValuable;
-import beast.evolution.sitemodel.DPNtdSiteModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.DPSiteModel;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import beast.evolution.tree.Tree;
-import beast.evolution.branchratemodel.BranchRateModel;
 
+import javax.sound.midi.SysexMessage;
 import java.lang.Runnable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -172,11 +170,15 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
             for(NewWVTreeLikelihood treeLik : treeLiks) {
 
 
+
             	if (treeLik.isDirtyCalculation()) {
                     double tmp = treeLik.calculateLogP();
             		logP += tmp;
+                    //System.out.println("calculateLogP: "+tmp);
+
             	} else {
             		logP += treeLik.getCurrentLogP();
+                    //System.out.println("CurrentLogP: "+treeLik.getCurrentLogP());
             	}
                 if (Double.isInfinite(logP) || Double.isNaN(logP)) {
                 	return logP;
@@ -481,6 +483,22 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
         treeLiks.remove(removedIndex);
     }
 
+    private void handlePointerChange(int dirtySite){
+        int prevCluster = dpSiteModel.getPrevCluster(dirtySite);
+        treeLiks.get(prevCluster).removeWeight(alignment.getPatternIndex(dirtySite),1);
+
+        int currCluster = dpSiteModel.getCurrCluster(dirtySite);
+        treeLiks.get(currCluster).addWeight(alignment.getPatternIndex(dirtySite),1);
+
+    }
+
+    private void handlePointersChange(){
+        int[] dirtySites = dpSiteModel.getLastDirtySites();
+        for(int dirtySite: dirtySites){
+            handlePointerChange(dirtySite);
+        }
+    }
+
     protected void updateWeights(){
         int dirtySite = dpSiteModel.getLastDirtySite();
         //System.out.println("changeType: "+changeType);
@@ -537,9 +555,12 @@ public class DPTreeLikelihood extends GenericTreeLikelihood implements PluginLis
             }else if(changeType == ChangeType.MERGE){
                 mergeTreeLikelihoods(dpSiteModel.getRemovedIndex());
                 this.changeType = ChangeType.MERGE;
-            }else if (changeType == ChangeType.POINTER_CHANGED|| changeType == ChangeType.POINTERS_SWAPPED){
+            }else if (changeType == ChangeType.POINTER_CHANGED||  changeType == ChangeType.POINTERS_SWAPPED){
                 this.changeType = changeType;
                 updateWeights();
+            }else if(changeType == ChangeType.MULTIPLE_POINTERS_CHANGED){
+                handlePointersChange();
+                this.changeType = changeType;
             }else if(changeType == ChangeType.VALUE_CHANGED){
                 this.changeType = ChangeType.VALUE_CHANGED;
 
