@@ -186,20 +186,20 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
     private void update(int dirtySite){
 
         int alignmentIndex = alignmentIndexBySite[dirtySite];
-        int currCategory = dpSiteModel.getCurrCategoryIDNumber(dirtySite);
-        int prevCategory = dpSiteModel.getPrevCategoryIDNumber(dirtySite);
+        int currCatIDNum = dpSiteModel.getCurrCategoryIDNumber(dirtySite);
+        int prevCatIDNum = dpSiteModel.getPrevCategoryIDNumber(dirtySite);
         //System.out.println(getClass()+": "+dirtySite+" "+currCategory+" alignmentIndex: "+alignmentIndex);
         //System.out.println(treeLiks.size());
-        if(!treeLikelihoodMap[alignmentIndex].containsKey(currCategory)){
-            addTreeLikelihood(alignmentIndex, currCategory,dirtySite);
+        if(!treeLikelihoodMap[alignmentIndex].containsKey(currCatIDNum)){
+            addTreeLikelihood(alignmentIndex, currCatIDNum,dirtySite);
             //System.out.println("Add? "+treeLikelihoodMap[alignmentIndex].get(currCategory).m_data.get()+" "+alignments.get(alignmentIndex).getPatternIndex(siteIndexWithinAlignment[dirtySite]));
         }
         //System.out.println(treeLiks.size());
 
         moveWeight(
             alignmentIndex,
-            currCategory,
-            prevCategory,
+            currCatIDNum,
+            prevCatIDNum,
             siteIndexWithinAlignment[dirtySite],
             1
         );
@@ -210,24 +210,46 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
 
     public void moveWeight(
             int alignmentIndex,
-            int currCategory,
-            int prevCategory,
+            int currCatIDNum,
+            int prevCatIDNum,
             int dirtySite,
             int weight){
         //System.out.println(alignmentIndex+" "+prevCategory+" "+ currCategory+" "+weight);
         //System.out.println("prevCat: "+prevCategory+" "+(treeLikelihoodMap[alignmentIndex].get(prevCategory)==null));
 
-        treeLikelihoodMap[alignmentIndex].get(prevCategory).removeWeight(
+        treeLikelihoodMap[alignmentIndex].get(prevCatIDNum).removeWeight(
                 alignments.get(alignmentIndex).getPatternIndex(dirtySite),
                 weight
         );
 
-        treeLikelihoodMap[alignmentIndex].get(currCategory).addWeight(
+        treeLikelihoodMap[alignmentIndex].get(currCatIDNum).addWeight(
                 alignments.get(alignmentIndex).getPatternIndex(dirtySite),
                 weight
         );
+
+        if(likelihoodWeight[alignmentIndex].containsKey(currCatIDNum)){
+            int currCatOldWeight = likelihoodWeight[alignmentIndex].get(currCatIDNum);
+            likelihoodWeight[alignmentIndex].put(currCatIDNum,currCatOldWeight+weight);
+
+            int prevCatOldWeight = likelihoodWeight[alignmentIndex].get(prevCatIDNum);
+            likelihoodWeight[alignmentIndex].put(currCatIDNum,prevCatOldWeight-weight);
+
+
+            //This is here for sanity checks
+            if(likelihoodWeight[alignmentIndex].get(prevCatIDNum) == 0){
+                likelihoodWeight[alignmentIndex].remove(prevCatIDNum);
+            }
+
+
+
+        }else{
+            likelihoodWeight[alignmentIndex].put(currCatIDNum, 1);
+
+        }
 
     }
+
+
 
     public void addTreeLikelihood(int alignmentIndex, int categoryID, int dirtySite){
         //System.out.println("alignmentIndex"+alignmentIndex);
@@ -238,7 +260,7 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
         try{
             NewWVTreeLikelihood treeLik = new NewWVTreeLikelihood(patternWeights,
                     alignments.get(alignmentIndex),
-                    m_tree.get(),
+                    trees.get(alignmentIndex),
                     useAmbiguitiesInput.get(),
                     siteModel,
                     m_pBranchRateModel.get());
@@ -253,11 +275,11 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
 
     }
 
-    private void checkAndRemove(int alignmentIndex, int prevCategory){
+    private void checkAndRemove(int alignmentIndex, int prevCatIDNum){
 
-        if(likelihoodWeight[alignmentIndex].get(prevCategory) == 0){
-            treeLiks.remove(treeLikelihoodMap[alignmentIndex].get(prevCategory));
-            treeLikelihoodMap[alignmentIndex].remove(prevCategory);
+        if(likelihoodWeight[alignmentIndex].get(prevCatIDNum) == 0){
+            treeLiks.remove(treeLikelihoodMap[alignmentIndex].get(prevCatIDNum));
+            treeLikelihoodMap[alignmentIndex].remove(prevCatIDNum);
         }
     }
 
@@ -269,6 +291,33 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
     private void handleMerge(){
         int[] dirtySites = dpVal.getMergedSites();
         update(dirtySites);
+    }
+
+    private void handleMultiPointerChanges(){
+        int[] dirtySites = dpVal.getLastDirtySites();
+        update(dirtySites);
+    }
+
+    public void store(){
+        for(int i = 0; i < treeLikelihoodMap.length;i++){
+            storedTreeLikelihoodMap[i] = (HashMap<Integer,NewWVTreeLikelihood>)treeLikelihoodMap[i].clone();
+        }
+        for(int i = 0; i < likelihoodWeight.length; i++){
+            storedLikelihoodWeight[i] = (HashMap<Integer,Integer>)likelihoodWeight[i].clone();
+        }
+        super.store();
+    }
+
+    public void restore(){
+        HashMap<Integer,NewWVTreeLikelihood>[] tmp = treeLikelihoodMap;
+        treeLikelihoodMap = storedTreeLikelihoodMap;
+        storedTreeLikelihoodMap = tmp;
+
+        HashMap<Integer,Integer>[] tmp1 = likelihoodWeight;
+        likelihoodWeight = storedLikelihoodWeight;
+        storedLikelihoodWeight = tmp1;
+        super.restore();
+
     }
 
     @Override
@@ -292,6 +341,8 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
             }else if(changeType == ChangeType.MERGE){
 
                 handleMerge();
+            }else if(changeType == ChangeType.MULTIPLE_POINTERS_CHANGED){
+                handleMultiPointerChanges();
             }else if(changeType == ChangeType.VALUE_CHANGED){
 
                 changeType = ChangeType.VALUE_CHANGED;

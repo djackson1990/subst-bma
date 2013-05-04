@@ -5,6 +5,7 @@ import beast.core.StateNode;
 import beast.core.parameter.QuietRealParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.SubstitutionModel;
+import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 
 import java.util.ArrayList;
 
@@ -168,4 +169,9 @@ public class QuietSiteModel extends SiteModel {
     public QuietRealParameter getRateParameter(){
         return (QuietRealParameter)muParameter;
     }
+
+    /*public boolean requiresRecalculation(){
+        System.out.println(getRateParameter().getIDNumber()+ " "+((SwitchingNtdBMA)substitutionModel).getIDNumber());
+        return super.requiresRecalculation();
+    } */
 }

@@ -2,16 +2,12 @@ package beast.evolution.sitemodel;
 
 import beast.core.Description;
 import beast.core.MCMCNodeFactory;
-import beast.core.PluginList;
 import beast.core.parameter.*;
 import beast.core.Input;
 import beast.evolution.substitutionmodel.DPNtdBMA;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import beast.evolution.substitutionmodel.SubstitutionModel;
-import org.omg.CORBA.INTERNAL;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Arrays;
 
 /**
@@ -296,36 +292,38 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
 
     }
 
+
+
     void handleMultiPointerChanges(int changedInput) throws Exception{
 
-        int ntdBMAIDNum;
-        int muIDNum;
         if(changedInput == NTDBMA){
-
             clusterSites = dpValSubst.getLastDirtySites();
-            //This the substModel cluster that takes up the members of the removed substModel cluster
-            ntdBMAIDNum = dpNtdBMA.getDirtyModelIDNumber();
-            //System.out.println("ntdBMAIDNum: "+dpNtdBMA.getDimension());
-            for(int dirtySite: clusterSites){
-                muIDNum = ratesPointers.getParameterIDNumber(dirtySite);
-                updateMap(dirtySite, ntdBMAIDNum, muIDNum);
-            }
-
         }else if(changedInput == RATES){
-            //The rate cluster that takes up the member of the removed rate cluster
-            muIDNum = ratesList.getDirtyParameterIDNumber();
-
-            int removedRateIndex = ratesList.getRemovedIndex();
-            clusterSites = dpValRate.getStoredClusterSites(removedRateIndex);
-
-            for(int dirtySite:clusterSites){
-                ntdBMAIDNum = dpNtdBMA.getModel(dpNtdBMA.getCurrCluster(dirtySite)).getIDNumber();
-                //System.out.println(ntdBMAIDNum +" " +muIDNum);
-                updateMap(dirtySite, ntdBMAIDNum, muIDNum);
-
-            }
+            clusterSites = dpValRate.getLastDirtySites();
         }else{
             throw new RuntimeException("Can only add clusters for either ntdBMA model or rates, changedInput: "+changedInput);
+        }
+
+        for(int dirtySite: clusterSites){
+            SwitchingNtdBMA ntdBMA = dpNtdBMA.getModel(dpNtdBMA.getCurrCluster(dirtySite));
+            QuietRealParameter muParameter = ratesPointers.getParameter(dirtySite);
+
+            int ntdBMACluster = ntdBMA.getIDNumber();
+            int rateCluster = muParameter.getIDNumber();
+
+            //update mapping and weights
+            updateWeights(dirtySite, ntdBMACluster, rateCluster);
+
+
+
+            //updateModelMatrix(dirtySite);
+
+
+
+        }
+        for(int dirtySite: clusterSites){
+            updateModelMatrix(dirtySite);
+
         }
 
     }
@@ -351,10 +349,13 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
         }else if(changedInput == RATES){
 
             fixedIndex = ratesList.getParameter(ratesList.getDirtyIndex()).getIDNumber(); //todo use getDirtyParameterIDNumber
+            //System.out.println("fixedIndex: "+fixedIndex);
             for(int i = 0; i < siteModelsMatrix.length;i++){
                 if(siteModelsMatrix[i][fixedIndex] != null){
+                    //System.out.println(i);
                     MCMCNodeFactory.checkDirtiness(siteModelsMatrix[i][fixedIndex]);
                     //System.out.println(i+" "+fixedIndex+" "+siteModelsMatrix[i][fixedIndex].isDirtyCalculation()+" "+siteModelsMatrix[i][fixedIndex].getRateParameter().getIDNumber());
+                    //System.out.println(siteModelsMatrix[i][fixedIndex]+" "+siteModelsMatrix[i][fixedIndex].isDirtyCalculation());
                 }
             }
 
@@ -382,7 +383,7 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
         int prevRateIdNum = clusterMap[RATES][lastDirtySite];
 
         //Current cluster ids of the last dirty site
-        SwitchingNtdBMA ntdBMA = dpNtdBMA.getModel(dpNtdBMA.getCurrCluster(lastDirtySite));
+        SwitchingNtdBMA ntdBMA = dpNtdBMA.getModel(dpNtdBMA.getCurrCluster(lastDirtySite)); //todo
         QuietRealParameter muParameter = ratesPointers.getParameter(lastDirtySite);
         //int[] siteClusterMap = new int[2];
         int ntdBMACluster = ntdBMA.getIDNumber();
@@ -473,13 +474,15 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
 
     public void updateModelMatrix(int siteIndex) throws Exception{
         //Remove site model if it has zero pattern weight
-        if(siteModelWeights[storedClusterMap[NTDBMA][siteIndex]][storedClusterMap[RATES][siteIndex]] == 0){
+        if(siteModelWeights[storedClusterMap[NTDBMA][siteIndex]][storedClusterMap[RATES][siteIndex]] == 0
+                && siteModelsMatrix[storedClusterMap[NTDBMA][siteIndex]][storedClusterMap[RATES][siteIndex]] != null){
             siteModels.remove(siteModels.indexOf(siteModelsMatrix[storedClusterMap[NTDBMA][siteIndex]][storedClusterMap[RATES][siteIndex]]));
             siteModelsMatrix[storedClusterMap[NTDBMA][siteIndex]][storedClusterMap[RATES][siteIndex]] = null;
         }
 
         //Add site model if this is a new substModel and rate combination
         if(siteModelsMatrix[clusterMap[NTDBMA][siteIndex]][clusterMap[RATES][siteIndex]] == null){
+            //System.out.println("add: "+clusterMap[NTDBMA][siteIndex]+" "+clusterMap[RATES][siteIndex]);
             QuietSiteModel siteModel = new QuietSiteModel(dpNtdBMA.getModel(dpNtdBMA.getCurrCluster(siteIndex)),ratesPointers.getParameter(siteIndex));
             siteModelsMatrix[clusterMap[NTDBMA][siteIndex]][clusterMap[RATES][siteIndex]] = siteModel;
             siteModels.add(siteModel);
@@ -668,8 +671,12 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
         return lastDirtySite;
     }
 
-    public SiteModel getSiteModel(int ntdBMAID, int rateID){
+    public QuietSiteModel getSiteModel(int ntdBMAID, int rateID){
         return siteModelsMatrix[ntdBMAID][rateID];
+    }
+
+    public QuietSiteModel getStoredSiteModel(int ntdBMAID, int rateID){
+        return storedSiteModelsMatrix[ntdBMAID][rateID];
     }
 
 
@@ -732,6 +739,11 @@ public class DPNtdRateSepSiteModel extends DPSingleAlignSiteModel {
                     //System.out.println("POINTER_CHANGED");
 
                     handlePointerChange(lastDirtySite);
+                }else if(changeType == ChangeType.MULTIPLE_POINTERS_CHANGED){
+
+                    handleMultiPointerChanges(changedInput);
+
+
                 }else if(changeType == ChangeType.POINTERS_SWAPPED){
                     if(changedInput == NTDBMA){
                         clusterSites = dpNtdBMA.getSwappedSites();

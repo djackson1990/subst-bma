@@ -177,11 +177,11 @@ public class DirichletDistribution extends Dirichlet{
         double scaleVal = scale.getValue();
         Double [] fAlpha = alpha.getValues();
         //System.out.println(alpha.getID());
-        /*for(int i = 0; i < pX.getDimension(); i++){
+        for(int i = 0; i < pX.getDimension(); i++){
             if(pX.getArrayValue(i) == 0.0 || pX.getArrayValue(i) == 1.0){
                 return Double.NEGATIVE_INFINITY;
             }
-        }  */
+        }
 
 
         if (alpha.getDimension() != pX.getDimension()) {

@@ -69,7 +69,9 @@ public class DPNtdSiteModel extends DPSingleAlignSiteModel {
         return dpNtdBMA.getLastDirtySite();
     }
 
-
+    public int[] getLastDirtySites(){
+        return dpNtdBMA.getLastDirtySites();
+    }
 
 
     public int getSiteModelCount(){

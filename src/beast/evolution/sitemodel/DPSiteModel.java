@@ -51,6 +51,7 @@ public abstract class DPSiteModel extends CalculationNode implements PluginList,
     }
 
     public abstract int getLastDirtySite();
+    public abstract int[] getLastDirtySites();
 
     public SiteModel getLastAdded(){
         return getSiteModel(siteModels.size()-1);
@@ -98,6 +99,8 @@ public abstract class DPSiteModel extends CalculationNode implements PluginList,
     }
 
     public abstract int[] getSwappedSites();
+
+
 
 
 

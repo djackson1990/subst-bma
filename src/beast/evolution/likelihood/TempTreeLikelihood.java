@@ -274,7 +274,6 @@ public class TempTreeLikelihood extends Distribution {
 
     public List<String> getConditions(){
         return null;
-
     }
 
     public List<String> getArguments(){
