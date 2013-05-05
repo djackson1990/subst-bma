@@ -25,7 +25,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             "The weight of each pattern as an integer"
     );
 
-    public void TempWVTreeLikelihood(){}
+    public TempWVTreeLikelihood(){}
 
     public TempWVTreeLikelihood(int[] patternWeights,
                                Alignment data,
