@@ -71,7 +71,7 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
         int siteCount = prevAlignEndIndex[prevAlignEndIndex.length - 1] +
                 alignments.get(alignments.size() - 1).getSiteCount();
 
-        int[] alignmentIndexBySite = new int[siteCount];
+        alignmentIndexBySite = new int[siteCount];
 
         int k = 0;
         for(int i = 1; i< prevAlignEndIndex.length;i++){
@@ -159,6 +159,12 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
             throw new RuntimeException(e);
         }
 
+    }
+
+
+
+    public int getAlignmentIndexBySite(int siteIndex){
+        return alignmentIndexBySite[siteIndex];
     }
 
     private void update(){

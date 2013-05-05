@@ -7,7 +7,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Property;
 import beast.util.Randomizer;
-import beast.math.util.MathUtils;
+import beast.math.util.MathUtil;
 
 /**
  * Copyright ? 1999 CERN - European Organization for Nuclear Research.
@@ -788,7 +788,7 @@ private void tql2 () throws ArithmeticException  {
 
 			   double g = d[l];
 			   double p = (d[l+1] - g) / (2.0 * e[l]);
-			   double r = MathUtils.hypot(p,1.0);
+			   double r = MathUtil.hypot(p,1.0);
 			   if (p < 0) {
 				  r = -r;
 			   }
@@ -816,7 +816,7 @@ private void tql2 () throws ArithmeticException  {
 				  s2 = s;
 				  g = c * e[i];
 				  h = c * p;
-				  r = MathUtils.hypot(p,e[i]);
+				  r = MathUtil.hypot(p,e[i]);
 				  e[i+1] = s * r;
 				  s = e[i] / r;
 				  c = p / r;

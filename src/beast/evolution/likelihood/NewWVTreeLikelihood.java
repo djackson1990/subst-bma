@@ -57,9 +57,6 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         m_branchRateModel = branchRateModel;
         m_substitutionModel = (SubstitutionModel.Base)m_siteModel.getSubstitutionModel();
         setup();
-
-
-
     }
 
     public String getSiteModelID(){
@@ -69,7 +66,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     public void initAndValidate() throws Exception{
 
         super.initAndValidate();
-        setup();
+        //setup();
 
     }
 
