@@ -18,10 +18,10 @@ import javax.sound.midi.SysexMessage;
 @Description("Tree likelihood that supports independent Dirichlet process priors on the partitionings of substitution model and rate.")
 public class DPSepTreeLikelihood extends DPTreeLikelihood{
 
-    private DPNtdRateSepSiteModel dpSiteModel;
+    protected DPNtdRateSepSiteModel dpSiteModel;
     private NewWVTreeLikelihood[][] treeLiksMatrix;
     private NewWVTreeLikelihood[][] storedTreeLiksMatrix;
-    private ChangeType changeType = ChangeType.ALL;
+    protected ChangeType changeType = ChangeType.ALL;
 
 
 
@@ -199,7 +199,7 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
     /*
      * Moving weight from one cluster combination to another
      */
-    public void moveWeight(
+    protected void moveWeight(
             int ntdBMAIndexFrom,
             int rateIndexFrom,
             int ntdBMAIndexTo,
@@ -413,10 +413,16 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
 
     public void store(){
         //storeTreeLikelihoods = true;
+        storeTreeLiksMatrix();
+
+        super.store();
+
+    }
+
+    protected void storeTreeLiksMatrix(){
         for(int i = 0; i < treeLiksMatrix.length;i++){
             System.arraycopy(treeLiksMatrix[i],0,storedTreeLiksMatrix[i],0, treeLiksMatrix[i].length);
         }
-        super.store();
 
     }
 
@@ -429,13 +435,19 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
     }*/
 
     public void restore(){
+        restoreTreeLiksMatrix();
+
+        super.restore();
+    }
+
+    protected void restoreTreeLiksMatrix(){
         //if(storeTreeLikelihoods){
         NewWVTreeLikelihood[][] tmp = treeLiksMatrix;
         treeLiksMatrix = storedTreeLiksMatrix;
         storedTreeLiksMatrix = tmp;
         //storeTreeLikelihoods = false;
         //}
-        super.restore();
+
     }
 
     /*public double calculateLogP()throws Exception{
