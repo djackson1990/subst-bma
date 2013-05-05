@@ -3,8 +3,11 @@ package beast.evolution.likelihood;
 
 import beast.core.Description;
 import beast.core.parameter.QuietRealParameter;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.DummySiteModel;
 import beast.evolution.sitemodel.QuietSiteModel;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.SwitchingNtdBMA;
 import beast.evolution.tree.Tree;
 import beast.evolution.sitemodel.SiteModel;
@@ -24,8 +27,20 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
 
     public void TempWVTreeLikelihood(){}
 
+    public TempWVTreeLikelihood(int[] patternWeights,
+                               Alignment data,
+                               Tree tree,
+                               boolean useAmbiguities,
+                               SiteModel siteModel,
+                               BranchRateModel.Base branchRateModel){
+        super(patternWeights, data, tree, useAmbiguities, siteModel, branchRateModel);
+    }
+
+
+
     public void initAndValidate() throws Exception{
 
+        //setup weights
         if(patternWeightInput.get() == null){
             patternWeights = m_data.get().getWeights();
 
@@ -290,6 +305,11 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
         }
 
         setPatternWeights(tempWeights);
+    }
+
+    public double getCurrSiteLikelihood(int siteIndex){
+        return m_fPatternLogLikelihoods[m_data.get().getPatternIndex(siteIndex)];
+
     }
    
 

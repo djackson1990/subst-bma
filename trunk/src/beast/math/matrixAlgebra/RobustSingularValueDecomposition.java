@@ -10,7 +10,7 @@ package beast.math.matrixAlgebra;
  *
  */
 
-import beast.math.util.MathUtils;
+import beast.math.util.MathUtil;
 import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Property;
@@ -86,7 +86,7 @@ public class RobustSingularValueDecomposition implements java.io.Serializable {
                                 // Compute 2-norm of k-th column without under/overflow.
                                 s[k] = 0;
                                 for (int i = k; i < m; i++) {
-                                   s[k] = beast.math.util.MathUtils.hypot(s[k], A[i][k]);
+                                   s[k] = beast.math.util.MathUtil.hypot(s[k], A[i][k]);
                                 }
                                 if (s[k] != 0.0) {
                                    if (A[k][k] < 0.0) {
@@ -135,7 +135,7 @@ public class RobustSingularValueDecomposition implements java.io.Serializable {
                                 // Compute 2-norm without under/overflow.
                                 e[k] = 0;
                                 for (int i = k+1; i < n; i++) {
-                                   e[k] = beast.math.util.MathUtils.hypot(e[k], e[i]);
+                                   e[k] = beast.math.util.MathUtil.hypot(e[k], e[i]);
                                 }
                                 if (e[k] != 0.0) {
                                    if (e[k+1] < 0.0) {
@@ -319,7 +319,7 @@ public class RobustSingularValueDecomposition implements java.io.Serializable {
                                    double f = e[p-2];
                                    e[p-2] = 0.0;
                                    for (int j = p-2; j >= k; j--) {
-                                              double t = MathUtils.hypot(s[j], f);
+                                              double t = MathUtil.hypot(s[j], f);
                                               double cs = s[j]/t;
                                               double sn = f/t;
                                               s[j] = t;
@@ -344,7 +344,7 @@ public class RobustSingularValueDecomposition implements java.io.Serializable {
                                    double f = e[k-1];
                                    e[k-1] = 0.0;
                                    for (int j = k; j < p; j++) {
-                                              double t = MathUtils.hypot(s[j],f);
+                                              double t = MathUtil.hypot(s[j],f);
                                               double cs = s[j]/t;
                                               double sn = f/t;
                                               s[j] = t;
@@ -391,7 +391,7 @@ public class RobustSingularValueDecomposition implements java.io.Serializable {
                                    // Chase zeros.
 
                                    for (int j = k; j < p-1; j++) {
-                                              double t = MathUtils.hypot(f,g);
+                                              double t = MathUtil.hypot(f,g);
                                               double cs = f/t;
                                               double sn = g/t;
                                               if (j != k) {
@@ -408,7 +408,7 @@ public class RobustSingularValueDecomposition implements java.io.Serializable {
                                                                 V[i][j] = t;
                                                      }
                                               }
-                                              t = MathUtils.hypot(f,g);
+                                              t = MathUtil.hypot(f,g);
                                               cs = f/t;
                                               sn = g/t;
                                               s[j] = t;

@@ -3,9 +3,11 @@ package beast.evolution.likelihood;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.DummySiteModel;
+import beast.evolution.substitutionmodel.NtdBMA;
 import beast.evolution.tree.Tree;
 
 import java.util.ArrayList;
@@ -46,9 +48,16 @@ public class MultiTreesTempTreeLikelihood extends Distribution {
             Input.Validate.REQUIRED
     );
 
+    public Input<DPMultiTreesTreeLikelihood> dpMultiTreesTreeLikelihoodInput = new Input<DPMultiTreesTreeLikelihood>(
+            "dpMultiTreesTreeLikelihood",
+            "The tree likelihood that facilitates nucleotide substitution model partition by site with multiple alignment/trees.",
+            Input.Validate.REQUIRED
+    );
+
     private List<Alignment> alignments;
     private List<Tree> trees;
     private TempTreeLikelihood[] tempTreeLikelihoods;
+    private DPMultiTreesTreeLikelihood dpMultiTreesTreeLikelihood;
     public void initAndValidate(){
         alignments = alignmentsInput.get();
         trees = treesInput.get();
@@ -63,10 +72,59 @@ public class MultiTreesTempTreeLikelihood extends Distribution {
 
             );
         }
+        dpMultiTreesTreeLikelihood = dpMultiTreesTreeLikelihoodInput.get();
 
 
 
     }
+
+    public double calculateLogP(
+            RealParameter modelParameters,
+            RealParameter modelCode,
+            RealParameter freqs,
+            int siteIndex){
+        int alignmentIndex = dpMultiTreesTreeLikelihood.getAlignmentIndexBySite(siteIndex);
+
+        logP = tempTreeLikelihoods[alignmentIndex].calculateLogP(
+                modelParameters,
+                modelCode,freqs,
+                siteIndex
+        );
+        return logP;
+    }
+
+    public double calculateLogP(
+            RealParameter modelParameters,
+            RealParameter modelCode,
+            RealParameter freqs,
+            RealParameter rate,
+            int siteIndex){
+        int alignmentIndex = dpMultiTreesTreeLikelihood.getAlignmentIndexBySite(siteIndex);
+
+        logP = tempTreeLikelihoods[alignmentIndex].calculateLogP(
+                modelParameters,
+                modelCode,
+                freqs,
+                rate,
+                siteIndex
+        );
+        return logP;
+    }
+
+
+    public double calculateLogP(
+            RealParameter rate,
+            int siteIndex){
+        int alignmentIndex = dpMultiTreesTreeLikelihood.getAlignmentIndexBySite(siteIndex);
+
+        logP = tempTreeLikelihoods[alignmentIndex].calculateLogP(
+                rate,
+                siteIndex
+        );
+        return logP;
+    }
+
+
 
     public List<String> getConditions(){
         return null;
