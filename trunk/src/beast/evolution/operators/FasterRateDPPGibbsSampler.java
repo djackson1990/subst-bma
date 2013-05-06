@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.Operator;
@@ -11,12 +12,9 @@ import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 22/04/13
- * Time: 10:57 AM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("An attempt to speed up this sampler by using multithreading.")
 public class FasterRateDPPGibbsSampler  extends Operator {
     public Input<DPPointer> ratePointersInput = new Input<DPPointer>(
             "ratesPointers",

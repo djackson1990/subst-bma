@@ -13,6 +13,7 @@
         <property name="build_substBMA" location="build" />
         <property name="dist_substBMA" location="${build_substBMA}/dist" />
         <property name="beast2path" location="../beast2" />
+        <property name="beastclassic" location="../beast-classic" />
         <property name="srcBeast2" location="${beast2path}/src" />
         <property name="beast2classpath" location="${beast2path}/build" />
 

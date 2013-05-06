@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.MCMCNodeFactory;
 import beast.core.parameter.ChangeType;
@@ -16,6 +17,7 @@ import java.util.List;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("DPTreeLikelihood that allows to take up multiple alignments/trees.")
 public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
     public Input<List<Tree>> treesInput = new Input<List<Tree>>(
             "trees",
@@ -25,7 +27,7 @@ public class DPMultiTreesTreeLikelihood extends DPTreeLikelihood{
     );
 
     public Input<List<Alignment>> alignmentsInput = new Input<List<Alignment>>(
-            "data",
+            "dataAlignment",
             "sequence data for the beast.tree",
             new ArrayList<Alignment>(),
             Input.Validate.REQUIRED

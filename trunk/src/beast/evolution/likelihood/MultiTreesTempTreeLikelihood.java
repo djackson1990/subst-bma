@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
@@ -17,6 +18,7 @@ import java.util.Random;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("TempTreeLikelihood that can handle multiple alignment/trees.")
 public class MultiTreesTempTreeLikelihood extends Distribution {
     public Input<List<Alignment>> alignmentsInput = new Input<List<Alignment>>(
             "alignment",

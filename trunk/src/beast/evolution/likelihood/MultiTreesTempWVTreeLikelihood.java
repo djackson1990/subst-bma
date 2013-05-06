@@ -1,6 +1,7 @@
 package beast.evolution.likelihood;
 
 
+import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
@@ -17,6 +18,7 @@ import java.util.Random;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("Weight variable tree likelihood that can handle multiple trees.")
 public class MultiTreesTempWVTreeLikelihood extends Distribution {
     public Input<List<Alignment>> alignmentsInput = new Input<List<Alignment>>(
             "alignment",

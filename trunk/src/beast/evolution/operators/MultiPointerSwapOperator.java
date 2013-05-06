@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.DPPointer;
@@ -12,12 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cwu080
- * Date: 27/04/13
- * Time: 3:47 PM
- * To change this template use File | Settings | File Templates.
+ * @author Chieh-Hsi Wu
  */
+@Description("This operator random selections a x sites from two clusters and switches the assignment.")
 public class MultiPointerSwapOperator extends Operator {
     public Input<Double> deltaInput = new Input<Double>(
             "delta",

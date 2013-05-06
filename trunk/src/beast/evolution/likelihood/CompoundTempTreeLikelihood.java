@@ -1,6 +1,7 @@
 package beast.evolution.likelihood;
 
 import beast.app.BeastMCMC;
+import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
@@ -18,6 +19,7 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * @author Chieh-Hsi Wu
  */
+@Description("This is a collection of temporary tree likelihoods that attempts to facilitate multithreading computation.")
 public class CompoundTempTreeLikelihood extends CompoundDistribution {
     public Input<List<TempTreeLikelihood>> tempTreeLiksInput = new Input<List<TempTreeLikelihood>>(
             "tempTreeLikelihood",

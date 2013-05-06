@@ -87,6 +87,8 @@ public class DPSepTreeLikelihood extends DPTreeLikelihood{
             treeLiksMatrix[ntdBMAId][ratesId] = treeLik;
             storedTreeLiksMatrix[ntdBMAId][ratesId] = treeLik;
         }
+
+
     }
 
     /*public double calculateLogP() throws Exception{
