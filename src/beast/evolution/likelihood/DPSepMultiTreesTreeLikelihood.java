@@ -25,14 +25,14 @@ public class DPSepMultiTreesTreeLikelihood extends DPSepTreeLikelihood {
     private int[][][] storedTreeLikWeightMatrix;
 
     public Input<List<Alignment>> alignmentsInput = new Input<List<Alignment>>(
-            "alignment",
+            "dataAlignment",
             "A list of nucleotide alignments used as a the data.",
             new ArrayList<Alignment>(),
             Input.Validate.REQUIRED
     );
 
     public Input<List<Tree>> treesInput = new Input<List<Tree>>(
-            "tree",
+            "trees",
             "A list of trees which describes the phylogenies under which the data has been generated.",
             new ArrayList<Tree>(),
             Input.Validate.REQUIRED

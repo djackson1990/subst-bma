@@ -1,11 +1,15 @@
 package beast.evolution.likelihood;
 
 import beast.core.Description;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.DPNtdRateSepSiteModel;
+import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.NtdBMA;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Tree;
 
 /**
  * @author Chieh-Hsi Wu
@@ -19,6 +23,19 @@ public class SepTempTreeLikelihood extends TempTreeLikelihood{
     );
 
     private DPNtdRateSepSiteModel dpNtdRateSepSiteModel;
+
+    public SepTempTreeLikelihood(){}
+
+    public SepTempTreeLikelihood(Alignment alignment,
+                              Tree tree,
+                              boolean useAmbiguities,
+                              SiteModel siteModel,
+                              BranchRateModel.Base branchRateModel,
+                              DPNtdRateSepSiteModel dpNtdRateSepSiteModel){
+        super(alignment, tree, useAmbiguities, siteModel, branchRateModel);
+        this.dpNtdRateSepSiteModel = dpNtdRateSepSiteModel;
+
+    }
     public void initAndValidate() throws Exception{
         dpNtdRateSepSiteModel = dpNtdRateSepSiteModelInput.get();
         super.initAndValidate();

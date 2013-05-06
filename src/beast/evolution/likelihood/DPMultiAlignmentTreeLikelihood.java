@@ -24,7 +24,7 @@ public class DPMultiAlignmentTreeLikelihood extends DPTreeLikelihood {
 
 
     public Input<List<Alignment>> alignmentsInput = new Input<List<Alignment>>(
-            "data",
+            "dataAlignment",
             "A list of alignments that cannot be combined into one alignment",
             new ArrayList<Alignment>(),
             Input.Validate.REQUIRED
