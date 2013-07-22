@@ -108,7 +108,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         }
         //System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
-        m_fProportionInvariant = m_siteModel.getProportianInvariant();
+        m_fProportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
         if (m_fProportionInvariant > 0) {
         	calcConstantPatternIndices(nPatterns, nStateCount);
@@ -377,7 +377,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     if (m_iConstantPattern != null) { // && !SiteModel.g_bUseOriginal) {
-                    	m_fProportionInvariant = m_siteModel.getProportianInvariant();
+                    	m_fProportionInvariant = m_siteModel.getProportionInvariant();
                     	// some portion of sites is invariant, so adjust root partials for this
                     	for (int i : m_iConstantPattern) {
                 			m_fRootPartials[i] += m_fProportionInvariant;
