@@ -79,7 +79,7 @@ public class WVTreeLikelihood extends TreeLikelihood{
         }
         //System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
-        m_fProportionInvariant = m_siteModel.getProportianInvariant();
+        m_fProportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
         if (m_fProportionInvariant > 0) {
         	calcConstantPatternIndices(nPatterns, nStateCount);

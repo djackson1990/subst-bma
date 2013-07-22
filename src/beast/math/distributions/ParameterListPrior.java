@@ -27,7 +27,7 @@ public class ParameterListPrior extends Prior{
     }
 
     boolean applyToList;
-    public void initAndValidate(){
+    public void initAndValidate() throws Exception {
         super.initAndValidate();
         applyToList = applyToListInput.get();
 
