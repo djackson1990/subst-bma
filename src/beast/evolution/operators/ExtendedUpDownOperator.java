@@ -103,9 +103,7 @@ public class ExtendedUpDownOperator extends Operator {
 
                             upParameter.setValue(Math.log(Math.exp(upVal)*scale));
 
-                            //upParameter.setValue(upVal+scaleLog);
                         }
-                        goingUp += upParameterDim;
 
                     }else{
                         throw new RuntimeException("If isExp is true, then the state node must be a real parameter.");
@@ -130,9 +128,8 @@ public class ExtendedUpDownOperator extends Operator {
                             double downVal = downParameter.getValue(j);
 
                             downParameter.setValue(Math.log(Math.exp(downVal)*scale));
-                            //downParameter.setValue(downVal-scaleLog);
+
                         }
-                        goingDown += downParameterDim;
 
                     }else{
                         throw new RuntimeException("If isExp is true, then the state node must be a real parameter.");
@@ -145,8 +142,9 @@ public class ExtendedUpDownOperator extends Operator {
 			// scale resulted in invalid StateNode, abort proposal
 			return Double.NEGATIVE_INFINITY;
 		}
-        //System.out.println(getID()+" "+goingUp+" "+goingDown);
+        //System.out.println(goingUp - goingDown );
 		return (goingUp - goingDown - 2) * Math.log(scale);
+        //return -2 * Math.log(scale);
 	}
 
 	/**
