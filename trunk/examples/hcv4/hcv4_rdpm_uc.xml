@@ -330,7 +330,7 @@
             <distribution spec="BayesianSkyline" id='skyline'>
                 <popSizes idref="skyline.popSize"/>
                 <groupSizes idref='skyline.groupSize'/>
-                <treeIntervals id="TreeIntervals" spec="ScaledTreeIntervals" tree="@tree" scaler="@mean.rate"/>
+                <treeIntervals id="TreeIntervals" spec="TreeIntervals" tree="@tree"/>
             </distribution>
             <distribution id='eml1' spec="beast.math.distributions.MarkovChainDistribution"
 				jeffreys="true"
