@@ -27,13 +27,13 @@ public class ScaledTreeWithMetaDataLogger  extends TreeWithMetaDataLogger implem
     @Override
 	public void log(int nSample, PrintStream out) {
 		// make sure we get the current version of the inputs
-        Tree tree = (Tree) m_tree.get().getCurrent();
-        Valuable metadata = m_parameter.get();
+        Tree tree = (Tree) treeInput.get().getCurrent();
+        Function metadata = parameterInput.get();
         if (metadata instanceof StateNode) {
         	metadata = ((StateNode) metadata).getCurrent();
         }
 
-        BranchRateModel.Base branchRateModel = clockModel.get();
+        BranchRateModel.Base branchRateModel = clockModelInput.get();
         // write out the log tree with meta data
         out.print("tree STATE_" + nSample + " = ");
 		tree.getRoot().sort();
@@ -49,7 +49,7 @@ public class ScaledTreeWithMetaDataLogger  extends TreeWithMetaDataLogger implem
 
 
 
-    String toNewick(Node node, Valuable metadata, BranchRateModel.Base branchRateModel, double scaleFactor) {
+    String toNewick(Node node, Function metadata, BranchRateModel.Base branchRateModel, double scaleFactor) {
         StringBuffer buf = new StringBuffer();
         if (node.getLeft() != null) {
             buf.append("(");
@@ -60,13 +60,13 @@ public class ScaledTreeWithMetaDataLogger  extends TreeWithMetaDataLogger implem
             }
             buf.append(")");
         } else {
-            buf.append(node.m_iLabel + 1);
+            buf.append(node.labelNr + 1);
         }
         if (someMetaDataNeedsLogging) {
 	        buf.append("[");
 	        if (metadata != null) {
-	            buf.append(m_sMetaDataLabel);
-	            buf.append(metadata.getArrayValue(node.m_iLabel));
+	            buf.append(metaDataLabel);
+	            buf.append(metadata.getArrayValue(node.labelNr));
 	            if (branchRateModel != null) {
 	                buf.append(",");
 	            }

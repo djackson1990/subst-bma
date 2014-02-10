@@ -54,8 +54,8 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         this.tree = tree;
         this.useAmbiguities = useAmbiguities;
         m_siteModel = siteModel;
-        m_branchRateModel = branchRateModel;
-        m_substitutionModel = (SubstitutionModel.Base)m_siteModel.getSubstitutionModel();
+        this.branchRateModel = branchRateModel;
+        substitutionModel = (SubstitutionModel.Base)m_siteModel.getSubstitutionModel();
         setup();
     }
 
@@ -88,7 +88,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
             m_branchRateModel = new StrictClockModel();
         }*/
     	m_branchLengths = new double[nodeCount];
-    	m_StoredBranchLengths = new double[nodeCount];
+    	storedBranchLengths = new double[nodeCount];
 
         int nStateCount = data.getMaxStateCount();
         //System.out.println("nStateCount: "+nStateCount);
@@ -108,24 +108,24 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         }
         //System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
-        m_fProportionInvariant = m_siteModel.getProportionInvariant();
+        proportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
-        if (m_fProportionInvariant > 0) {
+        if (proportionInvariant > 0) {
         	calcConstantPatternIndices(nPatterns, nStateCount);
         }
         addedPatternIds = new int[nPatterns];
         initCore();
 
-        m_fPatternLogLikelihoods = new double[nPatterns];
+        patternLogLikelihoods = new double[nPatterns];
         storedPatternLogLikelihoods = new double[nPatterns];
         m_fRootPartials = new double[nPatterns * nStateCount];
-        m_nMatrixSize = (nStateCount +1)* (nStateCount+1);
-        m_fProbabilities = new double[(nStateCount +1)* (nStateCount+1)];
+        matrixSize = (nStateCount +1)* (nStateCount+1);
+        probabilities = new double[(nStateCount +1)* (nStateCount+1)];
         //System.out.println("m_fProbabilities: "+m_fProbabilities.length+" "+m_data.get());
-        Arrays.fill(m_fProbabilities, 1.0);
+        Arrays.fill(probabilities, 1.0);
 
         if (data instanceof AscertainedAlignment) {
-            m_bAscertainedSitePatterns = true;
+            useAscertainedSitePatterns = true;
         }
     }
 
@@ -148,7 +148,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         } else {
             setStates(tree.getRoot(), data.getPatternCount());
         }
-        m_nHasDirt = Tree.IS_FILTHY;
+        hasDirt = Tree.IS_FILTHY;
         for (int i = 0; i < intNodeCount; i++) {
             m_likelihoodCore.createNodePartials(extNodeCount + i);
         }
@@ -204,7 +204,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         //((NtdBMA)m_substitutionModel).printDetails();
         boolean[] trueUnmasked = m_likelihoodCore.getUnmasked();
         //System.out.println("m_nHasDirt: "+m_nHasDirt);
-        if(m_nHasDirt > -1){
+        if(hasDirt > -1){
             //System.out.println("addedPatternIdCount: "+addedPatternIdCount);
             if(addedPatternIdCount > 0){
                 boolean[] tempUnmasked = new boolean[patternWeights.length];
@@ -253,7 +253,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
             //System.out.println("Switch off scaling");
             m_likelihoodCore.setUseScaling(1.0);
             m_likelihoodCore.unstore();
-            m_nHasDirt = Tree.IS_FILTHY;
+            hasDirt = Tree.IS_FILTHY;
             X *= 2;
            	traverse(tree.getRoot());
             calcLogP();
@@ -263,7 +263,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
             //System.out.println("Turning on scaling to prevent numeric instability " + m_fScale);
             m_likelihoodCore.setUseScaling(m_fScale);
             m_likelihoodCore.unstore();
-            m_nHasDirt = Tree.IS_FILTHY;
+            hasDirt = Tree.IS_FILTHY;
            	traverse(tree.getRoot());
             calcLogP();
         }
@@ -282,10 +282,10 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         System.out.println("mu: "+((QuietSiteModel)m_siteModel).getRateParameter()+" "+((QuietSiteModel)m_siteModel).getRateParameter().getIDNumber());
         }*/
         logP = 0.0;
-        if (m_bAscertainedSitePatterns) {
-            double ascertainmentCorrection = ((AscertainedAlignment)data).getAscertainmentCorrection(m_fPatternLogLikelihoods);
+        if (useAscertainedSitePatterns) {
+            double ascertainmentCorrection = ((AscertainedAlignment)data).getAscertainmentCorrection(patternLogLikelihoods);
             for (int i = 0; i < data.getPatternCount(); i++) {
-            	logP += (m_fPatternLogLikelihoods[i] - ascertainmentCorrection) * patternWeights[i];
+            	logP += (patternLogLikelihoods[i] - ascertainmentCorrection) * patternWeights[i];
 
             }
         } else {
@@ -303,7 +303,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
                     throw new RuntimeException("WRONG!");
                 }*/
                 //System.out.println(m_data.get().getID()+" pattern "+i+" Likelihood: "+m_fPatternLogLikelihoods[i]+" "+patternWeights[i]);
-	            logP += m_fPatternLogLikelihoods[i] * patternWeights[i];
+	            logP += patternLogLikelihoods[i] * patternWeights[i];
                 //System.out.println(m_fPatternLogLikelihoods[i] +" "+ patternWeights[i]);
                 //System.out.println("m_fPatternLogLikelihoods "+i+": "+m_fPatternLogLikelihoods[i]+" "+ patternWeights[i]);
 	        }
@@ -314,24 +314,24 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     /* Assumes there IS a branch rate model as opposed to traverse() */
     int traverse(Node node) throws Exception {
 
-        int update = (node.isDirty()| m_nHasDirt);
+        int update = (node.isDirty()| hasDirt);
         //System.out.println("update node: "+update);
         int iNode = node.getNr();
 
-        double branchRate = m_branchRateModel.getRateForBranch(node);
+        double branchRate = branchRateModel.getRateForBranch(node);
         double branchTime = node.getLength() * branchRate;
         m_branchLengths[iNode] = branchTime;
 
         // First update the transition probability matrix(ices) for this branch
-        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[iNode])) {
+        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != storedBranchLengths[iNode])) {
             Node parent = node.getParent();
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
                 double jointBranchRate = m_siteModel.getRateForCategory(i, node) * branchRate;
                 //System.out.println(getID()+" mu: "+m_siteModel.getRateForCategory(i, node)+" "+branchRate);
                 //System.out.println(m_data.get()+ " update node: "+jointBranchRate);
-                m_substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), jointBranchRate, m_fProbabilities);
-                m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
+                substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), jointBranchRate, probabilities);
+                m_likelihoodCore.setNodeMatrix(iNode, i, probabilities);
             }
             update |= Tree.IS_DIRTY;
         }
@@ -371,20 +371,20 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
                     // No parent this is the root of the beast.tree -
                     // calculate the pattern likelihoods
                     double[] frequencies = //m_pFreqs.get().
-                            m_substitutionModel.getFrequencies();
+                            substitutionModel.getFrequencies();
 
                     double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
-                    if (m_iConstantPattern != null) { // && !SiteModel.g_bUseOriginal) {
-                    	m_fProportionInvariant = m_siteModel.getProportionInvariant();
+                    if (constantPattern != null) { // && !SiteModel.g_bUseOriginal) {
+                    	proportionInvariant = m_siteModel.getProportionInvariant();
                     	// some portion of sites is invariant, so adjust root partials for this
-                    	for (int i : m_iConstantPattern) {
-                			m_fRootPartials[i] += m_fProportionInvariant;
+                    	for (int i : constantPattern) {
+                			m_fRootPartials[i] += proportionInvariant;
                     	}
                     }
 
-                    m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
+                    m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, patternLogLikelihoods);
                 }
 
             }
@@ -399,7 +399,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
             return Double.NaN;
         }
 
-        return m_fPatternLogLikelihoods[iPat];
+        return patternLogLikelihoods[iPat];
     }
     /**
      * check state for changed variables and update temp results if necessary *
@@ -408,33 +408,33 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     protected boolean requiresRecalculation() {
         //printThings();
 
-        m_nHasDirt = Tree.IS_CLEAN;
+        hasDirt = Tree.IS_CLEAN;
 
         if(weightsChanged){
 
             if(addedPatternIdCount > 0){
-                m_nHasDirt = Tree.IS_FILTHY;
+                hasDirt = Tree.IS_FILTHY;
             }else{
-                m_nHasDirt = -1;
+                hasDirt = -1;
             }
             //System.out.println("flag2");
             return true;
         }
 
-        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_FILTHY;
+        if (branchRateModel != null && branchRateModel.isDirtyCalculation()) {
+            hasDirt = Tree.IS_FILTHY;
             //System.out.println("flag3");
             return true;
         }
 
         if (data.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_FILTHY;
+            hasDirt = Tree.IS_FILTHY;
             //System.out.println("flag4");
             return true;
         }
 
         if (m_siteModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_DIRTY;
+            hasDirt = Tree.IS_DIRTY;
             //System.out.println("flag5");
             return true;
         }
@@ -487,7 +487,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         System.arraycopy(patternWeights,0,storedPatternWeights,0,patternWeights.length);
         //System.err.println("m_fPatternLogLikelihoods: "+m_fPatternLogLikelihoods);
         //System.err.println("storedPatternLogLikelihoods: "+storedPatternLogLikelihoods);
-        System.arraycopy(m_fPatternLogLikelihoods,0,storedPatternLogLikelihoods,0,m_fPatternLogLikelihoods.length);
+        System.arraycopy(patternLogLikelihoods,0,storedPatternLogLikelihoods,0,patternLogLikelihoods.length);
         super.store();
     }
 
@@ -502,8 +502,8 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
         patternWeights = storedPatternWeights;
         storedPatternWeights = temp1;
 
-        double[] temp2 = m_fPatternLogLikelihoods;
-        m_fPatternLogLikelihoods = storedPatternLogLikelihoods;
+        double[] temp2 = patternLogLikelihoods;
+        patternLogLikelihoods = storedPatternLogLikelihoods;
         storedPatternLogLikelihoods = temp2;
 
         weightsChanged = false;
@@ -537,7 +537,7 @@ public class NewWVTreeLikelihood extends QuietTreeLikelihood {
     }
 
     public void printThings(){
-        System.out.println("modelID: "+((SwitchingNtdBMA)m_substitutionModel).getIDNumber());
+        System.out.println("modelID: "+((SwitchingNtdBMA)substitutionModel).getIDNumber());
         System.out.println("modelID: " + ((QuietSiteModel) m_siteModel).getRateParameter().getIDNumber()+" "+((QuietSiteModel) m_siteModel).isDirtyCalculation());
     }
 

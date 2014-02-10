@@ -42,7 +42,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
 
         //setup weights
         if(patternWeightInput.get() == null){
-            patternWeights = m_data.get().getWeights();
+            patternWeights = dataInput.get().getWeights();
 
         }else{
             IntegerParameter weightsParameter = patternWeightInput.get();
@@ -70,9 +70,9 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
         }
             System.out.println();*/
 
-        Tree tree = m_tree.get();
+        Tree tree = (Tree) treeInput.get();
         //System.err.println("m_nHasDirt: "+m_nHasDirt);
-        m_nHasDirt = Tree.IS_FILTHY;
+        hasDirt = Tree.IS_FILTHY;
        	traverse(tree.getRoot());
 
 
@@ -83,7 +83,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             //System.err.println("Switch off scaling");
             m_likelihoodCore.setUseScaling(1.0);
             m_likelihoodCore.unstore();
-            m_nHasDirt = Tree.IS_FILTHY;
+            hasDirt = Tree.IS_FILTHY;
             X *= 2;
            	traverse(tree.getRoot());
             calcLogP();
@@ -94,7 +94,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             System.err.println("Turning on scaling to prevent numeric instability " + m_fScale);
             m_likelihoodCore.setUseScaling(m_fScale);
             m_likelihoodCore.unstore();
-            m_nHasDirt = Tree.IS_FILTHY;
+            hasDirt = Tree.IS_FILTHY;
            	traverse(tree.getRoot());
             calcLogP();
             //System.err.println(getID()+": "+logP);
@@ -114,7 +114,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
         double[] siteLogP = new double[sites.length];
         calculateLogP(modelParameters,modelCode,freqs,rate);
         for(int i = 0; i < sites.length;i++){
-            siteLogP[i] = m_fPatternLogLikelihoods[m_data.get().getPatternIndex(sites[i])];
+            siteLogP[i] = patternLogLikelihoods[dataInput.get().getPatternIndex(sites[i])];
         }
         return siteLogP;
     }
@@ -134,7 +134,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             for(int i = 0; i < sites.length;i++){
                 if(sites[i] != exceptSite){
                     //System.out.println(sites[i] +" "+exceptSite);
-                    siteLogP[k++] = m_fPatternLogLikelihoods[m_data.get().getPatternIndex(sites[i])];
+                    siteLogP[k++] = patternLogLikelihoods[dataInput.get().getPatternIndex(sites[i])];
                 }
             }
 
@@ -153,7 +153,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             RealParameter rate) throws Exception{
 
 
-        SwitchingNtdBMA  substModel = (SwitchingNtdBMA)m_substitutionModel;
+        SwitchingNtdBMA  substModel = (SwitchingNtdBMA)substitutionModel;
         (substModel.getLogKappa()).setValueQuietly(0, modelParameters.getValue(0));
         (substModel.getLogTN()).setValueQuietly(0,modelParameters.getValue(1));
         (substModel.getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
@@ -188,7 +188,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             for(int i = 0; i < sites.length;i++){
                 if(sites[i] != exceptSite){
                     //System.out.println(sites[i] +" "+exceptSite);
-                    siteLogP[k++] = m_fPatternLogLikelihoods[m_data.get().getPatternIndex(sites[i])];
+                    siteLogP[k++] = patternLogLikelihoods[dataInput.get().getPatternIndex(sites[i])];
                 }
             }
 
@@ -208,7 +208,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
         double[] siteLogP = new double[sites.length];
         calculateLogP(modelParameters,modelCode,freqs);
         for(int i = 0; i < sites.length;i++){
-            siteLogP[i] = m_fPatternLogLikelihoods[m_data.get().getPatternIndex(sites[i])];
+            siteLogP[i] = patternLogLikelihoods[dataInput.get().getPatternIndex(sites[i])];
         }
         return siteLogP;
     }
@@ -219,7 +219,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             RealParameter freqs) throws Exception{
 
 
-                SwitchingNtdBMA  substModel = (SwitchingNtdBMA)m_substitutionModel;
+                SwitchingNtdBMA  substModel = (SwitchingNtdBMA)substitutionModel;
                 (substModel.getLogKappa()).setValueQuietly(0,modelParameters.getValue(0));
                 (substModel.getLogTN()).setValueQuietly(0,modelParameters.getValue(1));
                 (substModel.getLogAC()).setValueQuietly(0,modelParameters.getValue(2));
@@ -249,7 +249,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             ((DummySiteModel)m_siteModel).getRateParameter().setValueQuietly(0,rateParameter.getValue());
             calculateLogP();
             for(int i = 0; i < sites.length;i++){
-                siteLogP[i] = m_fPatternLogLikelihoods[m_data.get().getPatternIndex(sites[i])];
+                siteLogP[i] = patternLogLikelihoods[dataInput.get().getPatternIndex(sites[i])];
                 //System.out.println(siteLogP[i]);
             }
         }catch(Exception e){
@@ -270,7 +270,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
             int k = 0;
             for(int i = 0; i < sites.length;i++){
                 if(sites[i] != exceptSite){                    
-                    siteLogP[k++] = m_fPatternLogLikelihoods[m_data.get().getPatternIndex(sites[i])];
+                    siteLogP[k++] = patternLogLikelihoods[dataInput.get().getPatternIndex(sites[i])];
                 }
             }
         }catch(Exception e){
@@ -297,10 +297,10 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
 
 
     public void setupPatternWeightsFromSites(int[] sites){
-        int[] tempWeights = new int[m_data.get().getPatternCount()];
+        int[] tempWeights = new int[dataInput.get().getPatternCount()];
         int patIndex;
         for(int i = 0; i < sites.length; i++){
-            patIndex = m_data.get().getPatternIndex(sites[i]);
+            patIndex = dataInput.get().getPatternIndex(sites[i]);
             tempWeights[patIndex] = 1;
         }
 
@@ -308,7 +308,7 @@ public class TempWVTreeLikelihood extends NewWVTreeLikelihood{
     }
 
     public double getCurrSiteLikelihood(int siteIndex){
-        return m_fPatternLogLikelihoods[m_data.get().getPatternIndex(siteIndex)];
+        return patternLogLikelihoods[dataInput.get().getPatternIndex(siteIndex)];
 
     }
    

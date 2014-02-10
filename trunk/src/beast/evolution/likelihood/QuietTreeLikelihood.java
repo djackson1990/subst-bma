@@ -36,8 +36,8 @@ public class QuietTreeLikelihood extends TreeLikelihood{
         this.tree = tree;
         this.useAmbiguities = useAmbiguities;
         m_siteModel = siteModel;
-        m_branchRateModel = branchRateModel;
-        m_substitutionModel = (SubstitutionModel.Base)m_siteModel.getSubstitutionModel();
+        this.branchRateModel = branchRateModel;
+        substitutionModel = (SubstitutionModel.Base)m_siteModel.getSubstitutionModel();
         setup();
 
     }
@@ -45,20 +45,20 @@ public class QuietTreeLikelihood extends TreeLikelihood{
     @Override
     public void initAndValidate() throws Exception {
 
-        data = m_data.get();
-        tree = m_tree.get();
-        if (!(m_pSiteModel.get() instanceof SiteModel.Base)) {
+        data = dataInput.get();
+        tree = (Tree) treeInput.get();
+        if (!(siteModelInput.get() instanceof SiteModel.Base)) {
         	throw new Exception ("siteModel input should be of type SiteModel.Base");
         }
-        m_siteModel = (SiteModel.Base) m_pSiteModel.get();
-        if (m_pBranchRateModel.get() != null) {
-            m_branchRateModel = m_pBranchRateModel.get();
+        m_siteModel = (SiteModel.Base) siteModelInput.get();
+        if (branchRateModelInput.get() != null) {
+            branchRateModel = branchRateModelInput.get();
         } else {
-            m_branchRateModel = new StrictClockModel();
+            branchRateModel = new StrictClockModel();
         }
         useAmbiguities = m_useAmbiguities.get();
         scale = scaling.get();
-        m_substitutionModel = (SubstitutionModel.Base) m_siteModel.getSubstitutionModel();
+        substitutionModel = (SubstitutionModel.Base) m_siteModel.getSubstitutionModel();
         // sanity check: alignment should have same #taxa as tree
         if (data.getNrTaxa() != tree.getLeafNodeCount()) {
             throw new Exception("The number of nodes in the tree does not match the number of sequences");
@@ -89,33 +89,33 @@ public class QuietTreeLikelihood extends TreeLikelihood{
 
 
         m_branchLengths = new double[nodeCount];
-        m_StoredBranchLengths = new double[nodeCount];
+        storedBranchLengths = new double[nodeCount];
 
         int nStateCount = data.getMaxStateCount();
         int nPatterns = data.getPatternCount();
         if (nStateCount == 4) {
-            m_likelihoodCore = new CHWLikelihoodCore4();
+            likelihoodCore = new CHWLikelihoodCore4();
         } else {
-            m_likelihoodCore = new CHWLikelihoodCore(nStateCount);
+            likelihoodCore = new CHWLikelihoodCore(nStateCount);
         }
-        System.out.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
+        System.out.println("TreeLikelihood uses " + likelihoodCore.getClass().getName());
 
-        m_fProportionInvariant = m_siteModel.getProportionInvariant();
+        proportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
-        if (m_fProportionInvariant > 0) {
+        if (proportionInvariant > 0) {
             calcConstantPatternIndices(nPatterns, nStateCount);
         }
 
         initCore();
 
-        m_fPatternLogLikelihoods = new double[nPatterns];
+        patternLogLikelihoods = new double[nPatterns];
         m_fRootPartials = new double[nPatterns * nStateCount];
-        m_nMatrixSize = (nStateCount + 1) * (nStateCount + 1);
-        m_fProbabilities = new double[(nStateCount + 1) * (nStateCount + 1)];
-        Arrays.fill(m_fProbabilities, 1.0);
+        matrixSize = (nStateCount + 1) * (nStateCount + 1);
+        probabilities = new double[(nStateCount + 1) * (nStateCount + 1)];
+        Arrays.fill(probabilities, 1.0);
 
         if (data instanceof AscertainedAlignment) {
-            m_bAscertainedSitePatterns = true;
+            useAscertainedSitePatterns = true;
         }
 
     }
@@ -129,7 +129,7 @@ public class QuietTreeLikelihood extends TreeLikelihood{
      * // the 'site invariant' category.
      */
     void calcConstantPatternIndices(final int nPatterns, final int nStateCount) {
-        m_iConstantPattern = new ArrayList<Integer>();
+        constantPattern = new ArrayList<Integer>();
         for (int i = 0; i < nPatterns; i++) {
             final int[] pattern = data.getPattern(i);
             final boolean[] bIsInvariant = new boolean[nStateCount];
@@ -144,7 +144,7 @@ public class QuietTreeLikelihood extends TreeLikelihood{
             }
             for (int k = 0; k < nStateCount; k++) {
                 if (bIsInvariant[k]) {
-                    m_iConstantPattern.add(i * nStateCount + k);
+                    constantPattern.add(i * nStateCount + k);
                 }
             }
         }
@@ -152,7 +152,7 @@ public class QuietTreeLikelihood extends TreeLikelihood{
 
     void initCore() {
         final int nodeCount = tree.getNodeCount();
-        m_likelihoodCore.initialize(
+        likelihoodCore.initialize(
                 nodeCount,
                 data.getPatternCount(),
                 m_siteModel.getCategoryCount(),
@@ -167,9 +167,9 @@ public class QuietTreeLikelihood extends TreeLikelihood{
         } else {
             setStates(tree.getRoot(), data.getPatternCount());
         }
-        m_nHasDirt = Tree.IS_FILTHY;
+        hasDirt = Tree.IS_FILTHY;
         for (int i = 0; i < intNodeCount; i++) {
-            m_likelihoodCore.createNodePartials(extNodeCount + i);
+            likelihoodCore.createNodePartials(extNodeCount + i);
         }
     }
 
@@ -184,7 +184,7 @@ public class QuietTreeLikelihood extends TreeLikelihood{
             for (i = 0; i < patternCount; i++) {
                 states[i] = data.getPattern(iTaxon, i);
             }
-            m_likelihoodCore.setNodeStates(node.getNr(), states);
+            likelihoodCore.setNodeStates(node.getNr(), states);
 
         } else {
             setStates(node.getLeft(), patternCount);
@@ -211,7 +211,7 @@ public class QuietTreeLikelihood extends TreeLikelihood{
                     partials[k++] = (stateSet[iState] ? 1.0 : 0.0);
                 }
             }
-            m_likelihoodCore.setNodePartials(node.getNr(), partials);
+            likelihoodCore.setNodePartials(node.getNr(), partials);
 
         } else {
             setPartials(node.getLeft(), patternCount);
@@ -221,8 +221,8 @@ public class QuietTreeLikelihood extends TreeLikelihood{
 
     @Override
     public double calculateLogP() throws Exception {
-        if (m_beagle != null) {
-            logP = m_beagle.calculateLogP();
+        if (beagle != null) {
+            logP = beagle.calculateLogP();
             return logP;
         }
 
@@ -230,7 +230,7 @@ public class QuietTreeLikelihood extends TreeLikelihood{
         calcLogP();
 
         m_nScale++;
-        if (logP > 0 || (m_likelihoodCore.getUseScaling() && m_nScale > X)) {
+        if (logP > 0 || (likelihoodCore.getUseScaling() && m_nScale > X)) {
 //            System.err.println("Switch off scaling");
 //            m_likelihoodCore.setUseScaling(1.0);
 //            m_likelihoodCore.unstore();
@@ -243,9 +243,9 @@ public class QuietTreeLikelihood extends TreeLikelihood{
             m_nScale = 0;
             m_fScale *= 1.01;
             System.err.println("Turning on scaling to prevent numeric instability " + m_fScale);
-            m_likelihoodCore.setUseScaling(m_fScale);
-            m_likelihoodCore.unstore();
-            m_nHasDirt = Tree.IS_FILTHY;
+            likelihoodCore.setUseScaling(m_fScale);
+            likelihoodCore.unstore();
+            hasDirt = Tree.IS_FILTHY;
             traverse(tree.getRoot());
             calcLogP();
             return logP;
@@ -255,14 +255,14 @@ public class QuietTreeLikelihood extends TreeLikelihood{
 
     void calcLogP() throws Exception {
         logP = 0.0;
-        if (m_bAscertainedSitePatterns) {
-            final double ascertainmentCorrection = ((AscertainedAlignment) data).getAscertainmentCorrection(m_fPatternLogLikelihoods);
+        if (useAscertainedSitePatterns) {
+            final double ascertainmentCorrection = ((AscertainedAlignment) data).getAscertainmentCorrection(patternLogLikelihoods);
             for (int i = 0; i < data.getPatternCount(); i++) {
-                logP += (m_fPatternLogLikelihoods[i] - ascertainmentCorrection) * data.getPatternWeight(i);
+                logP += (patternLogLikelihoods[i] - ascertainmentCorrection) * data.getPatternWeight(i);
             }
         } else {
             for (int i = 0; i < data.getPatternCount(); i++) {
-                logP += m_fPatternLogLikelihoods[i] * data.getPatternWeight(i);
+                logP += patternLogLikelihoods[i] * data.getPatternWeight(i);
             }
         }
     }
@@ -275,21 +275,21 @@ public class QuietTreeLikelihood extends TreeLikelihood{
      */
     @Override
     protected boolean requiresRecalculation() {
-        if (m_beagle != null) {
-            return m_beagle.requiresRecalculation();
+        if (beagle != null) {
+            return beagle.requiresRecalculation();
         }
-        m_nHasDirt = Tree.IS_CLEAN;
+        hasDirt = Tree.IS_CLEAN;
 
         if (data.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_FILTHY;
+            hasDirt = Tree.IS_FILTHY;
             return true;
         }
         if (m_siteModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_DIRTY;
+            hasDirt = Tree.IS_DIRTY;
             return true;
         }
-        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_DIRTY;
+        if (branchRateModel != null && branchRateModel.isDirtyCalculation()) {
+            hasDirt = Tree.IS_DIRTY;
             return true;
         }
         return tree.somethingIsDirty();

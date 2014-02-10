@@ -96,9 +96,8 @@
         <dpValRate idref="dpValuable.rate"/>
     </input>
 
-        <tree id="tree">
-    <tree estimate="false" id="RandomTree" name="initial" spec="beast.evolution.tree.RandomTree">
-            <data idref="ebola" name="taxa"/>
+    <tree estimate="true" id="tree" spec="beast.evolution.tree.RandomTree">
+            <taxa idref="ebola"/>
             <populationModel spec="ConstantPopulation">
                 <parameter dimension="1" estimate="false" name="popSize" value="25.0"/>
             </populationModel>
@@ -137,10 +136,8 @@
                 U23152_RESTON_1989=1989,
                 AF034645_PENNSYLVANIA_1989=1989
                 '>
-                <taxa spec='beast.evolution.alignment.TaxonSet'  alignment='@ebola'/>
-            </trait>
-        </tree>
-        <trait idref="datetrait"/>
+	        <taxa id='taxa' spec='beast.evolution.alignment.TaxonSet'  alignment='@ebola'/>
+        </trait>
     </tree>
 
     <input spec="StrictClockModel" id="strict.clock">

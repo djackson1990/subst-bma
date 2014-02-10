@@ -50,7 +50,7 @@ public class ScaledTreeIntervals extends TreeIntervals {
      */
     @Override
     protected boolean requiresRecalculation() {
-        if(m_tree.get().somethingIsDirty()){
+        if(treeInput.get().somethingIsDirty()){
             treeChanged = true;
 
         }
@@ -77,7 +77,7 @@ public class ScaledTreeIntervals extends TreeIntervals {
     }
 
     protected void calculateRawIntervals(){
-        Tree tree = m_tree.get();
+        Tree tree = treeInput.get();
 
         final int nodeCount = tree.getNodeCount();
 

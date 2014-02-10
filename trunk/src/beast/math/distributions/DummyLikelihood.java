@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 @Description("A class that is well uselful for testing things.")
 public class DummyLikelihood extends Distribution {
-    public Input<List<Plugin>> calcNodes = new  Input<List<Plugin>>("plugin","Some sort of input", new ArrayList<Plugin>());
+    public Input<List<BEASTObject>> calcNodes = new  Input<List<BEASTObject>>("plugin","Some sort of input", new ArrayList<BEASTObject>());
 
 	@Override
 	public void initAndValidate() {}

@@ -86,6 +86,8 @@
 		<!-- Compile the java code from ${srcSubstBMA} into ${buildSubstBMA} /bin -->
 		<javac srcdir="${srcSubstBMA}" destdir="${buildSubstBMA}" classpathref="classpath" 
 		       fork="true"
+               source="1.6"
+		       target="1.6"
 		       memoryinitialsize="256m"
 		       memorymaximumsize="256m">
 			<include name="beast/**/**" />
