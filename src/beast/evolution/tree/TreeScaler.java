@@ -35,7 +35,7 @@ public class TreeScaler extends Tree implements StateNodeInitialiser{
             scaleFactor = scaleFactorInput.get().getScaleFactor();
         }else{
             double scaleToHeight = scaleToHeightInput.get();
-            double rootHeight = tree.getRoot().m_fHeight;
+            double rootHeight = tree.getRoot().height;
             scaleFactor = scaleToHeight/rootHeight;
 
         }
@@ -60,13 +60,13 @@ public class TreeScaler extends Tree implements StateNodeInitialiser{
     public void scaleNodeHeight(Node node, double fScale){
         if (!node.isLeaf()) {
             //System.err.println(node.m_fHeight);
-            node.m_fHeight *= fScale;
+            node.height *= fScale;
             //System.err.println(node.m_fHeight);
             scaleNodeHeight(node.getLeft(),fScale);
             if (node.getRight() != null) {
                 scaleNodeHeight(node.getRight(),fScale);
             }
-            if (node.m_fHeight <node.getLeft().m_fHeight || node.m_fHeight < node.getRight().m_fHeight) {
+            if (node.height <node.getLeft().height || node.height < node.getRight().height) {
                 throw new RuntimeException("Scale gives negative branch length");
             }
         }
@@ -77,8 +77,7 @@ public class TreeScaler extends Tree implements StateNodeInitialiser{
 	public void initStateNodes() {}
 
 	@Override
-	public List<StateNode> getInitialisedStateNodes() {
-		List<StateNode> stateNodes = new ArrayList<StateNode>();		
-		return stateNodes;
+	public void getInitialisedStateNodes(List<StateNode> stateNodes) {
+		// TODO Auto-generated method stub
 	}
 }

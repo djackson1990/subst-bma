@@ -1,6 +1,6 @@
 package beast.math.distributions;
 
-import beast.core.Valuable;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Description;
 import beast.core.parameter.DPPointer;
@@ -19,7 +19,7 @@ public class ContinuousCategoricalDistribution extends ParametricDistribution{
 
     }
 
-    public double calcLogP(Valuable val){
+    public double calcLogP(Function val){
         //System.err.println("logDensity");
         if(!(val instanceof DPPointer)){
             throw new RuntimeException("This distriubtion only applies to DPValuable");

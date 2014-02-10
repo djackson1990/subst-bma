@@ -96,8 +96,7 @@
         <dpValRate idref="dpValuable.rate"/>
     </input>
 
-        <tree id="tree">
-    <tree estimate="false" id="RandomTree" name="initial" spec="beast.evolution.tree.RandomTree">
+    <tree id="tree" name="initial" spec="beast.evolution.tree.RandomTree">
             <data idref="ebola" name="taxa"/>
             <populationModel spec="ConstantPopulation">
                 <parameter dimension="1" estimate="false" name="popSize" value="25.0"/>
@@ -140,8 +139,6 @@
                 <taxa spec='beast.evolution.alignment.TaxonSet'  alignment='@ebola'/>
             </trait>
         </tree>
-        <trait idref="datetrait"/>
-    </tree>
 
     <input spec="StrictClockModel" id="strict.clock">
         <input name="clock.rate" value="1.0"/>

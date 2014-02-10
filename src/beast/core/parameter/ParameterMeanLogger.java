@@ -3,7 +3,7 @@ package beast.core.parameter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.tree.TreeHeightValuable;
 
 import java.io.PrintStream;
@@ -13,7 +13,7 @@ import java.util.logging.StreamHandler;
  * @author Chieh-Hsi Wu
  */
 @Description("Use this class to print the mean value of a ParameterList.")
-public class ParameterMeanLogger extends Plugin implements Loggable {
+public class ParameterMeanLogger extends BEASTObject implements Loggable {
     //ParameterList
     public Input<ParameterList> paramListInput = new Input<ParameterList>(
             "paramList",

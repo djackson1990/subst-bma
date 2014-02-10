@@ -24,9 +24,9 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
     public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories, boolean useAmbiguities){
         super.initialize(nNodeCount, nPatternCount, nMatrixCount, bIntegrateCategories, useAmbiguities);
 
-        if(unmasked.length != m_nPatterns){
+        if(unmasked.length != nrOfPatterns){
             throw new RuntimeException("The length of the unmasked ("+unmasked.length+
-                    ") array needs to be the same as the number of patterns("+m_nPatterns+").");
+                    ") array needs to be the same as the number of patterns("+nrOfPatterns+").");
         }
     }
 
@@ -38,55 +38,55 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 												double[] fPartials3){
 		int v = 0;
 
-		for (int l = 0; l < m_nMatrices; l++) {
+		for (int l = 0; l < nrOfMatrices; l++) {
 
-			for (int k = 0; k < m_nPatterns; k++) {
+			for (int k = 0; k < nrOfPatterns; k++) {
                 if(unmasked[k]){
 				    int state1 = iStates1[k];
 				    int state2 = iStates2[k];
 
-				    int w = l * m_nMatrixSize;
+				    int w = l * matrixSize;
 
-                    if (state1 < m_nStates && state2 < m_nStates) {
+                    if (state1 < nrOfStates && state2 < nrOfStates) {
 
-				    	for (int i = 0; i < m_nStates; i++) {
+				    	for (int i = 0; i < nrOfStates; i++) {
 
 				    		fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
 
 				    		v++;
-				    		w += m_nStates;
+				    		w += nrOfStates;
 				    	}
 
-				    } else if (state1 < m_nStates) {
+				    } else if (state1 < nrOfStates) {
 				    	// child 2 has a gap or unknown state so treat it as unknown
 
-				    	for (int i = 0; i < m_nStates; i++) {
+				    	for (int i = 0; i < nrOfStates; i++) {
 
 				    		fPartials3[v] = fMatrices1[w + state1];
 
 				    		v++;
-				    		w += m_nStates;
+				    		w += nrOfStates;
 				    	}
-				    } else if (state2 < m_nStates) {
+				    } else if (state2 < nrOfStates) {
 				    	// child 2 has a gap or unknown state so treat it as unknown
 
-				    	for (int i = 0; i < m_nStates; i++) {
+				    	for (int i = 0; i < nrOfStates; i++) {
 
 				    		fPartials3[v] = fMatrices2[w + state2];
 
 				    		v++;
-				    		w += m_nStates;
+				    		w += nrOfStates;
 				    	}
 				    } else {
 				    	// both children have a gap or unknown state so set partials to 1
 
-				    	for (int j = 0; j < m_nStates; j++) {
+				    	for (int j = 0; j < nrOfStates; j++) {
 				    		fPartials3[v] = 1.0;
 				    		v++;
 				    	}
 				    }
                 }else{
-                    v += m_nStates;
+                    v += nrOfStates;
                 }
 			}
 		}
@@ -104,22 +104,22 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 		int u = 0;
 		int v = 0;
 
-		for (int l = 0; l < m_nMatrices; l++) {
-			for (int k = 0; k < m_nPatterns; k++) {
+		for (int l = 0; l < nrOfMatrices; l++) {
+			for (int k = 0; k < nrOfPatterns; k++) {
                 if(unmasked[k]){
 				    int state1 = iStates1[k];
 
-                    int w = l * m_nMatrixSize;
+                    int w = l * matrixSize;
 
-				    if (state1 < m_nStates) {
+				    if (state1 < nrOfStates) {
 
 
-				    	for (int i = 0; i < m_nStates; i++) {
+				    	for (int i = 0; i < nrOfStates; i++) {
 
 				    		tmp = fMatrices1[w + state1];
 
 				    		sum = 0.0;
-				    		for (int j = 0; j < m_nStates; j++) {
+				    		for (int j = 0; j < nrOfStates; j++) {
 				    			sum += fMatrices2[w] * fPartials2[v + j];
 				    			w++;
 				    		}
@@ -128,14 +128,14 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 				    		u++;
 				    	}
 
-				    	v += m_nStates;
+				    	v += nrOfStates;
 				    } else {
 				    	// Child 1 has a gap or unknown state so don't use it
 
-				    	for (int i = 0; i < m_nStates; i++) {
+				    	for (int i = 0; i < nrOfStates; i++) {
 
 				    		sum = 0.0;
-				    		for (int j = 0; j < m_nStates; j++) {
+				    		for (int j = 0; j < nrOfStates; j++) {
 				    			sum += fMatrices2[w] * fPartials2[v + j];
 				    			w++;
 				    		}
@@ -144,11 +144,11 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 				    		u++;
 				    	}
 
-				    	v += m_nStates;
+				    	v += nrOfStates;
 				    }
                 }else{
-                    u += m_nStates;
-                    v += m_nStates;
+                    u += nrOfStates;
+                    v += nrOfStates;
                 }
 			}
 		}
@@ -166,17 +166,17 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 		int u = 0;
 		int v = 0;
 
-		for (int l = 0; l < m_nMatrices; l++) {
+		for (int l = 0; l < nrOfMatrices; l++) {
 
-			for (int k = 0; k < m_nPatterns; k++) {
+			for (int k = 0; k < nrOfPatterns; k++) {
                 if(unmasked[k]){
-                    int w = l * m_nMatrixSize;
+                    int w = l * matrixSize;
 
-				    for (int i = 0; i < m_nStates; i++) {
+				    for (int i = 0; i < nrOfStates; i++) {
 
 				    	sum1 = sum2 = 0.0;
 
-				    	for (int j = 0; j < m_nStates; j++) {
+				    	for (int j = 0; j < nrOfStates; j++) {
 				    		sum1 += fMatrices1[w] * fPartials1[v + j];
 				    		sum2 += fMatrices2[w] * fPartials2[v + j];
 
@@ -186,10 +186,10 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 				    	fPartials3[u] = sum1 * sum2;
 				    	u++;
 				    }
-				    v += m_nStates;
+				    v += nrOfStates;
                 }else{
-                    v += m_nStates;
-                    u += m_nStates;
+                    v += nrOfStates;
+                    u += nrOfStates;
                 }
 			}
 		}
@@ -205,53 +205,53 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 												double[] fPartials3, int[] iMatrixMap){
 		int v = 0;
 
-		for (int k = 0; k < m_nPatterns; k++) {
+		for (int k = 0; k < nrOfPatterns; k++) {
             if(unmasked[k]){
 			    int state1 = iStates1[k];
 			    int state2 = iStates2[k];
 
-			    int w = iMatrixMap[k] * m_nMatrixSize;
+			    int w = iMatrixMap[k] * matrixSize;
 
-			    if (state1 < m_nStates && state2 < m_nStates) {
+			    if (state1 < nrOfStates && state2 < nrOfStates) {
 
-			    	for (int i = 0; i < m_nStates; i++) {
+			    	for (int i = 0; i < nrOfStates; i++) {
 
 			    		fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
 
 			    		v++;
-			    		w += m_nStates;
+			    		w += nrOfStates;
 			    	}
 
-			    } else if (state1 < m_nStates) {
+			    } else if (state1 < nrOfStates) {
 			    	// child 2 has a gap or unknown state so treat it as unknown
 
-			    	for (int i = 0; i < m_nStates; i++) {
+			    	for (int i = 0; i < nrOfStates; i++) {
 
 			    		fPartials3[v] = fMatrices1[w + state1];
 
 			    		v++;
-			    		w += m_nStates;
+			    		w += nrOfStates;
 			    	}
-			    } else if (state2 < m_nStates) {
+			    } else if (state2 < nrOfStates) {
 			    	// child 2 has a gap or unknown state so treat it as unknown
 
-			    	for (int i = 0; i < m_nStates; i++) {
+			    	for (int i = 0; i < nrOfStates; i++) {
 
 			    		fPartials3[v] = fMatrices2[w + state2];
 
 			    		v++;
-			    		w += m_nStates;
+			    		w += nrOfStates;
 			    	}
 			    } else {
 			    	// both children have a gap or unknown state so set partials to 1
 
-			    	for (int j = 0; j < m_nStates; j++) {
+			    	for (int j = 0; j < nrOfStates; j++) {
 			    		fPartials3[v] = 1.0;
 			    		v++;
 			    	}
 			    }
             }else{
-                v += m_nStates;
+                v += nrOfStates;
             }
 		}
 	}
@@ -268,20 +268,20 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 		int u = 0;
 		int v = 0;
 
-		for (int k = 0; k < m_nPatterns; k++) {
+		for (int k = 0; k < nrOfPatterns; k++) {
             if(unmasked[k]){
 			    int state1 = iStates1[k];
 
-			    int w = iMatrixMap[k] * m_nMatrixSize;
+			    int w = iMatrixMap[k] * matrixSize;
 
-			    if (state1 < m_nStates) {
+			    if (state1 < nrOfStates) {
 
-			    	for (int i = 0; i < m_nStates; i++) {
+			    	for (int i = 0; i < nrOfStates; i++) {
 
 			    		tmp = fMatrices1[w + state1];
 
 			    		sum = 0.0;
-			    		for (int j = 0; j < m_nStates; j++) {
+			    		for (int j = 0; j < nrOfStates; j++) {
 			    			sum += fMatrices2[w] * fPartials2[v + j];
 			    			w++;
 			    		}
@@ -290,14 +290,14 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 			    		u++;
 			    	}
 
-			    	v += m_nStates;
+			    	v += nrOfStates;
 			    } else {
 			    	// Child 1 has a gap or unknown state so don't use it
 
-			    	for (int i = 0; i < m_nStates; i++) {
+			    	for (int i = 0; i < nrOfStates; i++) {
 
 			    		sum = 0.0;
-			    		for (int j = 0; j < m_nStates; j++) {
+			    		for (int j = 0; j < nrOfStates; j++) {
 			    			sum += fMatrices2[w] * fPartials2[v + j];
 			    			w++;
 			    		}
@@ -306,11 +306,11 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 			    		u++;
 			    	}
 
-			    	v += m_nStates;
+			    	v += nrOfStates;
 			    }
             }else{
-                u += m_nStates;
-                v += m_nStates;
+                u += nrOfStates;
+                v += nrOfStates;
 
             }
 		}
@@ -329,15 +329,15 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 		int u = 0;
 		int v = 0;
 
-		for (int k = 0; k < m_nPatterns; k++) {
+		for (int k = 0; k < nrOfPatterns; k++) {
             if(unmasked[k]){
-			    int w = iMatrixMap[k] * m_nMatrixSize;
+			    int w = iMatrixMap[k] * matrixSize;
 
-			    for (int i = 0; i < m_nStates; i++) {
+			    for (int i = 0; i < nrOfStates; i++) {
 
 			    	sum1 = sum2 = 0.0;
 
-			    	for (int j = 0; j < m_nStates; j++) {
+			    	for (int j = 0; j < nrOfStates; j++) {
 			    		sum1 += fMatrices1[w] * fPartials1[v + j];
 			    		sum2 += fMatrices2[w] * fPartials2[v + j];
 
@@ -347,10 +347,10 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 			    	fPartials3[u] = sum1 * sum2;
 			    	u++;
 			    }
-			    v += m_nStates;
+			    v += nrOfStates;
             }else{
-                u += m_nStates;
-                v += m_nStates;
+                u += nrOfStates;
+                v += nrOfStates;
 
             }
 		}
@@ -367,35 +367,35 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 
 		int u = 0;
 		int v = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
+		for (int k = 0; k < nrOfPatterns; k++) {
             if(unmasked[k]){
-			    for (int i = 0; i < m_nStates; i++) {
+			    for (int i = 0; i < nrOfStates; i++) {
 
 			    	fOutPartials[u] = fInPartials[v] * fProportions[0];
 			    	u++;
 			    	v++;
 			    }
             }else{
-                u+=m_nStates;
-                v+=m_nStates;
+                u+=nrOfStates;
+                v+=nrOfStates;
             }
 		}
 
 
-		for (int l = 1; l < m_nMatrices; l++) {
+		for (int l = 1; l < nrOfMatrices; l++) {
 			u = 0;
 
-			for (int k = 0; k < m_nPatterns; k++) {
+			for (int k = 0; k < nrOfPatterns; k++) {
                 if(unmasked[k]){
-				    for (int i = 0; i < m_nStates; i++) {
+				    for (int i = 0; i < nrOfStates; i++) {
 
 				    	fOutPartials[u] += fInPartials[v] * fProportions[l];
 				    	u++;
 				    	v++;
 				    }
                 }else{
-                    u += m_nStates;
-                    v += m_nStates;
+                    u += nrOfStates;
+                    v += nrOfStates;
                 }
 			}
 		}
@@ -409,10 +409,10 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
 	 */
 	public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods){
         int v = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
+		for (int k = 0; k < nrOfPatterns; k++) {
             if(unmasked[k]){
                 double sum = 0.0;
-			    for (int i = 0; i < m_nStates; i++) {
+			    for (int i = 0; i < nrOfStates; i++) {
 
 			    	sum += fFrequencies[i] * fPartials[v];
                     //System.out.println("sum: "+sum+" log sum: "+Math.log(sum)+" fPartials[v]: "+fPartials[v]+" log fPartials[v]: "+Math.log(fPartials[v]));
@@ -440,7 +440,7 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
                 fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
 
             }else{
-                v += m_nStates;
+                v += nrOfStates;
 
             }
 		}
@@ -465,38 +465,38 @@ public class WVLikelihoodCore extends BeerLikelihoodCore{
     protected void scalePartials(int iNodeIndex) {
         int u = 0;
 
-        for (int i = 0; i < m_nPatterns; i++) {
+        for (int i = 0; i < nrOfPatterns; i++) {
             if(unmasked[i]){
                 double scaleFactor = 0.0;
                 int v = u;
-                for (int k = 0; k < m_nMatrices; k++) {
-                    for (int j = 0; j < m_nStates; j++) {
-                        if (m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex][v] > scaleFactor) {
-                            scaleFactor = m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex][v];
+                for (int k = 0; k < nrOfMatrices; k++) {
+                    for (int j = 0; j < nrOfStates; j++) {
+                        if (partials[currentPartialsIndex[iNodeIndex]][iNodeIndex][v] > scaleFactor) {
+                            scaleFactor = partials[currentPartialsIndex[iNodeIndex]][iNodeIndex][v];
                         }
                         v++;
                     }
-                    v += (m_nPatterns - 1) * m_nStates;
+                    v += (nrOfPatterns - 1) * nrOfStates;
                 }
                 //System.out.println("pattern "+i+" scale factor: "+scaleFactor);
                 if (scaleFactor < m_fScalingThreshold && scaleFactor > 0.0) {
 
                     v = u;
-                    for (int k = 0; k < m_nMatrices; k++) {
-                        for (int j = 0; j < m_nStates; j++) {
-                            m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex][v] /= scaleFactor;
+                    for (int k = 0; k < nrOfMatrices; k++) {
+                        for (int j = 0; j < nrOfStates; j++) {
+                            partials[currentPartialsIndex[iNodeIndex]][iNodeIndex][v] /= scaleFactor;
                             v++;
                         }
-                        v += (m_nPatterns - 1) * m_nStates;
+                        v += (nrOfPatterns - 1) * nrOfStates;
                     }
-                    m_fScalingFactors[m_iCurrentPartials[iNodeIndex]][iNodeIndex][i] = Math.log(scaleFactor);
+                    scalingFactors[currentPartialsIndex[iNodeIndex]][iNodeIndex][i] = Math.log(scaleFactor);
 
                 } else {
-                    m_fScalingFactors[m_iCurrentPartials[iNodeIndex]][iNodeIndex][i] = 0.0;
+                    scalingFactors[currentPartialsIndex[iNodeIndex]][iNodeIndex][i] = 0.0;
                 }
 
             }
-            u += m_nStates;
+            u += nrOfStates;
 
         }
     }

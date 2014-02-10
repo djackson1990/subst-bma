@@ -100,8 +100,7 @@
      </input>
 
 
-    <tree id="tree">
-        <tree estimate="false" id="RandomTree" name="initial" spec="beast.evolution.tree.RandomTree">
+    <tree id="tree" spec="beast.evolution.tree.RandomTree">
             <data idref="rsva" name="taxa"/>
             <populationModel spec="ConstantPopulation">
                 <parameter dimension="1" estimate="false" name="popSize" value="5.0"/>
@@ -146,8 +145,6 @@
                 <taxa spec='beast.evolution.alignment.TaxonSet' alignment='@rsva'/>
             </trait>
         </tree>
-        <trait idref="datetrait"/>
-    </tree>
 
     <branchRateModel id="branchRates" spec="beast.evolution.branchratemodel.UCRelaxedClockModel" normalize="true">
         <tree idref="tree"/>

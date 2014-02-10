@@ -21,30 +21,30 @@ public class LogNormal extends LogNormalDistributionModel {
     public void initAndValidate() throws Exception {
         sIsPrec = sIsPrecInput.get();
         super.initAndValidate();
-    	m_bMeanInRealSpace = m_bMeanInRealSpaceInput.get();
+    	m_bMeanInRealSpace = hasMeanInRealSpaceInput.get();
 
-        if (MParameter.get() != null) {
-            if (MParameter.get().getLower() == null) {
-                MParameter.get().setLower(Double.NEGATIVE_INFINITY);
+        if (MParameterInput.get() != null) {
+            if (MParameterInput.get().getLower() == null) {
+                MParameterInput.get().setLower(Double.NEGATIVE_INFINITY);
             }
-            if (MParameter.get().getUpper() == null) {
-                MParameter.get().setUpper(Double.POSITIVE_INFINITY);
+            if (MParameterInput.get().getUpper() == null) {
+                MParameterInput.get().setUpper(Double.POSITIVE_INFINITY);
             }
         }
 
-        if (SParameter.get() != null) {
-            if (SParameter.get().getLower() == null) {
-                SParameter.get().setLower(0.0);
+        if (SParameterInput.get() != null) {
+            if (SParameterInput.get().getLower() == null) {
+                SParameterInput.get().setLower(0.0);
             }
-            if (SParameter.get().getUpper() == null) {
-                SParameter.get().setUpper(Double.POSITIVE_INFINITY);
+            if (SParameterInput.get().getUpper() == null) {
+                SParameterInput.get().setUpper(Double.POSITIVE_INFINITY);
             }
         }
         refresh();
     }
 
     public boolean requiresRecalculation(){
-        if(MParameter.get().somethingIsDirty() || SParameter.get().somethingIsDirty()){
+        if(MParameterInput.get().somethingIsDirty() || SParameterInput.get().somethingIsDirty()){
             refresh();
         }
         return super.requiresRecalculation();
@@ -71,15 +71,15 @@ public class LogNormal extends LogNormalDistributionModel {
 	void refresh() {
 		double fMean;
 		double fSigma;
-		if (SParameter.get() == null) {
+		if (SParameterInput.get() == null) {
 			fSigma = 1;
 		} else {
-			fSigma = SParameter.get().getValue();
+			fSigma = SParameterInput.get().getValue();
 		}
-		if (MParameter.get() == null) {
+		if (MParameterInput.get() == null) {
 			fMean = 0;
 		} else {
-			fMean = MParameter.get().getValue();
+			fMean = MParameterInput.get().getValue();
 		}
 
         if (sIsPrec) {

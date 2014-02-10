@@ -3,7 +3,7 @@ package beast.math.distributions;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Valuable;
+import beast.core.Function;
 import beast.core.parameter.RealParameter;
 import beast.math.GammaFunction;
 import beast.math.matrixAlgebra.CholeskyDecomposition;
@@ -232,7 +232,7 @@ public class Wishart extends ParametricDistribution implements MultivariateDistr
         return draw;
     }
 
-    public double calcLogP(Valuable x) throws Exception {
+    public double calcLogP(Function x) throws Exception {
         int vDim = x.getDimension();
         if(vDim == 4){
 

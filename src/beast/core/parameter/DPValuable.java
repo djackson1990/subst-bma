@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 
 @Description("Summarizes a set of valuables from a Dirichlet prior process")
-public class DPValuable extends CalculationNode implements Valuable, Loggable{
+public class DPValuable extends CalculationNode implements Function, Loggable{
 
     //ParameterList
     public Input<ParameterList> paramListInput = new Input<ParameterList>(

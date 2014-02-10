@@ -18,7 +18,7 @@ public class Count extends CalculationNode implements Loggable {
 
     @Override
 	public void init(PrintStream out) throws Exception {
-        out.print("count("+((Plugin)list).getID() + ")\t");
+        out.print("count("+((BEASTObject)list).getID() + ")\t");
     }
 
     @Override

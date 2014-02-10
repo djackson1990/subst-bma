@@ -28,8 +28,8 @@ public class ParameterListPrior extends Prior{
 
     boolean applyToList;
     public void initAndValidate() throws Exception {
-        super.initAndValidate();
         applyToList = applyToListInput.get();
+        super.initAndValidate();
 
     }
 
@@ -38,13 +38,13 @@ public class ParameterListPrior extends Prior{
         ParameterList parameterList = xListInput.get();
         if(applyToList){
             //System.err.println("logP: "+logP);
-            logP = m_dist.calcLogP(parameterList);
+            logP = dist.calcLogP(parameterList);
         }else{
             logP = 0.0;
 
             int dimParam = parameterList.getDimension();
             for(int i = 0; i < dimParam; i ++){
-                logP += m_dist.calcLogP(parameterList.getParameter(i));
+                logP += dist.calcLogP(parameterList.getParameter(i));
             }
 
         }

@@ -4,7 +4,7 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import beast.core.parameter.*;
 import beast.core.Input;
 import beast.core.Description;
-import beast.core.Valuable;
+import beast.core.Function;
 
 /**
  * @author Chieh-Hsi Wu
@@ -80,7 +80,7 @@ public class DirichletProcess extends ParametricDistribution{
         }
 
     }
-    public double calcLogP(Valuable xList) throws Exception {
+    public double calcLogP(Function xList) throws Exception {
         if(requiresRecalculation()){
             refresh();
         }

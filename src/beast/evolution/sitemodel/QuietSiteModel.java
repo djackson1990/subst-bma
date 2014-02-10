@@ -138,7 +138,7 @@ public class QuietSiteModel extends SiteModel {
         }
 
         if (/*invarParameter != null && */invarParameter.getValue() > 0) {
-            if (m_bPropInvariantIsCategory) {
+            if (hasPropInvariantCategory) {
                 categoryCount += 1;
             }
         }

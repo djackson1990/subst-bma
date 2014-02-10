@@ -1,7 +1,7 @@
 package beast.math.distributions;
 
 import beast.core.Input;
-import beast.core.Valuable;
+import beast.core.Function;
 import beast.core.parameter.RealParameter;
 import beast.core.Description;
 import beast.util.Randomizer;
@@ -46,7 +46,7 @@ public class DirichletDistribution extends Dirichlet{
         //System.out.println("This is initiated!");
         //System.out.println(m_alpha.get().getID()+" "+m_alpha.get().getValue(0));
 
-        alpha = m_alpha.get();
+        alpha = alphaInput.get();
         //System.out.println(alpha.getID()+" " +alpha.getValue(0));
         scale = scaleInput.get();
 	}
@@ -172,7 +172,7 @@ public class DirichletDistribution extends Dirichlet{
 
 
     @Override
-    public double calcLogP(Valuable pX) throws Exception {
+    public double calcLogP(Function pX) throws Exception {
 
         double scaleVal = scale.getValue();
         Double [] fAlpha = alpha.getValues();
