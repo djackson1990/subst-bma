@@ -23,6 +23,21 @@
         <sequence id="seq_Rattus" taxon="Rattus" totalcount="4" value="ATGGCCGAAGGGGAGATCACAACCTTTGCAGCCCTGACCGAGAGGTTCAATCTGCCTCTAGGGAACTACAAAAAACCCAAACTGCTCTACTGCAGCAACGGGGGCCACTTCTTGAGGATTCTTCCCGATGGCACCGTGGATGGGACCAGGGACAGGAGCGACCAGCACATTCAGCTGCAGCTCAGTGCGGAAAGCGCGGGCGAAGTGTATATAAAGGGTACAGAGACTGGCCAGTACTTGGCCATGGACACCGAAGGGCTTTTATACGGCTCGCAGACACCAAATGAAGAATGCCTATTCCTGGAAAGGCTAGAAGAAAACCATTATAACACTTACACATCCAAGAAGCACGCGGAGAAGAACTGGTTTGTGGGCCTCAAGAAGAACGGGAGTTGTAAGCGCGGTCCTCGGACTCACTACGGCCAGAAAGCCATCTTGTTTCTCCCCCTCCCGGTATCTTCTGACTAA"/>
     </data>
 
+    <taxonset spec='beast.evolution.alignment.TaxonSet' id='taxa'>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Canis'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Felis'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Homo'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Macaca'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Microcebus'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Mus'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Ochotona'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Oryctolagus'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Otolemur'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Pan'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Pongo'/>
+        <taxon spec='beast.evolution.alignment.Taxon' id='Rattus'/>
+    </taxonset>
+
 
     <input spec="ParameterList" id="parameterList">
         <parameter spec="QuietRealParameter" id="parameter1" value="0.0 0.0 0.0 0.0 0.0" upper="Infinity" lower="-Infinity"/>
@@ -155,10 +170,15 @@
         <input name="plugin" idref="dpNtdSiteModel"/>
     </input-->
 
-    <input spec='beast.evolution.speciation.YuleModelWithScaling' id="yule">
-        <birthDiffRate id="birthRate" spec="RealParameter" value="2.0" lower="0.0" upper="100.0"/>
-        <tree idref="tree"/>
-        <scaler  idref="mean.rate"/>
+    <input spec='beast.evolution.speciation.CalibratedYuleModel' type="all" id="yule">
+        <birthRate id="birthRate" spec='parameter.RealParameter' value="2.0"/>
+        <tree idref='tree'/>
+
+        <calibrations spec='beast.evolution.speciation.CalibrationPoint' id='cal'>
+            <taxonset idref="taxa"/>
+            <!-- This Gamma distribution approximates Normal(mean=0,stdev=0.1)-->
+            <distr spec="beast.math.distributions.Gamma" alpha="100" beta="0.01"/>
+        </calibrations>
     </input>
 
     <input name="scaler" id="mean.rate" spec="PointerMean">
