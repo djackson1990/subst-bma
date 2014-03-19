@@ -459,7 +459,7 @@
         </logger>
 
         <logger logEvery="10000" fileName="mammal_468_sdpm1_uc_1.trees" mode="tree">
-            <log spec="beast.evolution.tree.ScaledTreeWithMetaDataLogger" tree="@tree" branchratemodel="@branchRates" scaler="@mean.rate"/>
+            <log spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@tree" branchratemodel="@branchRates"/>
         </logger>
 
         <logger logEvery="20000" fileName="mammal_468_sdpm1_uc_paramList_1.log">

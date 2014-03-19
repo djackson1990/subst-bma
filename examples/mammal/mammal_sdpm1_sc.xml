@@ -396,7 +396,6 @@
             <log idref="siteModel.count"/>
             <log idref="treeLik.count"/>
             <log id="tree.height.time" spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
-            <log spec='beast.evolution.tree.TreeLengthLogger' tree='@tree' scaler="@mean.rate"/>
             <log id="tree.height" spec='beast.core.parameter.ParameterMeanLogger' paramList='@ratesList' pointers="@rates.pointers" dpVal="@dpValuable" tree="@rootHeight"/>
             <log idref='birthRate'/>
         </logger>
@@ -409,7 +408,6 @@
             <log idref="treeLikelihood"/>
             <log idref="treeLik.count"/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
-            <log spec='beast.evolution.tree.TreeLengthLogger' tree='@tree' scaler="@mean.rate"/>
             <log spec='beast.core.parameter.ParameterMeanLogger' paramList='@ratesList' pointers="@rates.pointers" dpVal="@dpValuable" tree="@rootHeight"/>
             <log idref="mvnmean.prior"/>
             <log idref="mvnprecision.prior"/>
