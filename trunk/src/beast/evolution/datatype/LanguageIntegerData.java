@@ -165,10 +165,11 @@ public class LanguageIntegerData extends DataType.Base{
 
     }
 
-
-
-
-
+	@Override
+	public String getTypeDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 }
