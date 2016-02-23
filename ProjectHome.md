@@ -1,0 +1,1 @@
+Substitution Bayesian Model Averaging is a BEAST2 (https://github.com/CompEvol/beast2) package.
